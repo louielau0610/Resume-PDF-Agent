@@ -1,0 +1,44 @@
+Data Science Intern
+
+Company: Example Tech Corp
+Location: San Francisco, CA (Remote Friendly)
+Employment Type: Full-time Internship
+
+About the Role
+We are looking for a Data Science Intern to join our analytics team. You will work on real-world data problems and contribute to production models.
+
+Responsibilities
+- Analyze large datasets to identify trends and insights
+- Build and evaluate machine learning models for business problems
+- Create data visualizations and dashboards for stakeholders
+- Collaborate with engineers to deploy models to production
+- Present findings to technical and non-technical audiences
+
+Basic Qualifications
+- Currently pursuing a Bachelor's or Master's degree in Computer Science, Statistics, Mathematics, or related field
+- Proficiency in Python and SQL
+- Experience with data analysis libraries (pandas, NumPy)
+- Understanding of statistical concepts and machine learning fundamentals
+- Strong communication skills
+
+Preferred Qualifications
+- Experience with data visualization tools (Tableau, Power BI, Matplotlib)
+- Familiarity with cloud platforms (AWS, GCP, or Azure)
+- Knowledge of deep learning frameworks (PyTorch, TensorFlow)
+- Previous internship or project experience in data science
+- Experience with Git and collaborative development
+
+Skills
+- Python
+- SQL
+- pandas
+- NumPy
+- scikit-learn
+- Machine Learning
+- Statistics
+- Data Visualization
+- Git
+
+Education
+- Currently enrolled in Bachelor's or Master's program
+- Major in Computer Science, Statistics, Mathematics, Data Science, or related field

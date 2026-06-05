@@ -1,0 +1,90 @@
+{
+  "user_profile": {
+    "full_name": "Alex Chen",
+    "contact": {
+      "email": "alex.chen@example.com",
+      "location": "Taipei, Taiwan",
+      "linkedin": "https://www.linkedin.com/in/alex-chen-example",
+      "github": "https://github.com/alex-chen-example"
+    },
+    "education": [
+      {
+        "institution": "Example University",
+        "degree": "Bachelor of Science",
+        "major": "Statistics and Computer Science",
+        "start_date": "2022",
+        "end_date": "2026",
+        "gpa": "3.7/4.0",
+        "core_courses": [
+          "Data Structures",
+          "Probability",
+          "Statistical Modeling",
+          "Database Systems"
+        ],
+        "honors": ["Dean's List"]
+      }
+    ],
+    "target_roles": ["Data Science Intern"],
+    "target_companies": [],
+    "target_industries": ["Technology", "Analytics"],
+    "skills": [
+      {"category": "Programming", "skills": ["Python", "SQL", "R"]},
+      {"category": "Data Tools", "skills": ["pandas", "NumPy", "scikit-learn"]},
+      {"category": "Visualization", "skills": ["Matplotlib", "Tableau"]}
+    ],
+    "languages": [
+      {"language": "English", "proficiency": "Professional working proficiency"},
+      {"language": "Mandarin", "proficiency": "Native"}
+    ],
+    "awards": [
+      {
+        "title": "University Data Challenge Finalist",
+        "issuer": "Example University Analytics Club",
+        "date": "2025",
+        "description": "Team project selected for final presentation round."
+      }
+    ],
+    "additional_notes": "Sample profile for deterministic workflow testing."
+  },
+  "resume_content": {
+    "resume_type": "data_science_resume",
+    "summary": "Student candidate targeting data science internship roles.",
+    "experiences": [
+      {
+        "experience_id": "exp_project_course_recommender",
+        "experience_type": "project",
+        "title": "Course Recommendation Analysis Project",
+        "organization": "Example University",
+        "raw_description": "Analyzed anonymized course review data for a class project and built baseline recommendation features.",
+        "responsibilities": [
+          "Cleaned tabular course review data for exploratory analysis.",
+          "Compared simple similarity-based recommendation approaches."
+        ],
+        "tools_used": ["Python", "pandas", "scikit-learn"],
+        "methods_used": ["Exploratory data analysis", "Cosine similarity"],
+        "outcomes": ["Prepared a reproducible notebook and final class presentation."],
+        "metrics": [],
+        "evidence_notes": ["Based on coursework project description provided in sample profile."]
+      },
+      {
+        "experience_id": "exp_course_stats_modeling",
+        "experience_type": "coursework",
+        "title": "Statistical Modeling Coursework",
+        "organization": "Example University",
+        "responsibilities": [
+          "Applied regression and hypothesis testing methods to class datasets."
+        ],
+        "tools_used": ["R", "Excel"],
+        "methods_used": ["Regression analysis", "Hypothesis testing"],
+        "outcomes": ["Completed course with A grade."],
+        "metrics": [],
+        "evidence_notes": ["Course grade available on transcript."]
+      }
+    ]
+  },
+  "target_role": "Data Science Intern",
+  "output_dir": "outputs/sample_jd",
+  "pdf_backend": "mock",
+  "use_user_provided_jd": true,
+  "jd_text": "Data Science Intern\n\nCompany: Example Tech Corp\nLocation: San Francisco, CA\n\nAbout the Role\nWe are looking for a Data Science Intern to join our analytics team.\n\nResponsibilities\n- Analyze large datasets to identify trends and insights\n- Build and evaluate machine learning models\n- Create data visualizations and dashboards\n\nBasic Qualifications\n- Pursuing Bachelor's or Master's in CS, Statistics, or related field\n- Proficiency in Python and SQL\n- Experience with pandas, NumPy, scikit-learn\n\nPreferred Qualifications\n- Experience with Tableau or Power BI\n- Familiarity with AWS or GCP\n- Previous internship experience\n\nSkills: Python, SQL, Machine Learning, Statistics, Data Visualization"
+}

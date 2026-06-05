@@ -2,9 +2,9 @@
 
 ## Current Milestone
 
-M14 User Confirmation Workflow ✅
+M15 User-provided JD Parser with Compliance Checks ✅
 
-## M0-M14 已完成
+## M0-M15 已完成
 
 - M0：项目基础结构、配置、异常、占位 pipeline 和基础测试。
 - M1：用户画像、简历内容、criteria、analysis 和真实性 safeguard schemas。

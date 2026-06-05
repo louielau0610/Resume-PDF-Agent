@@ -103,6 +103,11 @@ def run_resume_workflow(
     confirmation_review_path: str | None = None
     confirmation_required: bool = False
     can_generate_final_pdf: bool = True
+    # M15 JD
+    parsed_jd_path: str | None = None
+    jd_criteria_profile_path: str | None = None
+    jd_compliance_status: str | None = None
+    used_user_provided_jd: bool = False
 
     # ── A. User intake (setup) ─────────────────────────────────────────────
     stages.append(
@@ -115,22 +120,101 @@ def run_resume_workflow(
 
     # ── B. Criteria selection ──────────────────────────────────────────────
     try:
-        if workflow_input.criteria_profile_id:
-            criteria_profile = load_criteria_profile(workflow_input.criteria_profile_id)
-            selected_criteria_profile_id = workflow_input.criteria_profile_id
-        else:
-            target_role = workflow_input.target_role or (
-                workflow_input.user_profile.target_roles[0]
-                if workflow_input.user_profile.target_roles
-                else None
-            )
-            profiles = select_criteria_profiles(target_role=target_role)
-            if not profiles:
-                raise RuntimeError(
-                    f"No criteria profile could be selected for target_role={target_role!r}"
+        # M15: Use user-provided JD if enabled
+        if workflow_input.use_user_provided_jd:
+            used_user_provided_jd = True
+
+            # Load JD text
+            jd_text: str | None = None
+            if workflow_input.jd_file_path:
+                from resume_pdf_agent.jd.io import load_jd_text_from_file
+                jd_text = load_jd_text_from_file(workflow_input.jd_file_path)
+            elif workflow_input.jd_text:
+                jd_text = workflow_input.jd_text
+
+            if jd_text:
+                from resume_pdf_agent.jd import (
+                    build_criteria_profile_from_jd,
+                    parse_user_provided_jd,
                 )
-            criteria_profile = profiles[0]
-            selected_criteria_profile_id = criteria_profile.profile_id
+                from resume_pdf_agent.jd.io import (
+                    write_jd_criteria_artifact,
+                    write_parsed_jd_artifact,
+                )
+
+                parsed = parse_user_provided_jd(jd_text)
+                jd_compliance_status = parsed.compliance_result.status.value
+
+                # Write parsed JD artifact
+                if workflow_input.write_jd_artifacts and workflow_input.write_intermediate_json:
+                    pjd_art = write_parsed_jd_artifact(
+                        parsed,
+                        _json_path(output_dir, _artifact_filename("parsed_jd", "json")),
+                    )
+                    all_artifacts.append(pjd_art)
+                    parsed_jd_path = pjd_art.path
+
+                # Build criteria from JD
+                if parsed.compliance_result.can_parse:
+                    jd_build = build_criteria_profile_from_jd(parsed)
+                    if jd_build.criteria_profile is not None:
+                        criteria_profile = jd_build.criteria_profile
+                        selected_criteria_profile_id = criteria_profile.profile_id
+
+                        if workflow_input.write_jd_artifacts and workflow_input.write_intermediate_json:
+                            jdc_art = write_jd_criteria_artifact(
+                                jd_build,
+                                _json_path(
+                                    output_dir,
+                                    _artifact_filename("jd_criteria_profile", "json"),
+                                ),
+                            )
+                            if jdc_art:
+                                all_artifacts.append(jdc_art)
+                                jd_criteria_profile_path = jdc_art.path
+                    else:
+                        global_warnings.append(
+                            f"JD criteria build failed: {'; '.join(jd_build.errors)}"
+                        )
+                else:
+                    global_warnings.append(
+                        f"JD compliance blocked: {parsed.compliance_result.summary}"
+                    )
+                    # Fall back to static criteria
+                    target_role = workflow_input.target_role or (
+                        workflow_input.user_profile.target_roles[0]
+                        if workflow_input.user_profile.target_roles
+                        else None
+                    )
+                    profiles = select_criteria_profiles(target_role=target_role)
+                    if profiles:
+                        criteria_profile = profiles[0]
+                        selected_criteria_profile_id = criteria_profile.profile_id
+                        used_user_provided_jd = False
+                    else:
+                        raise RuntimeError("No criteria profile available (JD blocked, no static fallback).")
+            else:
+                global_warnings.append("use_user_provided_jd is true but no JD text or file provided.")
+                used_user_provided_jd = False
+
+        if not used_user_provided_jd:
+            # Existing static criteria selection
+            if workflow_input.criteria_profile_id:
+                criteria_profile = load_criteria_profile(workflow_input.criteria_profile_id)
+                selected_criteria_profile_id = workflow_input.criteria_profile_id
+            else:
+                target_role = workflow_input.target_role or (
+                    workflow_input.user_profile.target_roles[0]
+                    if workflow_input.user_profile.target_roles
+                    else None
+                )
+                profiles = select_criteria_profiles(target_role=target_role)
+                if not profiles:
+                    raise RuntimeError(
+                        f"No criteria profile could be selected for target_role={target_role!r}"
+                    )
+                criteria_profile = profiles[0]
+                selected_criteria_profile_id = criteria_profile.profile_id
 
         stages.append(
             _stage_result(
@@ -690,6 +774,10 @@ def run_resume_workflow(
         confirmation_review_path=confirmation_review_path,
         confirmation_required=confirmation_required,
         can_generate_final_pdf=can_generate_final_pdf,
+        parsed_jd_path=parsed_jd_path,
+        jd_criteria_profile_path=jd_criteria_profile_path,
+        jd_compliance_status=jd_compliance_status,
+        used_user_provided_jd=used_user_provided_jd,
     )
 
     # ── L. Write workflow_result.json if intermediate JSON is enabled ──────
@@ -725,6 +813,10 @@ def _build_result(
     confirmation_review_path: str | None = None,
     confirmation_required: bool = False,
     can_generate_final_pdf: bool = True,
+    parsed_jd_path: str | None = None,
+    jd_criteria_profile_path: str | None = None,
+    jd_compliance_status: str | None = None,
+    used_user_provided_jd: bool = False,
 ) -> ResumeWorkflowResult:
     """Assemble the final ResumeWorkflowResult."""
 
@@ -767,4 +859,8 @@ def _build_result(
         confirmation_review_path=confirmation_review_path,
         confirmation_required=confirmation_required,
         can_generate_final_pdf=can_generate_final_pdf,
+        parsed_jd_path=parsed_jd_path,
+        jd_criteria_profile_path=jd_criteria_profile_path,
+        jd_compliance_status=jd_compliance_status,
+        used_user_provided_jd=used_user_provided_jd,
     )

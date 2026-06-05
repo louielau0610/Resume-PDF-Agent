@@ -47,6 +47,15 @@ from resume_pdf_agent.models.frontend import (
     FrontendPageStatus,
     FrontendStageView,
 )
+from resume_pdf_agent.models.jd import (
+    JDComplianceIssue,
+    JDComplianceIssueType,
+    JDComplianceResult,
+    JDComplianceStatus,
+    JDToCriteriaBuildResult,
+    JDSourceType,
+    ParsedJD,
+)
 from resume_pdf_agent.models.pdf import (
     PDFBackend,
     PDFGenerationOptions,
@@ -139,6 +148,12 @@ __all__ = [
     "HTMLRenderResult",
     "HTMLRenderStatus",
     "InternalTemplateProfile",
+    "JDComplianceIssue",
+    "JDComplianceIssueType",
+    "JDComplianceResult",
+    "JDComplianceStatus",
+    "JDToCriteriaBuildResult",
+    "JDSourceType",
     "LanguageSkill",
     "MatchLevel",
     "Metric",
@@ -148,6 +163,7 @@ __all__ = [
     "PDFGenerationResult",
     "PDFGenerationStatus",
     "PDFPageFormat",
+    "ParsedJD",
     "ResumeBullet",
     "ResumeClaim",
     "ResumeContent",

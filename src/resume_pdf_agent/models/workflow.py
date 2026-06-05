@@ -95,6 +95,11 @@ class ResumeWorkflowInput(BaseModel):
     require_confirmation_before_pdf: bool = False
     write_confirmation_packet: bool = True
     confirmation_decisions_path: str | None = None
+    # M15: User-provided JD
+    jd_text: str | None = None
+    jd_file_path: str | None = None
+    use_user_provided_jd: bool = False
+    write_jd_artifacts: bool = True
 
     @model_validator(mode="after")
     def _output_dir_not_empty(self) -> ResumeWorkflowInput:
@@ -124,6 +129,11 @@ class ResumeWorkflowResult(BaseModel):
     confirmation_review_path: str | None = None
     confirmation_required: bool = False
     can_generate_final_pdf: bool = True
+    # M15: User-provided JD
+    parsed_jd_path: str | None = None
+    jd_criteria_profile_path: str | None = None
+    jd_compliance_status: str | None = None
+    used_user_provided_jd: bool = False
 
     @model_validator(mode="after")
     def _summary_not_empty(self) -> ResumeWorkflowResult:

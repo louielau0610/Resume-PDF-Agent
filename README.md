@@ -4,11 +4,11 @@
 
 `resume_pdf_agent` 是一个 **criteria-aware 的 AI 简历 PDF 生成 Agent**。它不调用 LLM API，而是通过 11 阶段确定性工作流，将用户职业画像与岗位筛选指标（criteria）进行系统比对，经过分类、差距分析、真实性检查、Bullet 增强、模板匹配、HTML 渲染等步骤，最终输出 ATS 友好的结构化 PDF 简历和静态工作流仪表板。
 
-## 当前状态：M14
+## 当前状态：M15
 
-M14 新增用户确认工作流（User Confirmation Workflow），在 PDF 生成前收集需要用户关注的确认项，支持可选的安全门控。
+M15 新增用户提供 JD 解析器（User-provided JD Parser），支持将本地岗位描述文本解析为结构化 criteria profile，含合规检查。
 
-**已完成里程碑**：M0 → M1 → M2 → M3 → M4 → M5 → M6 → M7 → M8 → M9 → M10 → M11 → M12 → M13 → **M14** ✅
+**已完成里程碑**：M0 → M1 → M2 → M3 → M4 → M5 → M6 → M7 → M8 → M9 → M10 → M11 → M12 → M13 → M14 → **M15** ✅
 
 ## 架构概要
 

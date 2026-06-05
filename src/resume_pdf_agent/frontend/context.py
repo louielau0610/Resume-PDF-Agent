@@ -175,6 +175,18 @@ def build_frontend_page_context(
             workflow_result.confirmation_review_path, output_dir
         )
 
+    # M15 JD paths
+    parsed_jd_rel = ""
+    jd_criteria_profile_rel = ""
+    if getattr(workflow_result, "parsed_jd_path", None):
+        parsed_jd_rel = safe_relative_artifact_path(
+            workflow_result.parsed_jd_path, output_dir
+        )
+    if getattr(workflow_result, "jd_criteria_profile_path", None):
+        jd_criteria_profile_rel = safe_relative_artifact_path(
+            workflow_result.jd_criteria_profile_path, output_dir
+        )
+
     return {
         "page_title": page_title,
         "status": status,
@@ -213,4 +225,9 @@ def build_frontend_page_context(
         "can_generate_final_pdf": getattr(workflow_result, "can_generate_final_pdf", True),
         "confirmation_packet_path": confirmation_packet_rel,
         "confirmation_review_path": confirmation_review_rel,
+        # M15 JD
+        "used_user_provided_jd": getattr(workflow_result, "used_user_provided_jd", False),
+        "jd_compliance_status": getattr(workflow_result, "jd_compliance_status", ""),
+        "parsed_jd_path": parsed_jd_rel,
+        "jd_criteria_profile_path": jd_criteria_profile_rel,
     }

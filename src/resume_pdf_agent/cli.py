@@ -52,6 +52,13 @@ def _print_summary(result, output_dir: str) -> None:
     if result.confirmation_required:
         typer.echo(f"Confirmation:        REQUIRED before final PDF")
     typer.echo(f"Can generate PDF:    {result.can_generate_final_pdf}")
+    # M15 JD
+    if result.used_user_provided_jd:
+        typer.echo(f"JD used:             Yes (compliance: {result.jd_compliance_status or 'N/A'})")
+        if result.parsed_jd_path:
+            typer.echo(f"Parsed JD:           {result.parsed_jd_path}")
+        if result.jd_criteria_profile_path:
+            typer.echo(f"JD criteria profile: {result.jd_criteria_profile_path}")
 
 
 def _write_frontend_page_if_enabled(
@@ -106,6 +113,20 @@ def run_workflow(
         None, "--confirmation-decisions",
         help="Path to confirmation decisions JSON file to apply.",
     ),
+    # M15 JD options
+    jd_file: str | None = typer.Option(
+        None, "--jd-file",
+        exists=False,
+        help="Path to a local JD text file to use as criteria source.",
+    ),
+    use_user_provided_jd: bool = typer.Option(
+        False, "--use-user-provided-jd/--no-use-user-provided-jd",
+        help="Use user-provided JD as criteria source instead of static profiles.",
+    ),
+    write_jd_artifacts: bool = typer.Option(
+        True, "--write-jd-artifacts/--no-write-jd-artifacts",
+        help="Write parsed JD and JD-derived criteria artifacts.",
+    ),
 ) -> None:
     """Run the resume workflow from an explicit JSON input file."""
 
@@ -123,6 +144,13 @@ def run_workflow(
     workflow_input.require_confirmation_before_pdf = require_confirmation_before_pdf
     workflow_input.write_confirmation_packet = write_confirmation_packet
     workflow_input.confirmation_decisions_path = confirmation_decisions
+    # M15 JD overrides
+    if jd_file:
+        workflow_input.jd_file_path = jd_file
+        workflow_input.use_user_provided_jd = True
+    if use_user_provided_jd:
+        workflow_input.use_user_provided_jd = True
+    workflow_input.write_jd_artifacts = write_jd_artifacts
 
     result = run_resume_workflow(workflow_input)
     _print_summary(result, output_dir)
@@ -160,6 +188,20 @@ def run_sample(
         None, "--confirmation-decisions",
         help="Path to confirmation decisions JSON file to apply.",
     ),
+    # M15 JD options
+    jd_file: str | None = typer.Option(
+        None, "--jd-file",
+        exists=False,
+        help="Path to a local JD text file to use as criteria source.",
+    ),
+    use_user_provided_jd: bool = typer.Option(
+        False, "--use-user-provided-jd/--no-use-user-provided-jd",
+        help="Use user-provided JD as criteria source instead of static profiles.",
+    ),
+    write_jd_artifacts: bool = typer.Option(
+        True, "--write-jd-artifacts/--no-write-jd-artifacts",
+        help="Write parsed JD and JD-derived criteria artifacts.",
+    ),
 ) -> None:
     """Run the resume workflow using built-in sample data."""
 
@@ -182,6 +224,13 @@ def run_sample(
     workflow_input.require_confirmation_before_pdf = require_confirmation_before_pdf
     workflow_input.write_confirmation_packet = write_confirmation_packet
     workflow_input.confirmation_decisions_path = confirmation_decisions
+    # M15 JD overrides
+    if jd_file:
+        workflow_input.jd_file_path = jd_file
+        workflow_input.use_user_provided_jd = True
+    if use_user_provided_jd:
+        workflow_input.use_user_provided_jd = True
+    workflow_input.write_jd_artifacts = write_jd_artifacts
 
     result = run_resume_workflow(workflow_input)
     _print_summary(result, output_dir)

@@ -1,6 +1,6 @@
 # TODO
 
-## M1-M8 Completed
+## M1-M9 Completed
 
 - M1：Core schemas。
 - M2：Static criteria knowledge base v0。
@@ -10,21 +10,17 @@
 - M6：Criteria-aware bullet enhancement engine。
 - M7：Internal template metadata matching。
 - M8：HTML resume rendering。
+- M9：PDF generation pipeline。
 
-## M9: PDF Generation Pipeline
+## M10: CLI/API Workflow Integration ✅ (current)
 
-- 已完成 PDF generation options、result 和 backend enums。
-- 已完成 conversion reminder metadata helper。
-- 已完成 PDF output validation。
-- 已完成 WeasyPrint-preferred backend adapter 和 backend availability checks。
-- 已完成 mock backend 测试路径。
-- 已完成从 M8 HTML 输出生成本地 PDF 的 public API。
-- 已完成 M9 文档和测试。
-
-## M10: CLI or API Workflow Integration
-
-- 提供最小可用 CLI 或 API。
-- 串联 intake、criteria selection、gap analysis、truthfulness check、enhancement、template selection、rendering 和 PDF export。
+- 已完成 workflow Pydantic models。
+- 已完成 serialization 和 I/O helpers。
+- 已完成 `run_resume_workflow` orchestrator。
+- 已完成 Typer CLI（`run-sample`、`run`、`list-criteria`、`list-templates`）。
+- 已完成 `__main__.py`。
+- 已完成示例输入 JSON。
+- 已完成 M10 文档和测试。
 
 ## M11: Frontend Basic Workflow Page
 
@@ -35,3 +31,10 @@
 
 - 根据用户提供的样例图片优化视觉风格。
 - 保持专业、清晰、适合简历生成工作流。
+
+## Future Backlog (optional)
+
+- User confirmation workflow before final PDF generation。
+- Real JD parser with compliance checks。
+- Optional LLM-assisted bullet rewriting after safeguards。
+- Production PDF backend installation guide (WeasyPrint)。

@@ -1,38 +1,43 @@
-"""Placeholder workflow pipeline for the M9 PDF generation foundation."""
+"""Placeholder pipeline module kept for backward compatibility.
+
+For the real deterministic local workflow, use:
+
+    from resume_pdf_agent.workflow import run_resume_workflow
+
+M10 added a full end-to-end workflow orchestrator connected to all existing
+M0–M9 modules. The CLI entry point is in ``resume_pdf_agent.cli``.
+"""
 
 from resume_pdf_agent.config import SUPPORTED_EXPORT_FORMATS
 
 
 def run_resume_pipeline(input_data: dict) -> dict:
-    """Return a structured M9 placeholder response for the planned pipeline.
+    """Return a structured M10 placeholder response pointing to the real workflow.
 
-    M9 adds PDF generation helpers for M8 HTML output. This placeholder still
-    does not run the full production workflow.
+    The production workflow lives in ``resume_pdf_agent.workflow.run_resume_workflow``.
     """
 
     return {
-        "status": "skeleton",
+        "status": "redirect",
         "stages": [
             "user_intake",
             "criteria_selection",
-            "profile_structuring",
+            "resume_type_classification",
             "gap_analysis",
             "truthfulness_check",
             "criteria_aware_content_enhancement",
-            "resume_type_classification",
             "internal_template_matching",
             "html_rendering",
             "pdf_generation",
+            "artifact_writing",
             "reminder_panel",
         ],
         "message": (
-            "M7 deterministic internal template selector can choose internal "
-            "template metadata, and M8 deterministic HTML renderer can render "
-            "structured resume content with that selected metadata. M9 PDF "
-            "generation pipeline can convert rendered HTML to local PDF files. "
-            "The pipeline is still a placeholder: no online template search, "
-            "LLM calls, live JD analysis, or frontend UI is implemented. "
-            "PDF is the only supported target export format for v0."
+            "M10 integrated the deterministic local workflow. Use "
+            "'resume_pdf_agent.workflow.run_resume_workflow' for programmatic access "
+            "or the CLI ('py -m resume_pdf_agent run-sample') for command-line use. "
+            "No LLM calls, no online template search, no frontend UI. "
+            "PDF is the only supported export format for v0."
         ),
         "supported_export_formats": SUPPORTED_EXPORT_FORMATS,
         "input_received": bool(input_data),

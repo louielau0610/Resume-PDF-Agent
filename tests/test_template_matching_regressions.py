@@ -33,7 +33,7 @@ def test_pipeline_placeholder_includes_template_and_later_rendering_stages():
     assert "internal_template_matching" in result["stages"]
     assert "html_rendering" in result["stages"]
     assert "pdf_generation" in result["stages"]
-    assert "M7 deterministic internal template selector" in result["message"]
+    assert "M10 integrated" in result["message"]
 
 
 def test_export_format_still_only_includes_pdf():

@@ -1,0 +1,135 @@
+{
+  "user_profile": {
+    "full_name": "Alex Chen",
+    "contact": {
+      "email": "alex.chen@example.com",
+      "location": "Taipei, Taiwan",
+      "linkedin": "https://www.linkedin.com/in/alex-chen-example",
+      "github": "https://github.com/alex-chen-example"
+    },
+    "education": [
+      {
+        "institution": "Example University",
+        "degree": "Bachelor of Science",
+        "major": "Statistics and Computer Science",
+        "start_date": "2022",
+        "end_date": "2026",
+        "gpa": "3.7/4.0",
+        "core_courses": [
+          "Data Structures",
+          "Probability",
+          "Statistical Modeling",
+          "Database Systems"
+        ],
+        "honors": ["Dean's List"]
+      }
+    ],
+    "target_roles": ["Data Science Intern"],
+    "target_companies": [],
+    "target_industries": ["Technology", "Analytics"],
+    "skills": [
+      {"category": "Programming", "skills": ["Python", "SQL", "R"]},
+      {"category": "Data Tools", "skills": ["pandas", "NumPy", "scikit-learn"]},
+      {"category": "Visualization", "skills": ["Matplotlib", "Tableau"]}
+    ],
+    "languages": [
+      {"language": "English", "proficiency": "Professional working proficiency"},
+      {"language": "Mandarin", "proficiency": "Native"}
+    ],
+    "awards": [
+      {
+        "title": "University Data Challenge Finalist",
+        "issuer": "Example University Analytics Club",
+        "date": "2025",
+        "description": "Team project selected for final presentation round."
+      }
+    ],
+    "additional_notes": "Sample profile for deterministic workflow testing. Details are generic and not intended to represent a real applicant."
+  },
+  "resume_content": {
+    "resume_type": "data_science_resume",
+    "summary": "Student candidate targeting data science internship roles.",
+    "experiences": [
+      {
+        "experience_id": "exp_project_course_recommender",
+        "experience_type": "project",
+        "title": "Course Recommendation Analysis Project",
+        "organization": "Example University",
+        "raw_description": "Analyzed anonymized course review data for a class project and built baseline recommendation features.",
+        "responsibilities": [
+          "Cleaned tabular course review data for exploratory analysis.",
+          "Compared simple similarity-based recommendation approaches."
+        ],
+        "tools_used": ["Python", "pandas", "scikit-learn"],
+        "methods_used": ["Exploratory data analysis", "Cosine similarity"],
+        "outcomes": [
+          "Prepared a reproducible notebook and final class presentation."
+        ],
+        "metrics": [],
+        "evidence_notes": [
+          "Based on coursework project description provided in sample profile."
+        ]
+      },
+      {
+        "experience_id": "exp_course_stats_modeling",
+        "experience_type": "coursework",
+        "title": "Statistical Modeling Coursework",
+        "organization": "Example University",
+        "responsibilities": [
+          "Applied regression and hypothesis testing methods to class datasets."
+        ],
+        "tools_used": ["R", "Python"],
+        "methods_used": ["Linear regression", "Hypothesis testing"],
+        "outcomes": [
+          "Submitted written reports explaining assumptions and model limitations."
+        ],
+        "metrics": [],
+        "evidence_notes": [
+          "Coursework sample without fabricated impact metrics."
+        ]
+      }
+    ],
+    "sections": [
+      {
+        "heading": "Projects",
+        "bullets": [
+          {
+            "text": "Cleaned anonymized course review data and compared baseline similarity methods in a reproducible Python notebook.",
+            "source_experience_id": "exp_project_course_recommender",
+            "targeted_criteria_ids": ["ds_python_data_analysis", "ds_data_cleaning_visualization"],
+            "evidence_level": "user_provided",
+            "metric_status": "not_applicable",
+            "needs_confirmation": false
+          },
+          {
+            "text": "Presented project findings with clear assumptions, limitations, and next-step recommendations for a course audience.",
+            "source_experience_id": "exp_project_course_recommender",
+            "targeted_criteria_ids": ["ds_action_result_clarity"],
+            "evidence_level": "user_provided",
+            "metric_status": "not_applicable",
+            "needs_confirmation": false
+          }
+        ]
+      },
+      {
+        "heading": "Coursework",
+        "bullets": [
+          {
+            "text": "Applied regression and hypothesis testing to class datasets and documented modeling assumptions in written reports.",
+            "source_experience_id": "exp_course_stats_modeling",
+            "targeted_criteria_ids": ["ds_statistical_reasoning"],
+            "evidence_level": "user_provided",
+            "metric_status": "not_applicable",
+            "needs_confirmation": false
+          }
+        ]
+      }
+    ]
+  },
+  "target_role": "Data Science Intern",
+  "criteria_profile_id": null,
+  "output_dir": "outputs/sample_run",
+  "pdf_backend": "mock",
+  "include_preview_reminder_panel": false,
+  "write_intermediate_json": true
+}

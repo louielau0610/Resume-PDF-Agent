@@ -75,6 +75,15 @@ from resume_pdf_agent.models.user_profile import (
     SkillGroup,
     UserProfile,
 )
+from resume_pdf_agent.models.workflow import (
+    ResumeWorkflowInput,
+    ResumeWorkflowResult,
+    WorkflowArtifact,
+    WorkflowRunStatus,
+    WorkflowStageName,
+    WorkflowStageResult,
+    WorkflowStageStatus,
+)
 
 __all__ = [
     "AwardEntry",
@@ -110,6 +119,8 @@ __all__ = [
     "ResumeBullet",
     "ResumeClaim",
     "ResumeContent",
+    "ResumeWorkflowInput",
+    "ResumeWorkflowResult",
     "ResumeSection",
     "ResumeType",
     "ResumeTypeClassificationResult",
@@ -133,4 +144,9 @@ __all__ = [
     "TruthfulnessIssueType",
     "TruthfulnessSeverity",
     "UserProfile",
+    "WorkflowArtifact",
+    "WorkflowRunStatus",
+    "WorkflowStageName",
+    "WorkflowStageResult",
+    "WorkflowStageStatus",
 ]

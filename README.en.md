@@ -2,21 +2,28 @@
 
 `resume_pdf_agent` is a criteria-aware AI resume PDF generation agent. The project now has foundations for schemas, static criteria, resume type classification, gap analysis, truthfulness checking, bullet enhancement, internal template metadata matching, HTML resume rendering, and M9 PDF Generation Pipeline v0.
 
-## Current Milestone: M9
+## Current Milestone: M10
 
-M9 adds PDF Generation Pipeline v0. It converts M8 HTML output into local PDF files and returns a structured `PDFGenerationResult`.
+M10 adds CLI / Programmatic Workflow Integration, connecting all M0–M9 deterministic modules into a usable local pipeline.
 
-The M9 PDF pipeline:
+M10 provides:
 
-- Generates PDF from an existing `HTMLRenderResult`.
-- Or calls the M8 renderer from `UserProfile`, `ResumeContent`, and `TemplateSelectionResult`, then generates PDF.
-- Uses a backend adapter design, preferring WeasyPrint when available.
-- Supports a deterministic mock backend for tests when system PDF dependencies are unavailable.
-- Validates that the output PDF exists, is non-empty, and starts with a `%PDF` header.
-- Preserves HTML rendering warnings and PDF generation warnings.
-- Provides a neutral conversion reminder in result metadata: users who need Word/JPG/PNG can use an external PDF conversion tool after PDF export.
+- **Programmatic API**: `resume_pdf_agent.workflow.run_resume_workflow` for end-to-end execution.
+- **CLI**: Typer-based CLI with `run-sample`, `run`, `list-criteria`, and `list-templates` commands.
+- **Structured intermediate outputs**: Optional JSON artifacts for criteria profile, classification, gap analysis, truthfulness, enhancement, and template selection.
+- **Final outputs**: `resume.html` and `resume.pdf` (mock PDF backend used for tests/sample runs).
+- **Deterministic sample**: Built-in `data/sample_inputs/sample_data_science_user.json`.
 
-M9 only exports PDF. It does not implement Word/JPG/PNG export, frontend UI, sample-image-based UI polish, LLM API calls, online template search, template downloads, or claims about internal company screening standards.
+M10 does NOT implement frontend UI, UI polish, LLM API calls, online template search, or Word/JPG/PNG export.
+
+## Windows Example Commands
+
+```bash
+py -m resume_pdf_agent run-sample --output-dir outputs/sample_run --pdf-backend mock
+py -m resume_pdf_agent run --input data/sample_inputs/sample_data_science_user.json -o outputs/custom_run
+py -m resume_pdf_agent list-criteria
+py -m resume_pdf_agent list-templates
+```
 
 ## Supported Internal Template Metadata
 
@@ -31,7 +38,6 @@ M9 only exports PDF. It does not implement Word/JPG/PNG export, frontend UI, sam
 
 ## Upcoming Milestones
 
-- M10: CLI or API workflow integration.
 - M11: Frontend basic workflow page.
 - M12: Frontend UI polish based on user-provided sample images.
 

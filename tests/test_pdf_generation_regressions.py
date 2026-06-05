@@ -65,7 +65,7 @@ def test_pipeline_placeholder_still_includes_pdf_generation_and_reminder_panel()
 
     assert "pdf_generation" in result["stages"]
     assert "reminder_panel" in result["stages"]
-    assert "M9 PDF generation pipeline" in result["message"]
+    assert "M10 integrated" in result["message"]
 
 
 def test_export_format_still_only_includes_pdf():

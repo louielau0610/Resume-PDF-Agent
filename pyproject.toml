@@ -18,6 +18,9 @@ dev = [
     "pytest",
 ]
 
+[project.scripts]
+resume-pdf-agent = "resume_pdf_agent.cli:app"
+
 [tool.setuptools.packages.find]
 where = ["src"]
 

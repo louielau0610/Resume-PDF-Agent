@@ -128,7 +128,7 @@ def test_pipeline_placeholder_still_includes_gap_analysis_and_criteria_aware_sta
     assert "gap_analysis" in result["stages"]
     assert "criteria_aware_content_enhancement" in result["stages"]
     assert "resume_type_classification" in result["stages"]
-    assert "M7 deterministic internal template selector" in result["message"]
+    assert "M10 integrated" in result["message"]
 
 
 def test_export_format_still_only_includes_pdf():

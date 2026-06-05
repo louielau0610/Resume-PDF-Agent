@@ -17,7 +17,7 @@ def test_run_resume_pipeline_returns_status_and_stages():
     result = run_resume_pipeline({"target_role": "software engineer intern"})
 
     assert "status" in result
-    assert result["status"] == "skeleton"
+    assert result["status"] == "redirect"
     assert "stages" in result
     assert "pdf_generation" in result["stages"]
 

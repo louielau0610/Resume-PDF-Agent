@@ -48,11 +48,11 @@ def test_role_criteria_profile_sample_does_not_claim_internal_access():
 def test_placeholder_pipeline_includes_criteria_aware_stages():
     result = run_resume_pipeline({"target_role": "Data Science Intern"})
 
-    assert result["status"] == "skeleton"
+    assert result["status"] == "redirect"
     assert "criteria_selection" in result["stages"]
     assert "gap_analysis" in result["stages"]
     assert "criteria_aware_content_enhancement" in result["stages"]
     assert "html_rendering" in result["stages"]
     assert "pdf_generation" in result["stages"]
     assert result["supported_export_formats"] == ["pdf"]
-    assert "M7 deterministic internal template selector" in result["message"]
+    assert "M10 integrated" in result["message"]

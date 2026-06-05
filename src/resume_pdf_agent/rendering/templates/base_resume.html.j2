@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="{{ language }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ full_name }} - Resume</title>
+{% if css %}
+  <style>
+{{ css }}
+  </style>
+{% endif %}
+</head>
+<body class="{% block body_class %}template-ats-student-basic{% endblock %}">
+{% if include_preview_reminder_panel and reminder_panel_text %}
+  <aside class="preview-panel" aria-label="Export reminder">
+    <p>{{ reminder_panel_text }}</p>
+  </aside>
+{% endif %}
+{% if include_truthfulness_warnings and warnings %}
+  <aside class="preview-warnings" aria-label="Rendering warnings">
+    <h2>Rendering Warnings</h2>
+    <ul>
+{% for warning in warnings %}
+      <li>{{ warning }}</li>
+{% endfor %}
+    </ul>
+  </aside>
+{% endif %}
+  <main id="resume-document" class="resume-document" data-template-id="{{ selected_template_id }}">
+    <header class="resume-header">
+      <h1>{{ full_name }}</h1>
+{% if contact_lines %}
+      <p class="contact-lines">
+{% for line in contact_lines %}
+        <span>{{ line }}</span>{% if not loop.last %}<span class="separator"> | </span>{% endif %}
+{% endfor %}
+      </p>
+{% endif %}
+    </header>
+{% for section in sections %}
+{% if section.items %}
+    <section class="resume-section" data-section-id="{{ section.section_id }}">
+      <h2>{{ section.heading }}</h2>
+      <ul>
+{% for item in section.items %}
+        <li>{{ item.text }}</li>
+{% endfor %}
+      </ul>
+    </section>
+{% endif %}
+{% endfor %}
+  </main>
+</body>
+</html>

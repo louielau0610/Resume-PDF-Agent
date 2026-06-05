@@ -1,0 +1,25 @@
+{
+  "template_id": "ats_student_basic",
+  "display_name": "ATS Student Basic",
+  "description": "General ATS-friendly one-page student resume metadata profile.",
+  "style": "ats_friendly",
+  "density": "standard",
+  "supported_resume_types": ["general_student_resume", "data_science_resume", "technical_resume", "finance_business_resume", "consulting_resume", "research_cv", "product_manager_resume"],
+  "recommended_roles": ["intern", "student", "assistant"],
+  "recommended_industries": ["general", "technology", "business", "research"],
+  "sections": [
+    {"section_id": "education", "heading": "Education", "required": true, "max_items": null, "notes": null},
+    {"section_id": "skills", "heading": "Skills", "required": true, "max_items": 8, "notes": null},
+    {"section_id": "experience", "heading": "Experience", "required": false, "max_items": 4, "notes": null},
+    {"section_id": "projects", "heading": "Projects", "required": false, "max_items": 4, "notes": null},
+    {"section_id": "awards", "heading": "Awards", "required": false, "max_items": 4, "notes": null},
+    {"section_id": "languages", "heading": "Languages", "required": false, "max_items": 4, "notes": null}
+  ],
+  "ats_friendly": true,
+  "supports_portfolio_link": false,
+  "supports_research_outputs": true,
+  "supports_project_heavy_layout": true,
+  "supports_one_page_layout": true,
+  "visual_complexity": 1,
+  "notes": "Metadata only. No HTML or PDF template implemented in M7."
+}

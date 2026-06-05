@@ -95,7 +95,7 @@ def test_pipeline_placeholder_includes_truthfulness_check_and_criteria_stages():
 
     assert "truthfulness_check" in result["stages"]
     assert "criteria_aware_content_enhancement" in result["stages"]
-    assert "M5 deterministic truthfulness checker" in result["message"]
+    assert "M7 deterministic internal template selector" in result["message"]
 
 
 def test_export_format_still_only_includes_pdf():

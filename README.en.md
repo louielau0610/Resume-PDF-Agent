@@ -1,70 +1,39 @@
 # resume_pdf_agent
 
-`resume_pdf_agent` is a criteria-aware AI resume PDF generation agent. It helps students, internship applicants, and early-career candidates turn career profiles, public job requirements, official hiring guidance, user-provided JD text, and manually curated role criteria into truthful, ATS-friendly PDF resume content.
+`resume_pdf_agent` is a criteria-aware AI resume PDF generation agent. The project now has foundations for schemas, static criteria, resume type classification, gap analysis, truthfulness checking, bullet enhancement, internal template metadata matching, HTML resume rendering, and M9 PDF Generation Pipeline v0.
 
-This is not a general resume beautification chatbot. The project is designed as a controlled workflow that diagnoses and optimizes resumes against public, explainable, role-specific screening criteria. It does not claim to know any company's internal resume screening algorithm.
+## Current Milestone: M9
 
-## Product Constraints
+M9 adds PDF Generation Pipeline v0. It converts M8 HTML output into local PDF files and returns a structured `PDFGenerationResult`.
 
-- Version 0 does not search the web for resume templates.
-- Version 0 exports PDF only.
-- Word, JPG, and PNG export are out of scope; users may use external AI tools or PDF conversion tools if needed.
-- The project must not fabricate achievements, unsupported metrics, or company-specific internal criteria.
-- Later criteria sources should be public job descriptions, official career pages, official hiring guides, university career guidance, user-provided JD text, and manually curated criteria.
-- Frontend UI polish is out of scope for now and will be handled later based on user-provided sample images.
+The M9 PDF pipeline:
 
-## Long-Term Pipeline
+- Generates PDF from an existing `HTMLRenderResult`.
+- Or calls the M8 renderer from `UserProfile`, `ResumeContent`, and `TemplateSelectionResult`, then generates PDF.
+- Uses a backend adapter design, preferring WeasyPrint when available.
+- Supports a deterministic mock backend for tests when system PDF dependencies are unavailable.
+- Validates that the output PDF exists, is non-empty, and starts with a `%PDF` header.
+- Preserves HTML rendering warnings and PDF generation warnings.
+- Provides a neutral conversion reminder in result metadata: users who need Word/JPG/PNG can use an external PDF conversion tool after PDF export.
 
-1. User Intake
-2. Criteria Retrieval / Selection
-3. Criteria Extraction / Normalization
-4. Candidate Profile Structuring
-5. Gap Analysis
-6. Truthfulness Check
-7. Criteria-aware Bullet Enhancement
-8. Resume Type Classification
-9. Internal Template Matching
-10. HTML Rendering
-11. PDF Generation
-12. Reminder Panel
+M9 only exports PDF. It does not implement Word/JPG/PNG export, frontend UI, sample-image-based UI polish, LLM API calls, online template search, template downloads, or claims about internal company screening standards.
 
-## Current Milestone: M4
+## Supported Internal Template Metadata
 
-M4 adds Criteria-based Gap Analysis Engine v0: a deterministic, rule-based diagnostic module. It compares `UserProfile`, optional `ResumeContent`, and one M2 `RoleCriteriaProfile`, then returns criteria-level match results, strengths, weaknesses, missing keywords, diagnostic suggested actions, and basic truthfulness warnings.
+- ATS student basic
+- Data science technical
+- Software engineering technical
+- Finance business
+- Consulting business
+- Research CV
+- Product manager
+- Design portfolio light
 
-M4 helps answer:
+## Upcoming Milestones
 
-- Which criteria are strongly supported by user evidence
-- Which criteria are partial, weak, or missing
-- Which important keywords are missing
-- Which claims have unsupported evidence, unsupported metrics, confirmation needs, or risk flags
-- What real evidence the user should add before future resume generation
-
-Gap analysis does not rewrite resume bullets, predict hiring success, or represent internal company screening rules.
-
-M4 does not implement LLM calls, real job description analysis, resume rewriting, full truthfulness checker logic, template matching, HTML rendering, PDF generation, frontend UI, or external export formats.
-
-## Local Development
-
-Python 3.11 or later is recommended.
-
-Windows:
-
-```bash
-py -m venv .venv
-.venv\Scripts\activate
-py -m pip install -e ".[dev]"
-```
-
-If `python` is unavailable on Windows, use `py -m ...`.
-
-macOS or Linux:
-
-```bash
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install -e ".[dev]"
-```
+- M10: CLI or API workflow integration.
+- M11: Frontend basic workflow page.
+- M12: Frontend UI polish based on user-provided sample images.
 
 ## Validation
 

@@ -1,0 +1,25 @@
+{
+  "template_id": "finance_business",
+  "display_name": "Finance Business",
+  "description": "Business-oriented metadata profile for finance and investment applicants.",
+  "style": "business",
+  "density": "standard",
+  "supported_resume_types": ["finance_business_resume", "general_student_resume"],
+  "recommended_roles": ["finance", "investment", "analyst", "corporate finance"],
+  "recommended_industries": ["finance", "business"],
+  "sections": [
+    {"section_id": "education", "heading": "Education", "required": true, "max_items": null, "notes": null},
+    {"section_id": "finance_skills", "heading": "Finance Skills", "required": true, "max_items": 8, "notes": null},
+    {"section_id": "experience", "heading": "Experience", "required": false, "max_items": 4, "notes": null},
+    {"section_id": "projects", "heading": "Projects", "required": false, "max_items": 4, "notes": null},
+    {"section_id": "leadership", "heading": "Leadership", "required": false, "max_items": 3, "notes": null},
+    {"section_id": "awards", "heading": "Awards", "required": false, "max_items": 4, "notes": null}
+  ],
+  "ats_friendly": true,
+  "supports_portfolio_link": false,
+  "supports_research_outputs": false,
+  "supports_project_heavy_layout": false,
+  "supports_one_page_layout": true,
+  "visual_complexity": 2,
+  "notes": "Metadata only for later internal rendering."
+}

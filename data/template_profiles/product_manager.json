@@ -1,0 +1,25 @@
+{
+  "template_id": "product_manager",
+  "display_name": "Product Manager",
+  "description": "Product-oriented metadata profile for PM, AI product, and product analytics applicants.",
+  "style": "product",
+  "density": "standard",
+  "supported_resume_types": ["product_manager_resume", "general_student_resume"],
+  "recommended_roles": ["product manager", "product", "product analytics"],
+  "recommended_industries": ["technology", "product"],
+  "sections": [
+    {"section_id": "education", "heading": "Education", "required": true, "max_items": null, "notes": null},
+    {"section_id": "product_experience", "heading": "Product Experience", "required": true, "max_items": 4, "notes": null},
+    {"section_id": "projects", "heading": "Projects", "required": false, "max_items": 4, "notes": null},
+    {"section_id": "skills", "heading": "Skills", "required": true, "max_items": 8, "notes": null},
+    {"section_id": "leadership", "heading": "Leadership", "required": false, "max_items": 3, "notes": null},
+    {"section_id": "awards", "heading": "Awards", "required": false, "max_items": 4, "notes": null}
+  ],
+  "ats_friendly": true,
+  "supports_portfolio_link": true,
+  "supports_research_outputs": false,
+  "supports_project_heavy_layout": true,
+  "supports_one_page_layout": true,
+  "visual_complexity": 3,
+  "notes": "Metadata only for later internal rendering."
+}

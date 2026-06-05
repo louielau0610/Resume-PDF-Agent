@@ -1,0 +1,25 @@
+{
+  "template_id": "research_cv",
+  "display_name": "Research CV",
+  "description": "Research-oriented metadata profile for research assistant and academic CV use cases.",
+  "style": "research",
+  "density": "spacious",
+  "supported_resume_types": ["research_cv", "technical_resume"],
+  "recommended_roles": ["research assistant", "research", "lab"],
+  "recommended_industries": ["academic research", "research"],
+  "sections": [
+    {"section_id": "education", "heading": "Education", "required": true, "max_items": null, "notes": null},
+    {"section_id": "research_experience", "heading": "Research Experience", "required": true, "max_items": 5, "notes": null},
+    {"section_id": "publications_or_presentations", "heading": "Publications or Presentations", "required": false, "max_items": 5, "notes": "Populate only when user provided evidence."},
+    {"section_id": "technical_skills", "heading": "Technical Skills", "required": false, "max_items": 10, "notes": null},
+    {"section_id": "projects", "heading": "Projects", "required": false, "max_items": 4, "notes": null},
+    {"section_id": "awards", "heading": "Awards", "required": false, "max_items": 4, "notes": null}
+  ],
+  "ats_friendly": true,
+  "supports_portfolio_link": false,
+  "supports_research_outputs": true,
+  "supports_project_heavy_layout": true,
+  "supports_one_page_layout": false,
+  "visual_complexity": 2,
+  "notes": "Metadata only. Publications require user-provided evidence."
+}

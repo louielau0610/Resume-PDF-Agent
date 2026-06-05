@@ -1,64 +1,30 @@
 # TODO
 
-## M1: Core Schemas for User Profile, Resume Content, and Screening Criteria
+## M1-M8 Completed
 
-- 已完成用户画像 schema。
-- 已完成简历内容 schema。
-- 已完成岗位 criteria schema。
-- 已完成 criteria matching / gap analysis result schema。
-- 已完成 sample data 和基础测试。
-
-## M2: Static Criteria Knowledge Base v0
-
-- 已完成六个静态 role criteria profiles。
-- 已完成 criteria loader。
-- 已完成简单 deterministic selector。
-- 已完成来源和置信度说明文档。
-
-## M3: Resume Type Classifier
-
-- 已完成 deterministic rule-based classifier。
-- 已完成 profile/resume content/criteria profile feature extraction。
-- 已完成 ranked resume type 输出、confidence、recommended sections、explanation 和 warnings。
-
-## M4: Criteria-Based Gap Analysis Engine
-
-- 已完成 deterministic evidence extraction。
-- 已完成 criterion-level matching。
-- 已完成 `GapAnalysisResult` 聚合。
-- 已完成 missing keywords、strengths、weaknesses 和基础 truthfulness warnings。
-
-## M5: Truthfulness and Unsupported-Claim Checker
-
-- 检测 unsupported claims。
-- 标记虚构指标、夸大成果和证据不足的描述。
-- 要求用户补充证据或确认。
-
-## M6: Criteria-Aware Bullet Enhancement Engine
-
-- 根据岗位 criteria 优化 bullet。
-- 保持真实、简洁、可追溯。
-- 不编造用户未提供的指标。
-
-## M7: Internal Template Matching
-
-- 匹配内部模板。
-- 不联网搜索或抓取模板。
-
-## M8: HTML Resume Rendering
-
-- 将结构化内容渲染为稳定 HTML。
-- 控制版式、section 顺序和内容长度。
+- M1：Core schemas。
+- M2：Static criteria knowledge base v0。
+- M3：Resume type classifier。
+- M4：Criteria-based gap analysis engine。
+- M5：Truthfulness and unsupported-claim checker。
+- M6：Criteria-aware bullet enhancement engine。
+- M7：Internal template metadata matching。
+- M8：HTML resume rendering。
 
 ## M9: PDF Generation Pipeline
 
-- 将 HTML 转换为 PDF。
-- 添加 PDF-only 导出提醒。
+- 已完成 PDF generation options、result 和 backend enums。
+- 已完成 conversion reminder metadata helper。
+- 已完成 PDF output validation。
+- 已完成 WeasyPrint-preferred backend adapter 和 backend availability checks。
+- 已完成 mock backend 测试路径。
+- 已完成从 M8 HTML 输出生成本地 PDF 的 public API。
+- 已完成 M9 文档和测试。
 
 ## M10: CLI or API Workflow Integration
 
 - 提供最小可用 CLI 或 API。
-- 串联 intake、criteria selection、gap analysis、truthfulness check、rendering 和 export。
+- 串联 intake、criteria selection、gap analysis、truthfulness check、enhancement、template selection、rendering 和 PDF export。
 
 ## M11: Frontend Basic Workflow Page
 

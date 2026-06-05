@@ -1,14 +1,13 @@
-"""Placeholder workflow pipeline for the M4 gap analysis foundation."""
+"""Placeholder workflow pipeline for the M9 PDF generation foundation."""
 
 from resume_pdf_agent.config import SUPPORTED_EXPORT_FORMATS
 
 
 def run_resume_pipeline(input_data: dict) -> dict:
-    """Return a structured M4 placeholder response for the planned pipeline.
+    """Return a structured M9 placeholder response for the planned pipeline.
 
-    M4 adds a deterministic criteria gap analysis engine only. It intentionally
-    does not perform LLM rewriting, real job description analysis, resume
-    rewriting, rendering, or PDF generation.
+    M9 adds PDF generation helpers for M8 HTML output. This placeholder still
+    does not run the full production workflow.
     """
 
     return {
@@ -27,10 +26,12 @@ def run_resume_pipeline(input_data: dict) -> dict:
             "reminder_panel",
         ],
         "message": (
-            "M4 deterministic gap analysis engine can compare candidate evidence "
-            "against manually curated criteria profiles. The pipeline is still a "
-            "placeholder: no real LLM rewriting, live JD analysis, resume rewriting, "
-            "template matching, HTML rendering, or PDF generation is implemented. "
+            "M7 deterministic internal template selector can choose internal "
+            "template metadata, and M8 deterministic HTML renderer can render "
+            "structured resume content with that selected metadata. M9 PDF "
+            "generation pipeline can convert rendered HTML to local PDF files. "
+            "The pipeline is still a placeholder: no online template search, "
+            "LLM calls, live JD analysis, or frontend UI is implemented. "
             "PDF is the only supported target export format for v0."
         ),
         "supported_export_formats": SUPPORTED_EXPORT_FORMATS,

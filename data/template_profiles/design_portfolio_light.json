@@ -1,0 +1,25 @@
+{
+  "template_id": "design_portfolio_light",
+  "display_name": "Design Portfolio Light",
+  "description": "ATS-readable portfolio-light metadata profile for design-oriented applicants.",
+  "style": "portfolio_light",
+  "density": "spacious",
+  "supported_resume_types": ["design_portfolio_resume", "general_student_resume"],
+  "recommended_roles": ["design", "ux", "ui", "portfolio"],
+  "recommended_industries": ["design", "product"],
+  "sections": [
+    {"section_id": "education", "heading": "Education", "required": true, "max_items": null, "notes": null},
+    {"section_id": "portfolio", "heading": "Portfolio", "required": true, "max_items": 1, "notes": "Use only when portfolio evidence exists."},
+    {"section_id": "design_projects", "heading": "Design Projects", "required": true, "max_items": 5, "notes": null},
+    {"section_id": "skills", "heading": "Skills", "required": true, "max_items": 8, "notes": null},
+    {"section_id": "experience", "heading": "Experience", "required": false, "max_items": 4, "notes": null},
+    {"section_id": "awards", "heading": "Awards", "required": false, "max_items": 4, "notes": null}
+  ],
+  "ats_friendly": true,
+  "supports_portfolio_link": true,
+  "supports_research_outputs": false,
+  "supports_project_heavy_layout": true,
+  "supports_one_page_layout": true,
+  "visual_complexity": 4,
+  "notes": "Metadata only. No image-heavy rendering implemented in M7."
+}

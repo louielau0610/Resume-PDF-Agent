@@ -1,37 +1,66 @@
 # TODO
 
-## M1-M9 Completed
+## M0-M13 Completed ✅
 
-- M1：Core schemas。
-- M2：Static criteria knowledge base v0。
-- M3：Resume type classifier。
+- M0：Project foundation。
+- M1：Core schemas（UserProfile、ResumeContent、Criteria 等）。
+- M2：Static criteria knowledge base v0（6 个角色 profile）。
+- M3：Resume type classifier（8 种类型）。
 - M4：Criteria-based gap analysis engine。
 - M5：Truthfulness and unsupported-claim checker。
 - M6：Criteria-aware bullet enhancement engine。
-- M7：Internal template metadata matching。
+- M7：Internal template metadata matching（8 个模板）。
 - M8：HTML resume rendering。
-- M9：PDF generation pipeline。
+- M9：PDF generation pipeline（Mock/WeasyPrint/Playwright）。
+- M10：CLI / programmatic workflow integration。
+- M11：Frontend basic workflow page。
+- M12：Frontend UI Polish（cinematic dark 主题）。
+- M13：GitHub / Demo Packaging & Release Readiness ✅（当前）。
 
-## M12: Frontend UI Polish ✅ (current)
+## M13: GitHub / Demo Packaging & Release Readiness ✅ (current)
 
-- 已完成 CSS 全面重写：cinematic dark 主题，CSS 变量，径向渐变背景。
-- 已完成 HTML 模板重构：`app-shell`、`hero-panel`、`metric-grid`、`section-panel`、`stage-timeline`。
-- 已完成 context builder 增强：`status_label`、`stages_completed`/`stages_total`、display labels。
-- 未改变工作流/PDF/HTML 渲染逻辑。
-- 已完成 M12 文档。
+- 已完成 5 个核心文档：demo_walkthrough、architecture_diagram、github_project_overview、release_checklist、limitations_and_roadmap。
+- 已完成 examples/ 目录：README + sample_data_science_demo。
+- 已完成 scripts/：run_demo_workflow.py + validate_release_readiness.py。
+- 已完成 tests/：test_release_readiness_docs.py + test_demo_script.py。
+- 已更新 README.md、README.en.md、PROJECT_STATUS.md、TODO.md。
+- 未改变核心工作流逻辑。
+- 未添加 LLM 调用、JD 解析、Word/JPG/PNG 导出、Web 应用。
 
-## Future Backlog (optional)
+## Future Roadmap（路线图想法，尚未实现）
 
-- Optional user confirmation workflow before final PDF。
-- Optional theme presets。
-- Optional real WeasyPrint setup guide。
-- Optional LLM-assisted rewriting after safeguards。
-- Optional JD parser with compliance checks。
-- Optional production web UI。
+### M14: User Confirmation Workflow
 
-## Future Backlog (optional)
+- 在 PDF 生成前提供用户确认步骤。
+- 允许用户查看、编辑和批准增强后的 bullet。
+- 支持逐条确认需要用户确认的 claims。
 
-- User confirmation workflow before final PDF generation。
-- Real JD parser with compliance checks。
-- Optional LLM-assisted bullet rewriting after safeguards。
-- Production PDF backend installation guide (WeasyPrint)。
+### M15: Real JD Parser with Compliance Checks
+
+- 支持用户上传真实岗位描述（文本/PDF/URL）。
+- 从 JD 中提取结构化 criteria。
+- 添加合规检查，确保不违反招聘平台使用条款。
+
+### M16: Optional LLM-Assisted Rewriting After Safeguards
+
+- 在证据充足、风险可控的前提下，提供可选的 LLM 辅助 bullet 改写。
+- 改写前后都运行真实性检查。
+- 用户可选择不启用 LLM 功能。
+
+### M17: Production PDF Backend Setup Guide
+
+- WeasyPrint 安装和配置指南（Windows/macOS/Linux）。
+- 生产环境 PDF 渲染质量建议。
+- 字体嵌入和中英文混排最佳实践。
+
+### M18: Visual Regression Testing
+
+- 自动化 PDF 渲染截图比对。
+- HTML 输出结构回归测试。
+- 仪表板页面视觉一致性检查。
+
+### M19: Optional Web App / API Layer
+
+- 如需要，提供 FastAPI 后端和简单前端。
+- RESTful API 接口。
+- 用户会话管理和历史记录。

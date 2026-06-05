@@ -8,6 +8,9 @@ build/
 # Outputs
 outputs/
 
+# Test
+.pytest_cache/
+
 # IDE
 .vscode/
 .idea/

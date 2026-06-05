@@ -163,6 +163,18 @@ def build_frontend_page_context(
     # --- artifact links ---
     artifact_links = _build_artifact_links(workflow_result, output_dir)
 
+    # --- M14 confirmation paths ---
+    confirmation_packet_rel = ""
+    confirmation_review_rel = ""
+    if getattr(workflow_result, "confirmation_packet_path", None):
+        confirmation_packet_rel = safe_relative_artifact_path(
+            workflow_result.confirmation_packet_path, output_dir
+        )
+    if getattr(workflow_result, "confirmation_review_path", None):
+        confirmation_review_rel = safe_relative_artifact_path(
+            workflow_result.confirmation_review_path, output_dir
+        )
+
     return {
         "page_title": page_title,
         "status": status,
@@ -196,4 +208,9 @@ def build_frontend_page_context(
             "language": opts.language,
         },
         "summary": escape_frontend_text(workflow_result.summary),
+        # M14 confirmation
+        "confirmation_required": getattr(workflow_result, "confirmation_required", False),
+        "can_generate_final_pdf": getattr(workflow_result, "can_generate_final_pdf", True),
+        "confirmation_packet_path": confirmation_packet_rel,
+        "confirmation_review_path": confirmation_review_rel,
     }

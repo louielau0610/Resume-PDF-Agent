@@ -231,6 +231,7 @@ def test_workflow_has_all_stages(tmp_path: Path):
         WorkflowStageName.CRITERIA_AWARE_CONTENT_ENHANCEMENT,
         WorkflowStageName.INTERNAL_TEMPLATE_MATCHING,
         WorkflowStageName.HTML_RENDERING,
+        WorkflowStageName.CONFIRMATION_REVIEW,
         WorkflowStageName.PDF_GENERATION,
         WorkflowStageName.ARTIFACT_WRITING,
         WorkflowStageName.REMINDER_PANEL,

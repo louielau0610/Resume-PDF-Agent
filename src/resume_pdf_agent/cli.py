@@ -44,6 +44,14 @@ def _print_summary(result, output_dir: str) -> None:
     typer.echo(f"PDF output:          {result.pdf_output_path or 'N/A'}")
     typer.echo(f"Warnings:            {len(result.warnings)}")
     typer.echo(f"Errors:              {len(result.errors)}")
+    # M14 confirmation
+    if result.confirmation_packet_path:
+        typer.echo(f"Confirmation packet: {result.confirmation_packet_path}")
+    if result.confirmation_review_path:
+        typer.echo(f"Confirmation review: {result.confirmation_review_path}")
+    if result.confirmation_required:
+        typer.echo(f"Confirmation:        REQUIRED before final PDF")
+    typer.echo(f"Can generate PDF:    {result.can_generate_final_pdf}")
 
 
 def _write_frontend_page_if_enabled(
@@ -86,6 +94,18 @@ def run_workflow(
         False, "--write-frontend-page",
         help="Also render a static index.html workflow dashboard page.",
     ),
+    require_confirmation_before_pdf: bool = typer.Option(
+        False, "--require-confirmation-before-pdf",
+        help="Require user confirmation before final PDF generation.",
+    ),
+    write_confirmation_packet: bool = typer.Option(
+        True, "--write-confirmation-packet/--no-write-confirmation-packet",
+        help="Write confirmation_packet.json and confirmation_review.md.",
+    ),
+    confirmation_decisions: str | None = typer.Option(
+        None, "--confirmation-decisions",
+        help="Path to confirmation decisions JSON file to apply.",
+    ),
 ) -> None:
     """Run the resume workflow from an explicit JSON input file."""
 
@@ -98,6 +118,11 @@ def run_workflow(
     except ValueError:
         typer.echo(f"Error: Unknown PDF backend '{pdf_backend}'.", err=True)
         raise typer.Exit(code=2)
+
+    # M14 overrides
+    workflow_input.require_confirmation_before_pdf = require_confirmation_before_pdf
+    workflow_input.write_confirmation_packet = write_confirmation_packet
+    workflow_input.confirmation_decisions_path = confirmation_decisions
 
     result = run_resume_workflow(workflow_input)
     _print_summary(result, output_dir)
@@ -123,6 +148,18 @@ def run_sample(
         False, "--write-frontend-page",
         help="Also render a static index.html workflow dashboard page.",
     ),
+    require_confirmation_before_pdf: bool = typer.Option(
+        False, "--require-confirmation-before-pdf",
+        help="Require user confirmation before final PDF generation.",
+    ),
+    write_confirmation_packet: bool = typer.Option(
+        True, "--write-confirmation-packet/--no-write-confirmation-packet",
+        help="Write confirmation_packet.json and confirmation_review.md.",
+    ),
+    confirmation_decisions: str | None = typer.Option(
+        None, "--confirmation-decisions",
+        help="Path to confirmation decisions JSON file to apply.",
+    ),
 ) -> None:
     """Run the resume workflow using built-in sample data."""
 
@@ -140,6 +177,11 @@ def run_sample(
     except ValueError:
         typer.echo(f"Error: Unknown PDF backend '{pdf_backend}'.", err=True)
         raise typer.Exit(code=2)
+
+    # M14 overrides
+    workflow_input.require_confirmation_before_pdf = require_confirmation_before_pdf
+    workflow_input.write_confirmation_packet = write_confirmation_packet
+    workflow_input.confirmation_decisions_path = confirmation_decisions
 
     result = run_resume_workflow(workflow_input)
     _print_summary(result, output_dir)

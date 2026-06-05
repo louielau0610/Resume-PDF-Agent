@@ -2,9 +2,9 @@
 
 ## Current Milestone
 
-M13 GitHub / Demo Packaging & Release Readiness ✅
+M14 User Confirmation Workflow ✅
 
-## M0-M12 已完成
+## M0-M14 已完成
 
 - M0：项目基础结构、配置、异常、占位 pipeline 和基础测试。
 - M1：用户画像、简历内容、criteria、analysis 和真实性 safeguard schemas。
@@ -19,8 +19,10 @@ M13 GitHub / Demo Packaging & Release Readiness ✅
 - M10：CLI / programmatic workflow integration。
 - M11：Frontend basic workflow page。
 - M12：Frontend UI Polish（cinematic dark 主题）。
+- M13：GitHub / Demo Packaging & Release Readiness。
+- M14：User Confirmation Workflow ✅（当前）。
 
-## M13 已完成内容
+## M14 已完成内容
 
 - `docs/demo_walkthrough_v0.md` — 完整本地演示导览（中文）。
 - `docs/architecture_diagram_v0.md` — Mermaid 架构与工作流图（中文）。

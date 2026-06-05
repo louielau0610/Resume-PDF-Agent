@@ -26,6 +26,7 @@ class WorkflowStageName(str, Enum):
     INTERNAL_TEMPLATE_MATCHING = "internal_template_matching"
     HTML_RENDERING = "html_rendering"
     PDF_GENERATION = "pdf_generation"
+    CONFIRMATION_REVIEW = "confirmation_review"
     ARTIFACT_WRITING = "artifact_writing"
     REMINDER_PANEL = "reminder_panel"
 
@@ -90,6 +91,10 @@ class ResumeWorkflowInput(BaseModel):
     pdf_backend: PDFBackend = PDFBackend.MOCK
     include_preview_reminder_panel: bool = False
     write_intermediate_json: bool = True
+    # M14: User confirmation workflow
+    require_confirmation_before_pdf: bool = False
+    write_confirmation_packet: bool = True
+    confirmation_decisions_path: str | None = None
 
     @model_validator(mode="after")
     def _output_dir_not_empty(self) -> ResumeWorkflowInput:
@@ -114,6 +119,11 @@ class ResumeWorkflowResult(BaseModel):
     errors: list[str] = Field(default_factory=list)
     conversion_reminder: str | None = None
     summary: str = ""
+    # M14: User confirmation workflow
+    confirmation_packet_path: str | None = None
+    confirmation_review_path: str | None = None
+    confirmation_required: bool = False
+    can_generate_final_pdf: bool = True
 
     @model_validator(mode="after")
     def _summary_not_empty(self) -> ResumeWorkflowResult:

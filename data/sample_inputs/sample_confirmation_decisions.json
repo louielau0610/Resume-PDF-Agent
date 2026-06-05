@@ -1,0 +1,34 @@
+{
+  "reviewer_name": "示例审核人",
+  "reviewed_at": "2026-06-05",
+  "notes": "这是一个示例决策文件。实际的 item_id 来自 confirmation_packet.json 中生成的项。请在运行工作流后，根据实际生成的 confirmation_packet.json 中的 item_id 来编辑此文件。",
+  "decisions": [
+    {
+      "item_id": "placeholder_item_id_1",
+      "decision": "approve",
+      "user_note": "该声明有实验报告和导师签字支持。"
+    },
+    {
+      "item_id": "placeholder_item_id_2",
+      "decision": "reject",
+      "user_note": "该声明不应出现在简历中。"
+    },
+    {
+      "item_id": "placeholder_item_id_3",
+      "decision": "needs_editing",
+      "replacement_text": "修改后的声明文本。",
+      "user_note": "将'主导'改为'参与'以更准确地反映实际角色。"
+    },
+    {
+      "item_id": "placeholder_item_id_4",
+      "decision": "provide_evidence",
+      "provided_evidence": "附件：项目报告第3页，导师推荐信。",
+      "user_note": "已上传支持文件。"
+    },
+    {
+      "item_id": "placeholder_item_id_5",
+      "decision": "ignore_for_now",
+      "user_note": "该警告为低优先级，可在最终审查时处理。"
+    }
+  ]
+}

@@ -4,11 +4,11 @@
 
 `resume_pdf_agent` is a **criteria-aware AI resume PDF generation agent**. It does not call LLM APIs. Instead, it runs a deterministic 11-stage pipeline that compares a user's career profile against role-specific screening criteria, producing an ATS-friendly structured PDF resume and a static workflow dashboard.
 
-## Current Status: M13
+## Current Status: M14
 
-M13 completes GitHub/demo packaging & release readiness, including full documentation, architecture diagrams, demo scripts, and a release checklist.
+M14 adds a User Confirmation Workflow that collects items requiring user review before final PDF generation, with an optional safety gate.
 
-**Completed Milestones**: M0 → M1 → M2 → M3 → M4 → M5 → M6 → M7 → M8 → M9 → M10 → M11 → M12 → **M13** ✅
+**Completed Milestones**: M0 → M1 → M2 → M3 → M4 → M5 → M6 → M7 → M8 → M9 → M10 → M11 → M12 → M13 → **M14** ✅
 
 ## Architecture Overview
 

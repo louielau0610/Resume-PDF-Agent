@@ -6,6 +6,17 @@ from resume_pdf_agent.models.classification import (
     ResumeTypeClassificationResult,
     ResumeTypeScore,
 )
+from resume_pdf_agent.models.confirmation import (
+    ConfirmationDecision,
+    ConfirmationDecisionSet,
+    ConfirmationDecisionType,
+    ConfirmationItem,
+    ConfirmationItemStatus,
+    ConfirmationItemType,
+    ConfirmationPacket,
+    ConfirmationPriority,
+    ConfirmationReviewResult,
+)
 from resume_pdf_agent.models.criteria import (
     RoleCriteriaProfile,
     ScreeningCriterion,
@@ -95,6 +106,15 @@ from resume_pdf_agent.models.workflow import (
 __all__ = [
     "AwardEntry",
     "BulletEnhancementMode",
+    "ConfirmationDecision",
+    "ConfirmationDecisionSet",
+    "ConfirmationDecisionType",
+    "ConfirmationItem",
+    "ConfirmationItemStatus",
+    "ConfirmationItemType",
+    "ConfirmationPacket",
+    "ConfirmationPriority",
+    "ConfirmationReviewResult",
     "BulletEnhancementResult",
     "BulletEnhancementStatus",
     "ContactInfo",

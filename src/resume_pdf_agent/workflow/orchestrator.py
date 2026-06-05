@@ -9,6 +9,14 @@ from __future__ import annotations
 from pathlib import Path
 
 from resume_pdf_agent.classifier import classify_resume_type
+from resume_pdf_agent.confirmation import (
+    apply_confirmation_decisions,
+    build_confirmation_gate_warning,
+    build_confirmation_packet,
+    load_confirmation_decisions,
+    render_confirmation_review_markdown,
+    should_block_final_pdf,
+)
 from resume_pdf_agent.criteria import load_criteria_profile, select_criteria_profiles
 from resume_pdf_agent.enhancement import enhance_resume_bullets
 from resume_pdf_agent.gap_analysis import analyze_criteria_gap
@@ -90,6 +98,11 @@ def run_resume_workflow(
     html_output_path: str | None = None
     pdf_output_path: str | None = None
     conversion_reminder: str | None = None
+    # M14 confirmation
+    confirmation_packet_path: str | None = None
+    confirmation_review_path: str | None = None
+    confirmation_required: bool = False
+    can_generate_final_pdf: bool = True
 
     # ── A. User intake (setup) ─────────────────────────────────────────────
     stages.append(
@@ -458,74 +471,194 @@ def run_resume_workflow(
             conversion_reminder,
         )
 
-    # ── I. PDF generation ──────────────────────────────────────────────────
+    # ── H5. Confirmation review (M14) ──────────────────────────────────
     try:
-        pdf_options = PDFGenerationOptions(
-            backend=workflow_input.pdf_backend,
-            include_conversion_reminder=True,
-        )
-        pdf_result = generate_pdf_from_html_result(
-            html_render_result=html_result,
-            output_path=output_dir / "resume.pdf",
-            options=pdf_options,
-        )
-
-        if pdf_result.output_path:
-            pdf_output_path = pdf_result.output_path
-
-        pdf_warnings: list[str] = list(pdf_result.warnings)
-        pdf_errors: list[str] = list(pdf_result.errors)
-
-        conversion_reminder = pdf_result.conversion_reminder
-
-        if pdf_errors:
-            pdf_stage_status = WorkflowStageStatus.FAILED
-            global_errors.extend(pdf_errors)
-        elif pdf_warnings:
-            pdf_stage_status = WorkflowStageStatus.COMPLETED_WITH_WARNINGS
-            global_warnings.extend(pdf_warnings)
-        else:
-            pdf_stage_status = WorkflowStageStatus.COMPLETED
-
-        pdf_msg = f"PDF generated to {pdf_output_path}" if pdf_output_path else "PDF not generated"
-        stages.append(
-            _stage_result(
-                WorkflowStageName.PDF_GENERATION,
-                pdf_stage_status,
-                pdf_msg,
-                warnings=pdf_warnings,
-                errors=pdf_errors,
-                artifacts=(
-                    [
-                        WorkflowArtifact(
-                            artifact_type="pdf",
-                            path=pdf_output_path,
-                            description="Generated resume PDF",
-                        )
-                    ]
-                    if pdf_output_path
-                    else []
-                ),
+        if workflow_input.write_confirmation_packet:
+            packet = build_confirmation_packet(
+                resume_content=workflow_input.resume_content,
+                truthfulness_result=truthfulness_result,
+                bullet_enhancement_result=enhancement_result,
+                gap_analysis_result=gap_result,
             )
-        )
-        if pdf_output_path:
+
+            # Load and apply decisions if provided
+            review_result = None
+            if workflow_input.confirmation_decisions_path:
+                try:
+                    decision_set = load_confirmation_decisions(
+                        workflow_input.confirmation_decisions_path
+                    )
+                    review_result = apply_confirmation_decisions(packet, decision_set)
+                    can_generate_final_pdf = review_result.can_generate_final_pdf
+                except Exception as dec_exc:
+                    global_warnings.append(
+                        f"Failed to apply confirmation decisions: {dec_exc}"
+                    )
+                    can_generate_final_pdf = packet.can_generate_final_pdf
+            else:
+                can_generate_final_pdf = packet.can_generate_final_pdf
+
+            # Write confirmation packet JSON (only if intermediate JSON enabled)
+            if workflow_input.write_intermediate_json:
+                pkt_art = write_json_artifact(
+                    packet,
+                    _json_path(output_dir, _artifact_filename("confirmation_packet", "json")),
+                )
+                all_artifacts.append(pkt_art)
+                confirmation_packet_path = pkt_art.path
+            else:
+                confirmation_packet_path = None
+
+            # Write confirmation review markdown
+            review_md = render_confirmation_review_markdown(packet, review_result)
+            review_md_path = output_dir / "confirmation_review.md"
+            review_md_path.write_text(review_md, encoding="utf-8")
+            confirmation_review_path = str(review_md_path)
             all_artifacts.append(
                 WorkflowArtifact(
-                    artifact_type="pdf",
-                    path=pdf_output_path,
-                    description="Generated resume PDF",
+                    artifact_type="confirmation_review",
+                    path=str(review_md_path),
+                    description="User confirmation review document (Chinese)",
+                )
+            )
+
+            # Write review result if decisions were applied
+            if review_result is not None and workflow_input.write_intermediate_json:
+                rr_art = write_json_artifact(
+                    review_result,
+                    _json_path(
+                        output_dir,
+                        _artifact_filename("confirmation_review_result", "json"),
+                    ),
+                )
+                all_artifacts.append(rr_art)
+
+            # Determine if confirmation is required (gate check)
+            if workflow_input.require_confirmation_before_pdf:
+                if should_block_final_pdf(packet):
+                    confirmation_required = True
+                    can_generate_final_pdf = False
+                    gate_warning = build_confirmation_gate_warning(packet)
+                    if gate_warning:
+                        global_warnings.append(gate_warning)
+
+            conf_stage_status = WorkflowStageStatus.COMPLETED
+            conf_warnings: list[str] = list(packet.warnings)
+            if confirmation_required:
+                conf_stage_status = WorkflowStageStatus.COMPLETED_WITH_WARNINGS
+
+            stages.append(
+                _stage_result(
+                    WorkflowStageName.CONFIRMATION_REVIEW,
+                    conf_stage_status,
+                    (
+                        f"Confirmation packet: {len(packet.items)} items; "
+                        f"blocking: {packet.blocking_count}; "
+                        f"can generate PDF: {can_generate_final_pdf}"
+                    ),
+                    warnings=conf_warnings,
                 )
             )
     except Exception as exc:
         stages.append(
             _stage_result(
-                WorkflowStageName.PDF_GENERATION,
+                WorkflowStageName.CONFIRMATION_REVIEW,
                 WorkflowStageStatus.FAILED,
-                f"PDF generation failed: {exc}",
+                f"Confirmation review failed: {exc}",
                 errors=[str(exc)],
             )
         )
         global_errors.append(str(exc))
+
+    # ── I. PDF generation ──────────────────────────────────────────────────
+    # M14: Skip PDF if confirmation gate blocks
+    if workflow_input.require_confirmation_before_pdf and not can_generate_final_pdf:
+        stages.append(
+            _stage_result(
+                WorkflowStageName.PDF_GENERATION,
+                WorkflowStageStatus.SKIPPED,
+                (
+                    "PDF generation skipped: user confirmation required before final PDF. "
+                    "Review confirmation_packet.json and provide decisions via "
+                    "--confirmation-decisions."
+                ),
+                warnings=[
+                    (
+                        "PDF skipped due to confirmation gate. "
+                        "Resolve blocking confirmation items and re-run."
+                    )
+                ],
+            )
+        )
+        pdf_output_path = None
+    else:
+        try:
+            pdf_options = PDFGenerationOptions(
+                backend=workflow_input.pdf_backend,
+                include_conversion_reminder=True,
+            )
+            pdf_result = generate_pdf_from_html_result(
+                html_render_result=html_result,
+                output_path=output_dir / "resume.pdf",
+                options=pdf_options,
+            )
+
+            if pdf_result.output_path:
+                pdf_output_path = pdf_result.output_path
+
+            pdf_warnings: list[str] = list(pdf_result.warnings)
+            pdf_errors: list[str] = list(pdf_result.errors)
+
+            conversion_reminder = pdf_result.conversion_reminder
+
+            if pdf_errors:
+                pdf_stage_status = WorkflowStageStatus.FAILED
+                global_errors.extend(pdf_errors)
+            elif pdf_warnings:
+                pdf_stage_status = WorkflowStageStatus.COMPLETED_WITH_WARNINGS
+                global_warnings.extend(pdf_warnings)
+            else:
+                pdf_stage_status = WorkflowStageStatus.COMPLETED
+
+            pdf_msg = f"PDF generated to {pdf_output_path}" if pdf_output_path else "PDF not generated"
+            stages.append(
+                _stage_result(
+                    WorkflowStageName.PDF_GENERATION,
+                    pdf_stage_status,
+                    pdf_msg,
+                    warnings=pdf_warnings,
+                    errors=pdf_errors,
+                    artifacts=(
+                        [
+                            WorkflowArtifact(
+                                artifact_type="pdf",
+                                path=pdf_output_path,
+                                description="Generated resume PDF",
+                            )
+                        ]
+                        if pdf_output_path
+                        else []
+                    ),
+                )
+            )
+            if pdf_output_path:
+                all_artifacts.append(
+                    WorkflowArtifact(
+                        artifact_type="pdf",
+                        path=pdf_output_path,
+                        description="Generated resume PDF",
+                    )
+                )
+        except Exception as exc:
+            stages.append(
+                _stage_result(
+                    WorkflowStageName.PDF_GENERATION,
+                    WorkflowStageStatus.FAILED,
+                    f"PDF generation failed: {exc}",
+                    errors=[str(exc)],
+                )
+            )
+            global_errors.append(str(exc))
 
     # ── J. Artifact writing ────────────────────────────────────────────────
     stages.append(
@@ -553,6 +686,10 @@ def run_resume_workflow(
         selected_criteria_profile_id, primary_resume_type,
         selected_template_id, html_output_path, pdf_output_path,
         conversion_reminder,
+        confirmation_packet_path=confirmation_packet_path,
+        confirmation_review_path=confirmation_review_path,
+        confirmation_required=confirmation_required,
+        can_generate_final_pdf=can_generate_final_pdf,
     )
 
     # ── L. Write workflow_result.json if intermediate JSON is enabled ──────
@@ -584,6 +721,10 @@ def _build_result(
     html_output_path: str | None,
     pdf_output_path: str | None,
     conversion_reminder: str | None,
+    confirmation_packet_path: str | None = None,
+    confirmation_review_path: str | None = None,
+    confirmation_required: bool = False,
+    can_generate_final_pdf: bool = True,
 ) -> ResumeWorkflowResult:
     """Assemble the final ResumeWorkflowResult."""
 
@@ -622,4 +763,8 @@ def _build_result(
         errors=global_errors,
         conversion_reminder=conversion_reminder,
         summary=summary,
+        confirmation_packet_path=confirmation_packet_path,
+        confirmation_review_path=confirmation_review_path,
+        confirmation_required=confirmation_required,
+        can_generate_final_pdf=can_generate_final_pdf,
     )

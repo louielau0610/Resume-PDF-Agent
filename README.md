@@ -4,11 +4,11 @@
 
 `resume_pdf_agent` 是一个 **criteria-aware 的 AI 简历 PDF 生成 Agent**。它不调用 LLM API，而是通过 11 阶段确定性工作流，将用户职业画像与岗位筛选指标（criteria）进行系统比对，经过分类、差距分析、真实性检查、Bullet 增强、模板匹配、HTML 渲染等步骤，最终输出 ATS 友好的结构化 PDF 简历和静态工作流仪表板。
 
-## 当前状态：M13
+## 当前状态：M14
 
-M13 完成 GitHub/演示打包与发布就绪，包括完整的中文文档、架构图、演示脚本和发布检查清单。
+M14 新增用户确认工作流（User Confirmation Workflow），在 PDF 生成前收集需要用户关注的确认项，支持可选的安全门控。
 
-**已完成里程碑**：M0 → M1 → M2 → M3 → M4 → M5 → M6 → M7 → M8 → M9 → M10 → M11 → M12 → **M13** ✅
+**已完成里程碑**：M0 → M1 → M2 → M3 → M4 → M5 → M6 → M7 → M8 → M9 → M10 → M11 → M12 → M13 → **M14** ✅
 
 ## 架构概要
 
@@ -163,8 +163,9 @@ py -m resume_pdf_agent list-templates
 - Mock PDF backend 用于演示（WeasyPrint 可选）
 - 仅 PDF 导出格式
 - 静态前端仪表板（无浏览器端工作流执行）
-- 无用户确认工作流
+- ~~无用户确认工作流~~ → M14 已实现 ✅
 - 无视觉回归测试
+- 无浏览器端确认 UI
 
 详见 [`docs/limitations_and_roadmap_v0.md`](docs/limitations_and_roadmap_v0.md)。
 
@@ -172,7 +173,7 @@ py -m resume_pdf_agent list-templates
 
 | 里程碑 | 内容 | 状态 |
 |--------|------|------|
-| M0-M13 | 项目基础 → 完整确定性管线 + 文档/演示 | ✅ 已完成 |
+| M0-M14 | 项目基础 → 完整管线 + 文档 + 用户确认工作流 | ✅ 已完成 |
 | M14 | 用户确认工作流 | 🔜 规划中 |
 | M15 | 真实 JD 解析器 | 🔜 规划中 |
 | M16 | 可选 LLM 辅助改写 | 🔜 规划中 |

@@ -1,6 +1,6 @@
 # TODO
 
-## M0-M13 Completed ✅
+## M0-M14 Completed ✅
 
 - M0：Project foundation。
 - M1：Core schemas（UserProfile、ResumeContent、Criteria 等）。
@@ -15,9 +15,22 @@
 - M10：CLI / programmatic workflow integration。
 - M11：Frontend basic workflow page。
 - M12：Frontend UI Polish（cinematic dark 主题）。
-- M13：GitHub / Demo Packaging & Release Readiness ✅（当前）。
+- M13：GitHub / Demo Packaging & Release Readiness。
+- M14：User Confirmation Workflow ✅（当前）。
 
-## M13: GitHub / Demo Packaging & Release Readiness ✅ (current)
+## M14: User Confirmation Workflow ✅ (current)
+
+- 已完成 `models/confirmation.py`：确认工作流 Pydantic 模型。
+- 已完成 `confirmation/packet.py`：从 truthfulness、enhancement、gap analysis、resume bullets 收集确认项。
+- 已完成 `confirmation/decisions.py`：加载并应用用户决策。
+- 已完成 `confirmation/markdown.py`：生成中文确认审核文档。
+- 已完成 `confirmation/gate.py`：确认门控判断。
+- 已集成到工作流编排器和 CLI。
+- 已完成 7 个测试文件和文档。
+- 未改变核心工作流逻辑（向后兼容）。
+- 未添加 LLM 调用、JD 解析、Word/JPG/PNG 导出、Web 应用。
+
+## Future Roadmap（路线图想法，尚未实现）
 
 - 已完成 5 个核心文档：demo_walkthrough、architecture_diagram、github_project_overview、release_checklist、limitations_and_roadmap。
 - 已完成 examples/ 目录：README + sample_data_science_demo。

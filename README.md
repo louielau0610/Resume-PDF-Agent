@@ -2,32 +2,28 @@
 
 `resume_pdf_agent` 是一个 criteria-aware 的 AI 简历 PDF 生成 Agent。当前系统已经具备用户画像 schema、静态 criteria knowledge base、简历类型分类、gap analysis、truthfulness checking、bullet enhancement、内部 template metadata matching、HTML resume rendering，以及 M9 的 PDF Generation Pipeline v0。
 
-## 当前 M11 阶段
+## 当前 M12 阶段
 
-M11 添加 Frontend Basic Workflow Page v0：生成静态 `index.html` 工作流仪表板页面。
+M12 添加 Frontend UI Polish：将静态工作流仪表板从基础布局升级为 cinematic dark 风格的高级仪表板。
 
-M11 提供：
+M12 提供：
 
-- **静态仪表板页面**：可视化展示工作流状态、阶段时间线、警告/错误、artifact 链接。
-- **简历输出链接**：`resume.html` 和 `resume.pdf` 的直接链接。
-- **格式转换提醒**：在仪表板区域显示，不写入简历正文。
-- **不依赖 Web 服务器**：HTML 页面可直接在浏览器打开。
+- **暗色电影感仪表板**：黑色/深灰背景，大圆角卡片，低饱和度强调色
+- **语义化布局**：app-shell、hero-panel、metric-grid、stage-timeline
+- **纯 CSS 实现**：无外部图片/字体/CDN 依赖
+- **保持所有 M11 功能**：工作流状态、阶段时间线、警告/错误、artifact 链接
+- **不改变任何后端逻辑**：工作流、PDF 生成、HTML 渲染均不受影响
 
-M11 不实现 React/FastAPI、不做 UI polish、不调用 LLM API、不运行 Web 服务器。
+M12 不实现 React/FastAPI、不做 Word/JPG/PNG export、不调用 LLM API。
 
 ## Windows 示例命令
 
 ```bash
-# 运行工作流并生成前端页面
+# 运行工作流并生成精修前端页面
 py -m resume_pdf_agent run-sample --output-dir outputs/sample_page --pdf-backend mock --write-frontend-page
 
-# 生成前端页面（自动运行工作流）
-py -m resume_pdf_agent render-page --input data/sample_inputs/sample_data_science_user.json -o outputs/page_run
-
-# 查看其他命令
-py -m resume_pdf_agent run-sample --output-dir outputs/sample_run --pdf-backend mock
-py -m resume_pdf_agent list-criteria
-py -m resume_pdf_agent list-templates
+# 在浏览器中查看
+# 打开 outputs/sample_page/index.html
 ```
 
 ## 已支持的内部模板 metadata
@@ -43,7 +39,7 @@ py -m resume_pdf_agent list-templates
 
 ## 后续 Milestones
 
-- M12：Frontend UI polish based on user-provided sample images。
+无。M12 是当前最新 milestone。
 
 ## 验证命令
 

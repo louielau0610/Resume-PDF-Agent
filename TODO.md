@@ -12,21 +12,22 @@
 - M8：HTML resume rendering。
 - M9：PDF generation pipeline。
 
-## M11: Frontend Basic Workflow Page ✅ (current)
+## M12: Frontend UI Polish ✅ (current)
 
-- 已完成 frontend Pydantic models。
-- 已完成 frontend safety helpers。
-- 已完成 frontend context builder。
-- 已完成 static page renderer（Jinja2 模板 + CSS/JS）。
-- 已完成 CLI 集成（`--write-frontend-page`、`render-page`）。
-- 已完成 workflow_result.json 输出。
-- 已完成 M11 文档和测试。
+- 已完成 CSS 全面重写：cinematic dark 主题，CSS 变量，径向渐变背景。
+- 已完成 HTML 模板重构：`app-shell`、`hero-panel`、`metric-grid`、`section-panel`、`stage-timeline`。
+- 已完成 context builder 增强：`status_label`、`stages_completed`/`stages_total`、display labels。
+- 未改变工作流/PDF/HTML 渲染逻辑。
+- 已完成 M12 文档。
 
-## M12: Frontend UI Polish Based on User-Provided Sample Images
+## Future Backlog (optional)
 
-- 根据用户提供的样例图片优化视觉风格。
-- 保持专业、清晰、适合简历生成工作流。
-- **M12 必须在用户提供样例 UI 图片后才能开始。**
+- Optional user confirmation workflow before final PDF。
+- Optional theme presets。
+- Optional real WeasyPrint setup guide。
+- Optional LLM-assisted rewriting after safeguards。
+- Optional JD parser with compliance checks。
+- Optional production web UI。
 
 ## Future Backlog (optional)
 

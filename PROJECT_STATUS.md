@@ -4,9 +4,9 @@
 
 ## Current Milestone
 
-M11 Frontend Basic Workflow Page
+M12 Frontend UI Polish
 
-## M0-M10 已完成
+## M0-M11 已完成
 
 - M0：项目基础结构、配置、异常、占位 pipeline 和基础测试。
 - M1：用户画像、简历内容、criteria、analysis 和真实性 safeguard schemas。
@@ -19,27 +19,24 @@ M11 Frontend Basic Workflow Page
 - M8：HTML resume rendering。
 - M9：PDF generation pipeline。
 - M10：CLI / programmatic workflow integration。
+- M11：Frontend basic workflow page。
 
-## M11 已完成内容
+## M12 已完成内容
 
-- 添加 frontend Pydantic models：`FrontendPageStatus`、`FrontendArtifactLink`、`FrontendStageView`、`FrontendPageOptions`、`FrontendPageResult`。
-- 添加 frontend safety helpers：`escape_frontend_text`、`safe_relative_artifact_path`、`is_allowed_frontend_artifact`。
-- 添加 frontend context builder：`build_frontend_page_context`。
-- 添加 static page renderer：`render_frontend_workflow_page`、`render_frontend_page_from_output_dir`。
-- 添加 Jinja2 模板 `workflow_page.html.j2`（工作流仪表板页面）。
-- 添加静态 CSS 和 JS 文件（无外部依赖）。
-- CLI 添加 `--write-frontend-page` 选项（`run` 和 `run-sample` 命令）。
-- CLI 添加 `render-page` 命令。
-- 工作流 orchestrator 添加 `workflow_result.json` 输出。
-- 添加 M11 文档和测试。
+- CSS 全面重写为 cinematic dark 主题（CSS 变量、径向渐变背景、大圆角卡片）。
+- HTML 模板重构为语义化布局：`app-shell`、`hero-panel`、`metric-grid`、`section-panel`、`stage-timeline`、`footer-note`。
+- Context builder 添加 `status_label`、`stages_completed`/`stages_total`、display-friendly 名称。
+- 不改变工作流逻辑、PDF 生成逻辑、HTML 渲染逻辑。
+- 无外部依赖：无 CDN、无字体、无图片、无图标库。
+- 添加 M12 文档。
 
 ## 尚未实现内容
 
-- Frontend UI polish based on sample images。
 - Word/JPG/PNG export。
 - Real LLM integration。
 - Real JD ingestion/parsing。
 - Browser-based workflow execution。
+- Production web app。
 
 ## 重要产品约束
 

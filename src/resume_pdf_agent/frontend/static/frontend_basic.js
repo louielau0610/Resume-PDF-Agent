@@ -1,14 +1,11 @@
-/* M11 Frontend Basic JS — minimal, optional, no external libraries */
+/* M12 Frontend UI Polish — minimal progressive enhancement, no external libs */
 
 (function () {
   "use strict";
 
-  // Collapsible details sections: keep behaviour, nothing extra needed.
-  // This small script adds smooth expand/collapse toggling for artifact
-  // sections if needed, but the page remains fully functional without JS
-  // thanks to native <details> elements.
+  // All core functionality is provided by native HTML <details> elements.
+  // This script adds nothing beyond what CSS already handles.
+  // The page remains fully functional without JavaScript.
 
-  // Highlight the current page in artifact links (visual feedback on hover
-  // is already handled by CSS). No remote data fetching or API calls.
-
+  // Future: could add expand-all / collapse-all if needed.
 })();

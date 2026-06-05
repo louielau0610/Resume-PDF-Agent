@@ -1,4 +1,4 @@
-"""Frontend page context builder for M11."""
+"""Frontend page context builder for M11/M12."""
 
 from __future__ import annotations
 
@@ -17,6 +17,40 @@ from resume_pdf_agent.frontend.safety import (
     escape_frontend_text,
     safe_relative_artifact_path,
 )
+
+
+def _status_label(status_value: str) -> str:
+    """Map a workflow status to a human-readable label."""
+    labels = {
+        "completed": "Completed",
+        "completed_with_warnings": "Completed (Warnings)",
+        "failed": "Failed",
+    }
+    return labels.get(status_value, status_value)
+
+
+def _display_resume_type(raw: str) -> str:
+    """Convert resume_type enum value to display-friendly label."""
+    if not raw:
+        return ""
+    return raw.replace("_", " ").title()
+
+
+def _display_template_id(raw: str) -> str:
+    """Convert template_id to display-friendly label."""
+    if not raw:
+        return ""
+    return raw.replace("_", " ").title()
+
+
+def _count_completed_stages(workflow_result: ResumeWorkflowResult) -> int:
+    """Count stages that completed (with or without warnings)."""
+    completed = 0
+    for stage in workflow_result.stages:
+        st = stage.status.value
+        if st in ("completed", "completed_with_warnings"):
+            completed += 1
+    return completed
 
 
 def _build_stage_views(
@@ -132,10 +166,13 @@ def build_frontend_page_context(
     return {
         "page_title": page_title,
         "status": status,
+        "status_label": _status_label(workflow_result.status.value),
         "output_dir": escape_frontend_text(output_dir),
         "selected_criteria_profile_id": criteria_id,
         "primary_resume_type": primary_type,
+        "primary_resume_type_display": _display_resume_type(primary_type),
         "selected_template_id": template_id,
+        "selected_template_id_display": _display_template_id(template_id),
         "html_output_path": html_output_rel,
         "pdf_output_path": pdf_output_rel,
         "conversion_reminder": conversion_reminder,
@@ -143,6 +180,8 @@ def build_frontend_page_context(
         "errors": errors_list,
         "warnings_count": len(warnings_list),
         "errors_count": len(errors_list),
+        "stages_completed": _count_completed_stages(workflow_result),
+        "stages_total": len(workflow_result.stages),
         "stage_views": stage_views,
         "artifact_links": artifact_links,
         "input_summary": input_summary,

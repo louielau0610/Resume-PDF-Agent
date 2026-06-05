@@ -10,68 +10,116 @@
 </head>
 <body>
 
-<header class="wf-header">
-  <h1>Resume PDF Agent</h1>
-  <p class="wf-subtitle">Workflow Dashboard</p>
-</header>
+<main class="app-shell">
 
-<main class="wf-main">
+  <!-- Top bar -->
+  <header class="top-bar">
+    <span class="top-bar-brand">Resume Intelligence Console</span>
+    <span class="top-bar-badge status-{{ status }}">
+      {{ status_label | default(status) }}
+    </span>
+  </header>
 
-  <!-- Status banner -->
-  <section class="wf-status-banner status-{{ status }}">
-    <h2>Workflow Status: {{ status }}</h2>
+  <!-- Hero panel -->
+  <section class="hero-panel">
+    <h1 class="hero-title">Workflow Dashboard</h1>
+    <p class="hero-subtitle">Deterministic resume generation pipeline &mdash; stage results below</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Criteria Profile</span>
+        <span class="hero-meta-value">{{ selected_criteria_profile_id or 'N/A' }}</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Resume Type</span>
+        <span class="hero-meta-value">{{ primary_resume_type_display or primary_resume_type or 'N/A' }}</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Template</span>
+        <span class="hero-meta-value">{{ selected_template_id_display or selected_template_id or 'N/A' }}</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Output</span>
+        <span class="hero-meta-value">{{ output_dir }}</span>
+      </div>
+    </div>
   </section>
 
-  <!-- Summary cards -->
-  <section class="wf-summary-cards">
-    <div class="wf-card">
-      <h3>Criteria Profile</h3>
-      <p>{{ selected_criteria_profile_id or 'N/A' }}</p>
+  <!-- Metric grid -->
+  <section class="metric-grid">
+    <div class="metric-card">
+      <div class="metric-card-label">Stages</div>
+      <div class="metric-card-value">{{ stages_completed }}<span class="metric-card-desc" style="font-size:0.7rem;color:var(--text-muted);margin-left:6px;">/ {{ stages_total }}</span></div>
+      <div class="metric-card-desc">completed</div>
     </div>
-    <div class="wf-card">
-      <h3>Resume Type</h3>
-      <p>{{ primary_resume_type or 'N/A' }}</p>
+    <div class="metric-card">
+      <div class="metric-card-label">Warnings</div>
+      <div class="metric-card-value">{{ warnings_count }}</div>
+      <div class="metric-card-desc">total</div>
     </div>
-    <div class="wf-card">
-      <h3>Template</h3>
-      <p>{{ selected_template_id or 'N/A' }}</p>
+    <div class="metric-card">
+      <div class="metric-card-label">Errors</div>
+      <div class="metric-card-value">{{ errors_count }}</div>
+      <div class="metric-card-desc">total</div>
     </div>
-    <div class="wf-card">
-      <h3>Output Directory</h3>
-      <p>{{ output_dir }}</p>
+    <div class="metric-card">
+      <div class="metric-card-label">Artifacts</div>
+      <div class="metric-card-value">{{ artifact_links | length }}</div>
+      <div class="metric-card-desc">files generated</div>
     </div>
   </section>
 
   <!-- Input summary -->
-  <section class="wf-section">
-    <h2>Input Summary</h2>
-    <ul>
-      <li><strong>Name:</strong> {{ input_summary.full_name }}</li>
-      <li><strong>Target Role:</strong> {{ input_summary.target_role or 'N/A' }}</li>
-      <li><strong>Education Entries:</strong> {{ input_summary.education_count }}</li>
-      <li><strong>Experiences:</strong> {{ input_summary.experience_count }}</li>
-      <li><strong>Skill Groups:</strong> {{ input_summary.skill_group_count }}</li>
-    </ul>
+  <section class="section-panel">
+    <div class="section-panel-header">
+      <h2 class="section-panel-title">Input Summary</h2>
+    </div>
+    <div class="input-summary-grid">
+      <div class="input-summary-item">
+        <span class="input-summary-label">Name</span>
+        <span class="input-summary-value">{{ input_summary.full_name }}</span>
+      </div>
+      <div class="input-summary-item">
+        <span class="input-summary-label">Target Role</span>
+        <span class="input-summary-value">{{ input_summary.target_role or 'N/A' }}</span>
+      </div>
+      <div class="input-summary-item">
+        <span class="input-summary-label">Education</span>
+        <span class="input-summary-value">{{ input_summary.education_count }} entries</span>
+      </div>
+      <div class="input-summary-item">
+        <span class="input-summary-label">Experiences</span>
+        <span class="input-summary-value">{{ input_summary.experience_count }} entries</span>
+      </div>
+      <div class="input-summary-item">
+        <span class="input-summary-label">Skill Groups</span>
+        <span class="input-summary-value">{{ input_summary.skill_group_count }} groups</span>
+      </div>
+    </div>
   </section>
 
   {% if options.include_stage_timeline and stage_views %}
   <!-- Stage timeline -->
-  <section class="wf-section">
-    <h2>Stage Timeline</h2>
-    <div class="wf-timeline">
+  <section class="section-panel">
+    <div class="section-panel-header">
+      <h2 class="section-panel-title">Stage Timeline</h2>
+      <span class="section-panel-count">{{ stage_views | length }} stages</span>
+    </div>
+    <div class="stage-timeline">
       {% for sv in stage_views %}
-      <div class="wf-timeline-item status-{{ sv.status }}">
-        <span class="wf-timeline-marker"></span>
-        <div class="wf-timeline-content">
-          <h4>{{ sv.stage }}</h4>
-          <p>{{ sv.message }}</p>
-          <span class="wf-badge badge-{{ sv.status }}">{{ sv.status }}</span>
-          {% if sv.warnings_count > 0 %}
-          <span class="wf-badge badge-warning">warnings: {{ sv.warnings_count }}</span>
-          {% endif %}
-          {% if sv.errors_count > 0 %}
-          <span class="wf-badge badge-error">errors: {{ sv.errors_count }}</span>
-          {% endif %}
+      <div class="stage-item status-{{ sv.status }}">
+        <span class="stage-dot"></span>
+        <div class="stage-content">
+          <div class="stage-name">{{ sv.stage }}</div>
+          <div class="stage-msg">{{ sv.message }}</div>
+          <div class="stage-tags">
+            <span class="pill pill-{% if sv.status == 'completed' %}ok{% elif sv.status == 'completed_with_warnings' %}warn{% elif sv.status == 'failed' %}fail{% else %}neutral{% endif %}">{{ sv.status }}</span>
+            {% if sv.warnings_count > 0 %}
+            <span class="pill pill-warn">{{ sv.warnings_count }} warnings</span>
+            {% endif %}
+            {% if sv.errors_count > 0 %}
+            <span class="pill pill-fail">{{ sv.errors_count }} errors</span>
+            {% endif %}
+          </div>
         </div>
       </div>
       {% endfor %}
@@ -81,66 +129,70 @@
 
   {% if options.include_warnings and warnings %}
   <!-- Warnings -->
-  <section class="wf-section">
-    <h2>Warnings ({{ warnings_count }})</h2>
+  <section class="section-panel">
+    <div class="section-panel-header">
+      <h2 class="section-panel-title">Warnings</h2>
+      <span class="section-panel-count">{{ warnings_count }}</span>
+    </div>
     <details open>
-      <summary>Show warnings</summary>
-      <ul class="wf-list warnings-list">
-        {% for w in warnings %}
-        <li class="wf-warning-item">{{ w }}</li>
-        {% endfor %}
-      </ul>
+      <summary>Show all warnings</summary>
+      {% for w in warnings %}
+      <div class="warn-item warn-item-warn">{{ w }}</div>
+      {% endfor %}
     </details>
   </section>
   {% endif %}
 
   {% if options.include_errors and errors %}
   <!-- Errors -->
-  <section class="wf-section">
-    <h2>Errors ({{ errors_count }})</h2>
+  <section class="section-panel">
+    <div class="section-panel-header">
+      <h2 class="section-panel-title">Errors</h2>
+      <span class="section-panel-count">{{ errors_count }}</span>
+    </div>
     <details open>
-      <summary>Show errors</summary>
-      <ul class="wf-list errors-list">
-        {% for e in errors %}
-        <li class="wf-error-item">{{ e }}</li>
-        {% endfor %}
-      </ul>
+      <summary>Show all errors</summary>
+      {% for e in errors %}
+      <div class="warn-item warn-item-err">{{ e }}</div>
+      {% endfor %}
     </details>
   </section>
   {% endif %}
 
   {% if options.include_artifact_links and artifact_links %}
   <!-- Artifact links -->
-  <section class="wf-section">
-    <h2>Artifacts</h2>
-    <ul class="wf-artifact-list">
+  <section class="section-panel">
+    <div class="section-panel-header">
+      <h2 class="section-panel-title">Artifacts</h2>
+      <span class="section-panel-count">{{ artifact_links | length }} files</span>
+    </div>
+    <div class="artifact-grid">
       {% for link in artifact_links %}
-      <li>
-        <a href="{{ link.path }}" class="wf-artifact-link">
-          {{ link.label }}
-        </a>
-        {% if link.description %}
-        <span class="wf-artifact-desc">— {{ link.description }}</span>
-        {% endif %}
-      </li>
+      <a href="{{ link.path }}" class="artifact-button">
+        <span class="artifact-icon">{% if link.artifact_type == 'json' %}&#128196;{% elif link.artifact_type == 'html' %}&#127760;{% elif link.artifact_type == 'pdf' %}&#128214;{% else %}&#128279;{% endif %}</span>
+        <span class="artifact-label">
+          <div>{{ link.label }}</div>
+          {% if link.description %}
+          <div class="artifact-desc">{{ link.description }}</div>
+          {% endif %}
+        </span>
+      </a>
       {% endfor %}
-    </ul>
+    </div>
   </section>
   {% endif %}
 
-  <!-- Resume preview links -->
-  <section class="wf-section">
-    <h2>Resume Outputs</h2>
-    <div class="wf-resume-links">
+  <!-- Resume outputs -->
+  <section class="section-panel">
+    <div class="section-panel-header">
+      <h2 class="section-panel-title">Resume Outputs</h2>
+    </div>
+    <div class="resume-actions">
       {% if options.include_resume_html_link and html_output_path %}
-      <a href="{{ html_output_path }}" class="wf-btn wf-btn-html">
-        View Resume (HTML)
-      </a>
+      <a href="{{ html_output_path }}" class="resume-btn resume-btn-html">&#127760; View Resume (HTML)</a>
       {% endif %}
       {% if options.include_pdf_link and pdf_output_path %}
-      <a href="{{ pdf_output_path }}" class="wf-btn wf-btn-pdf">
-        Download Resume (PDF)
-      </a>
+      <a href="{{ pdf_output_path }}" class="resume-btn resume-btn-pdf">&#128214; Download Resume (PDF)</a>
       {% endif %}
       {% if not html_output_path and not pdf_output_path %}
       <p>No resume outputs available.</p>
@@ -150,17 +202,19 @@
 
   {% if options.include_conversion_reminder and conversion_reminder %}
   <!-- Conversion reminder (outside resume body) -->
-  <section class="wf-section wf-reminder">
-    <h2>Format Conversion</h2>
-    <p class="wf-reminder-text">{{ conversion_reminder }}</p>
+  <section class="section-panel reminder-panel">
+    <div class="section-panel-header">
+      <h2 class="section-panel-title">Format Conversion</h2>
+    </div>
+    <p class="reminder-text">{{ conversion_reminder }}</p>
   </section>
   {% endif %}
 
 </main>
 
-<footer class="wf-footer">
-  <p>resume_pdf_agent v0 — PDF only. No LLM, no online search, no Word/JPG/PNG export.</p>
-  <p>This dashboard is a static page; it does not run a web server or execute workflows in the browser.</p>
+<footer class="footer-note">
+  <p>resume_pdf_agent v0 &mdash; PDF only. No LLM, no online search, no Word/JPG/PNG export.</p>
+  <p>Static dashboard &mdash; does not run a web server or execute workflows in the browser.</p>
 </footer>
 
 <script>

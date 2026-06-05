@@ -2,32 +2,27 @@
 
 `resume_pdf_agent` is a criteria-aware AI resume PDF generation agent. The project now has foundations for schemas, static criteria, resume type classification, gap analysis, truthfulness checking, bullet enhancement, internal template metadata matching, HTML resume rendering, and M9 PDF Generation Pipeline v0.
 
-## Current Milestone: M11
+## Current Milestone: M12
 
-M11 adds Frontend Basic Workflow Page v0 — a static HTML dashboard for workflow runs.
+M12 adds Frontend UI Polish: upgrades the static workflow dashboard to a cinematic dark-themed premium layout.
 
-M11 provides:
+M12 provides:
 
-- **Static dashboard page**: Shows workflow status, stage timeline, warnings/errors, and artifact links.
-- **Resume output links**: Direct links to `resume.html` and `resume.pdf`.
-- **Conversion reminder**: Shown in the dashboard area only, not in the resume body.
-- **No web server needed**: The HTML page opens directly in a browser.
+- **Dark cinematic dashboard**: black/deep-gray background, large rounded cards, low-saturation accents
+- **Semantic layout**: app-shell, hero-panel, metric-grid, stage-timeline
+- **Pure CSS**: no external images/fonts/CDN dependencies
+- **Preserves all M11 functionality**: workflow status, stage timeline, warnings/errors, artifact links
+- **No backend changes**: workflow, PDF generation, HTML rendering are unaffected
 
-M11 does NOT implement React/FastAPI, UI polish, LLM API calls, or a web server.
+M12 does NOT implement React/FastAPI, Word/JPG/PNG export, or LLM API calls.
 
 ## Windows Example Commands
 
 ```bash
-# Run workflow and generate frontend page
+# Run workflow and generate polished frontend page
 py -m resume_pdf_agent run-sample --output-dir outputs/sample_page --pdf-backend mock --write-frontend-page
 
-# Generate frontend page (auto-runs workflow)
-py -m resume_pdf_agent render-page --input data/sample_inputs/sample_data_science_user.json -o outputs/page_run
-
-# Other commands
-py -m resume_pdf_agent run-sample --output-dir outputs/sample_run --pdf-backend mock
-py -m resume_pdf_agent list-criteria
-py -m resume_pdf_agent list-templates
+# Open in browser: outputs/sample_page/index.html
 ```
 
 ## Supported Internal Template Metadata
@@ -43,7 +38,7 @@ py -m resume_pdf_agent list-templates
 
 ## Upcoming Milestones
 
-- M12: Frontend UI polish based on user-provided sample images.
+None. M12 is the latest milestone.
 
 ## Validation
 

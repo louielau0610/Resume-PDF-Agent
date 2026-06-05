@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="{{ options.language }}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ page_title }}</title>
+<style>
+{{ css }}
+</style>
+</head>
+<body>
+
+<header class="wf-header">
+  <h1>Resume PDF Agent</h1>
+  <p class="wf-subtitle">Workflow Dashboard</p>
+</header>
+
+<main class="wf-main">
+
+  <!-- Status banner -->
+  <section class="wf-status-banner status-{{ status }}">
+    <h2>Workflow Status: {{ status }}</h2>
+  </section>
+
+  <!-- Summary cards -->
+  <section class="wf-summary-cards">
+    <div class="wf-card">
+      <h3>Criteria Profile</h3>
+      <p>{{ selected_criteria_profile_id or 'N/A' }}</p>
+    </div>
+    <div class="wf-card">
+      <h3>Resume Type</h3>
+      <p>{{ primary_resume_type or 'N/A' }}</p>
+    </div>
+    <div class="wf-card">
+      <h3>Template</h3>
+      <p>{{ selected_template_id or 'N/A' }}</p>
+    </div>
+    <div class="wf-card">
+      <h3>Output Directory</h3>
+      <p>{{ output_dir }}</p>
+    </div>
+  </section>
+
+  <!-- Input summary -->
+  <section class="wf-section">
+    <h2>Input Summary</h2>
+    <ul>
+      <li><strong>Name:</strong> {{ input_summary.full_name }}</li>
+      <li><strong>Target Role:</strong> {{ input_summary.target_role or 'N/A' }}</li>
+      <li><strong>Education Entries:</strong> {{ input_summary.education_count }}</li>
+      <li><strong>Experiences:</strong> {{ input_summary.experience_count }}</li>
+      <li><strong>Skill Groups:</strong> {{ input_summary.skill_group_count }}</li>
+    </ul>
+  </section>
+
+  {% if options.include_stage_timeline and stage_views %}
+  <!-- Stage timeline -->
+  <section class="wf-section">
+    <h2>Stage Timeline</h2>
+    <div class="wf-timeline">
+      {% for sv in stage_views %}
+      <div class="wf-timeline-item status-{{ sv.status }}">
+        <span class="wf-timeline-marker"></span>
+        <div class="wf-timeline-content">
+          <h4>{{ sv.stage }}</h4>
+          <p>{{ sv.message }}</p>
+          <span class="wf-badge badge-{{ sv.status }}">{{ sv.status }}</span>
+          {% if sv.warnings_count > 0 %}
+          <span class="wf-badge badge-warning">warnings: {{ sv.warnings_count }}</span>
+          {% endif %}
+          {% if sv.errors_count > 0 %}
+          <span class="wf-badge badge-error">errors: {{ sv.errors_count }}</span>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if options.include_warnings and warnings %}
+  <!-- Warnings -->
+  <section class="wf-section">
+    <h2>Warnings ({{ warnings_count }})</h2>
+    <details open>
+      <summary>Show warnings</summary>
+      <ul class="wf-list warnings-list">
+        {% for w in warnings %}
+        <li class="wf-warning-item">{{ w }}</li>
+        {% endfor %}
+      </ul>
+    </details>
+  </section>
+  {% endif %}
+
+  {% if options.include_errors and errors %}
+  <!-- Errors -->
+  <section class="wf-section">
+    <h2>Errors ({{ errors_count }})</h2>
+    <details open>
+      <summary>Show errors</summary>
+      <ul class="wf-list errors-list">
+        {% for e in errors %}
+        <li class="wf-error-item">{{ e }}</li>
+        {% endfor %}
+      </ul>
+    </details>
+  </section>
+  {% endif %}
+
+  {% if options.include_artifact_links and artifact_links %}
+  <!-- Artifact links -->
+  <section class="wf-section">
+    <h2>Artifacts</h2>
+    <ul class="wf-artifact-list">
+      {% for link in artifact_links %}
+      <li>
+        <a href="{{ link.path }}" class="wf-artifact-link">
+          {{ link.label }}
+        </a>
+        {% if link.description %}
+        <span class="wf-artifact-desc">— {{ link.description }}</span>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  <!-- Resume preview links -->
+  <section class="wf-section">
+    <h2>Resume Outputs</h2>
+    <div class="wf-resume-links">
+      {% if options.include_resume_html_link and html_output_path %}
+      <a href="{{ html_output_path }}" class="wf-btn wf-btn-html">
+        View Resume (HTML)
+      </a>
+      {% endif %}
+      {% if options.include_pdf_link and pdf_output_path %}
+      <a href="{{ pdf_output_path }}" class="wf-btn wf-btn-pdf">
+        Download Resume (PDF)
+      </a>
+      {% endif %}
+      {% if not html_output_path and not pdf_output_path %}
+      <p>No resume outputs available.</p>
+      {% endif %}
+    </div>
+  </section>
+
+  {% if options.include_conversion_reminder and conversion_reminder %}
+  <!-- Conversion reminder (outside resume body) -->
+  <section class="wf-section wf-reminder">
+    <h2>Format Conversion</h2>
+    <p class="wf-reminder-text">{{ conversion_reminder }}</p>
+  </section>
+  {% endif %}
+
+</main>
+
+<footer class="wf-footer">
+  <p>resume_pdf_agent v0 — PDF only. No LLM, no online search, no Word/JPG/PNG export.</p>
+  <p>This dashboard is a static page; it does not run a web server or execute workflows in the browser.</p>
+</footer>
+
+<script>
+{{ js }}
+</script>
+
+</body>
+</html>

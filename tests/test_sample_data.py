@@ -55,4 +55,4 @@ def test_placeholder_pipeline_includes_criteria_aware_stages():
     assert "html_rendering" in result["stages"]
     assert "pdf_generation" in result["stages"]
     assert result["supported_export_formats"] == ["pdf"]
-    assert "M10 integrated" in result["message"]
+    assert "M11 added" in result["message"]

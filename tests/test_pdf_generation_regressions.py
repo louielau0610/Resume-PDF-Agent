@@ -25,9 +25,22 @@ def test_no_word_jpg_png_files_are_generated(tmp_path):
     assert not list(Path(tmp_path).rglob("*.png"))
 
 
-def test_no_frontend_ui_files_are_added_for_m9():
-    assert not Path("src/resume_pdf_agent/frontend").exists()
-    assert not Path("frontend").exists()
+def test_frontend_is_static_only_no_react_or_fastapi():
+    """M11 frontend exists but must be static HTML/CSS/JS only."""
+    frontend_dir = Path("src/resume_pdf_agent/frontend")
+    # The frontend dir now exists (M11) — verify it is static-only
+    assert frontend_dir.exists()
+
+    # Check no server/framework deps
+    all_py = list(frontend_dir.rglob("*.py"))
+    all_sources = "\n".join(f.read_text(encoding="utf-8").lower() for f in all_py)
+    forbidden = ["fastapi", "flask", "react", "streamlit", "uvicorn"]
+    for kw in forbidden:
+        assert kw not in all_sources, f"'{kw}' found in frontend Python files"
+
+    # Check no package.json or node_modules
+    assert not (frontend_dir / "package.json").exists()
+    assert not (frontend_dir / "node_modules").exists()
 
 
 def test_pdf_generator_does_not_report_hiring_probability_or_internal_screening_access(tmp_path):
@@ -65,7 +78,7 @@ def test_pipeline_placeholder_still_includes_pdf_generation_and_reminder_panel()
 
     assert "pdf_generation" in result["stages"]
     assert "reminder_panel" in result["stages"]
-    assert "M10 integrated" in result["message"]
+    assert "M11 added" in result["message"]
 
 
 def test_export_format_still_only_includes_pdf():

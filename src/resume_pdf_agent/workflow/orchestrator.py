@@ -548,12 +548,28 @@ def run_resume_workflow(
         )
     )
 
-    return _build_result(
+    result = _build_result(
         output_dir, stages, all_artifacts, global_warnings, global_errors,
         selected_criteria_profile_id, primary_resume_type,
         selected_template_id, html_output_path, pdf_output_path,
         conversion_reminder,
     )
+
+    # ── L. Write workflow_result.json if intermediate JSON is enabled ──────
+    if workflow_input.write_intermediate_json:
+        try:
+            wf_json_art = write_json_artifact(
+                result,
+                _json_path(output_dir, _artifact_filename("workflow_result", "json")),
+            )
+            # Add to result artifacts and stage
+            all_artifacts.append(wf_json_art)
+            result.artifacts.append(wf_json_art)
+        except Exception:
+            # Non-fatal; do not fail the workflow over result serialization
+            pass
+
+    return result
 
 
 def _build_result(

@@ -29,6 +29,13 @@ from resume_pdf_agent.models.enhancement import (
     EnhancedBulletCandidate,
     ExperienceEnhancementResult,
 )
+from resume_pdf_agent.models.frontend import (
+    FrontendArtifactLink,
+    FrontendPageOptions,
+    FrontendPageResult,
+    FrontendPageStatus,
+    FrontendStageView,
+)
 from resume_pdf_agent.models.pdf import (
     PDFBackend,
     PDFGenerationOptions,
@@ -102,6 +109,11 @@ __all__ = [
     "ExperienceEnhancementResult",
     "ExperienceType",
     "ExportFormat",
+    "FrontendArtifactLink",
+    "FrontendPageOptions",
+    "FrontendPageResult",
+    "FrontendPageStatus",
+    "FrontendStageView",
     "GapAnalysisResult",
     "HTMLRenderOptions",
     "HTMLRenderResult",

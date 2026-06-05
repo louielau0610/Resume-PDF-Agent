@@ -12,25 +12,21 @@
 - M8：HTML resume rendering。
 - M9：PDF generation pipeline。
 
-## M10: CLI/API Workflow Integration ✅ (current)
+## M11: Frontend Basic Workflow Page ✅ (current)
 
-- 已完成 workflow Pydantic models。
-- 已完成 serialization 和 I/O helpers。
-- 已完成 `run_resume_workflow` orchestrator。
-- 已完成 Typer CLI（`run-sample`、`run`、`list-criteria`、`list-templates`）。
-- 已完成 `__main__.py`。
-- 已完成示例输入 JSON。
-- 已完成 M10 文档和测试。
-
-## M11: Frontend Basic Workflow Page
-
-- 建立基础前端工作流页面。
-- 支持用户输入和结果下载入口。
+- 已完成 frontend Pydantic models。
+- 已完成 frontend safety helpers。
+- 已完成 frontend context builder。
+- 已完成 static page renderer（Jinja2 模板 + CSS/JS）。
+- 已完成 CLI 集成（`--write-frontend-page`、`render-page`）。
+- 已完成 workflow_result.json 输出。
+- 已完成 M11 文档和测试。
 
 ## M12: Frontend UI Polish Based on User-Provided Sample Images
 
 - 根据用户提供的样例图片优化视觉风格。
 - 保持专业、清晰、适合简历生成工作流。
+- **M12 必须在用户提供样例 UI 图片后才能开始。**
 
 ## Future Backlog (optional)
 

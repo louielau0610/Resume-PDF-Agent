@@ -127,7 +127,7 @@ def test_pipeline_placeholder_includes_enhancement_stage():
     result = run_resume_pipeline({"target_role": "data science intern"})
 
     assert "criteria_aware_content_enhancement" in result["stages"]
-    assert "M10 integrated" in result["message"]
+    assert "M11 added" in result["message"]
 
 
 def test_export_format_still_only_includes_pdf():

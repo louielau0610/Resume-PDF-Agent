@@ -2,9 +2,11 @@
 
 ## Current Milestone
 
-M10 CLI/API Workflow Integration
+## Current Milestone
 
-## M0-M9 已完成
+M11 Frontend Basic Workflow Page
+
+## M0-M10 已完成
 
 - M0：项目基础结构、配置、异常、占位 pipeline 和基础测试。
 - M1：用户画像、简历内容、criteria、analysis 和真实性 safeguard schemas。
@@ -16,24 +18,28 @@ M10 CLI/API Workflow Integration
 - M7：internal template metadata matching。
 - M8：HTML resume rendering。
 - M9：PDF generation pipeline。
+- M10：CLI / programmatic workflow integration。
 
-## M10 已完成内容
+## M11 已完成内容
 
-- 添加 workflow Pydantic models：`WorkflowStageName`、`WorkflowStageStatus`、`WorkflowRunStatus`、`WorkflowArtifact`、`WorkflowStageResult`、`ResumeWorkflowInput`、`ResumeWorkflowResult`。
-- 添加 workflow serialization 和 I/O helpers。
-- 添加 `run_resume_workflow` orchestrator：串联 criteria selection、classification、gap analysis、truthfulness、enhancement、template matching、HTML rendering、PDF generation。
-- 添加 Typer CLI：`run-sample`、`run`、`list-criteria`、`list-templates`。
-- 添加 `__main__.py` 支持 `py -m resume_pdf_agent`。
-- 添加示例输入 JSON：`data/sample_inputs/sample_data_science_user.json`。
-- 添加 M10 文档和测试。
+- 添加 frontend Pydantic models：`FrontendPageStatus`、`FrontendArtifactLink`、`FrontendStageView`、`FrontendPageOptions`、`FrontendPageResult`。
+- 添加 frontend safety helpers：`escape_frontend_text`、`safe_relative_artifact_path`、`is_allowed_frontend_artifact`。
+- 添加 frontend context builder：`build_frontend_page_context`。
+- 添加 static page renderer：`render_frontend_workflow_page`、`render_frontend_page_from_output_dir`。
+- 添加 Jinja2 模板 `workflow_page.html.j2`（工作流仪表板页面）。
+- 添加静态 CSS 和 JS 文件（无外部依赖）。
+- CLI 添加 `--write-frontend-page` 选项（`run` 和 `run-sample` 命令）。
+- CLI 添加 `render-page` 命令。
+- 工作流 orchestrator 添加 `workflow_result.json` 输出。
+- 添加 M11 文档和测试。
 
 ## 尚未实现内容
 
-- Frontend UI。
 - Frontend UI polish based on sample images。
 - Word/JPG/PNG export。
 - Real LLM integration。
 - Real JD ingestion/parsing。
+- Browser-based workflow execution。
 
 ## 重要产品约束
 

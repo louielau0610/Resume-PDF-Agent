@@ -1,0 +1,160 @@
+"""Frontend page context builder for M11."""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+from resume_pdf_agent.models.frontend import (
+    FrontendArtifactLink,
+    FrontendPageOptions,
+    FrontendStageView,
+)
+from resume_pdf_agent.models.workflow import (
+    ResumeWorkflowInput,
+    ResumeWorkflowResult,
+)
+from resume_pdf_agent.frontend.safety import (
+    escape_frontend_text,
+    safe_relative_artifact_path,
+)
+
+
+def _build_stage_views(
+    workflow_result: ResumeWorkflowResult,
+    output_dir: str,
+) -> list[dict]:
+    """Convert workflow stage results into frontend-safe stage views."""
+
+    views: list[dict] = []
+    for stage in workflow_result.stages:
+        views.append({
+            "stage": escape_frontend_text(stage.stage.value),
+            "status": escape_frontend_text(stage.status.value),
+            "message": escape_frontend_text(stage.message),
+            "warnings_count": len(stage.warnings),
+            "errors_count": len(stage.errors),
+        })
+    return views
+
+
+def _build_artifact_links(
+    workflow_result: ResumeWorkflowResult,
+    output_dir: str,
+) -> list[dict]:
+    """Build safe artifact links relative to the output directory."""
+
+    links: list[dict] = []
+    for artifact in workflow_result.artifacts:
+        rel_path = safe_relative_artifact_path(artifact.path, output_dir)
+        links.append({
+            "label": escape_frontend_text(artifact.artifact_type),
+            "path": rel_path,
+            "artifact_type": escape_frontend_text(artifact.artifact_type),
+            "description": escape_frontend_text(artifact.description or ""),
+        })
+    return links
+
+
+def build_frontend_page_context(
+    workflow_input: ResumeWorkflowInput,
+    workflow_result: ResumeWorkflowResult,
+    options: FrontendPageOptions | None = None,
+) -> dict:
+    """Build a Jinja2 context dict for the static workflow dashboard page.
+
+    The returned dict is safe for HTML rendering — all user-supplied text
+    is escaped, artifact paths are constrained to the output directory,
+    and no hiring-probability or internal-screening claims are included.
+    """
+
+    opts = options or FrontendPageOptions()
+    output_dir = workflow_result.output_dir
+
+    # --- safe scalar values ---
+    status = escape_frontend_text(workflow_result.status.value)
+    criteria_id = escape_frontend_text(
+        workflow_result.selected_criteria_profile_id or ""
+    )
+    primary_type = escape_frontend_text(
+        workflow_result.primary_resume_type.value
+        if workflow_result.primary_resume_type
+        else ""
+    )
+    template_id = escape_frontend_text(
+        workflow_result.selected_template_id or ""
+    )
+    target_role = escape_frontend_text(
+        workflow_input.target_role
+        or (workflow_input.user_profile.target_roles[0]
+            if workflow_input.user_profile.target_roles
+            else "")
+    )
+    page_title = "Resume PDF Agent — Workflow Dashboard"
+
+    # --- safe output paths ---
+    html_output_rel = ""
+    pdf_output_rel = ""
+    if workflow_result.html_output_path:
+        html_output_rel = safe_relative_artifact_path(
+            workflow_result.html_output_path, output_dir
+        )
+    if workflow_result.pdf_output_path:
+        pdf_output_rel = safe_relative_artifact_path(
+            workflow_result.pdf_output_path, output_dir
+        )
+
+    # --- conversion reminder (outside resume body) ---
+    conversion_reminder = escape_frontend_text(
+        workflow_result.conversion_reminder or ""
+    )
+
+    # --- warnings & errors ---
+    warnings_list = [escape_frontend_text(w) for w in workflow_result.warnings]
+    errors_list = [escape_frontend_text(e) for e in workflow_result.errors]
+
+    # --- input summary (no raw full content) ---
+    input_summary = {
+        "full_name": escape_frontend_text(
+            workflow_input.user_profile.full_name
+        ),
+        "education_count": len(workflow_input.user_profile.education),
+        "experience_count": len(workflow_input.resume_content.experiences),
+        "skill_group_count": len(workflow_input.user_profile.skills),
+        "target_role": target_role,
+    }
+
+    # --- stage timeline ---
+    stage_views = _build_stage_views(workflow_result, output_dir)
+
+    # --- artifact links ---
+    artifact_links = _build_artifact_links(workflow_result, output_dir)
+
+    return {
+        "page_title": page_title,
+        "status": status,
+        "output_dir": escape_frontend_text(output_dir),
+        "selected_criteria_profile_id": criteria_id,
+        "primary_resume_type": primary_type,
+        "selected_template_id": template_id,
+        "html_output_path": html_output_rel,
+        "pdf_output_path": pdf_output_rel,
+        "conversion_reminder": conversion_reminder,
+        "warnings": warnings_list,
+        "errors": errors_list,
+        "warnings_count": len(warnings_list),
+        "errors_count": len(errors_list),
+        "stage_views": stage_views,
+        "artifact_links": artifact_links,
+        "input_summary": input_summary,
+        "options": {
+            "include_artifact_links": opts.include_artifact_links,
+            "include_stage_timeline": opts.include_stage_timeline,
+            "include_warnings": opts.include_warnings,
+            "include_errors": opts.include_errors,
+            "include_resume_html_link": opts.include_resume_html_link,
+            "include_pdf_link": opts.include_pdf_link,
+            "include_conversion_reminder": opts.include_conversion_reminder,
+            "language": opts.language,
+        },
+        "summary": escape_frontend_text(workflow_result.summary),
+    }

@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-import sys
 from pathlib import Path
-from typing import Optional
 
 import typer
 
 from resume_pdf_agent.models import PDFBackend
+from resume_pdf_agent.models.frontend import FrontendPageOptions
 from resume_pdf_agent.models.workflow import ResumeWorkflowInput, WorkflowRunStatus
 from resume_pdf_agent.workflow import load_workflow_input_from_json, run_resume_workflow
 
@@ -47,6 +46,27 @@ def _print_summary(result, output_dir: str) -> None:
     typer.echo(f"Errors:              {len(result.errors)}")
 
 
+def _write_frontend_page_if_enabled(
+    workflow_input: ResumeWorkflowInput,
+    result,
+    output_dir: str,
+) -> None:
+    """Render frontend page if --write-frontend-page was passed."""
+    from resume_pdf_agent.frontend import render_frontend_workflow_page
+
+    page_result = render_frontend_workflow_page(
+        workflow_input=workflow_input,
+        workflow_result=result,
+        output_path=Path(output_dir) / "index.html",
+    )
+    if page_result.output_path:
+        typer.echo(f"Frontend page:       {page_result.output_path}")
+    if page_result.warnings:
+        typer.echo(f"Frontend warnings:   {len(page_result.warnings)}")
+    if page_result.errors:
+        typer.echo(f"Frontend errors:     {len(page_result.errors)}")
+
+
 @app.command("run")
 def run_workflow(
     input_path: Path = typer.Option(
@@ -61,6 +81,10 @@ def run_workflow(
     pdf_backend: str = typer.Option(
         "mock", "--pdf-backend",
         help="PDF backend: mock, weasyprint, or playwright.",
+    ),
+    write_frontend_page: bool = typer.Option(
+        False, "--write-frontend-page",
+        help="Also render a static index.html workflow dashboard page.",
     ),
 ) -> None:
     """Run the resume workflow from an explicit JSON input file."""
@@ -78,6 +102,9 @@ def run_workflow(
     result = run_resume_workflow(workflow_input)
     _print_summary(result, output_dir)
 
+    if write_frontend_page:
+        _write_frontend_page_if_enabled(workflow_input, result, output_dir)
+
     if result.status == WorkflowRunStatus.FAILED:
         raise typer.Exit(code=1)
 
@@ -91,6 +118,10 @@ def run_sample(
     pdf_backend: str = typer.Option(
         "mock", "--pdf-backend",
         help="PDF backend: mock, weasyprint, or playwright.",
+    ),
+    write_frontend_page: bool = typer.Option(
+        False, "--write-frontend-page",
+        help="Also render a static index.html workflow dashboard page.",
     ),
 ) -> None:
     """Run the resume workflow using built-in sample data."""
@@ -112,6 +143,9 @@ def run_sample(
 
     result = run_resume_workflow(workflow_input)
     _print_summary(result, output_dir)
+
+    if write_frontend_page:
+        _write_frontend_page_if_enabled(workflow_input, result, output_dir)
 
     if result.status == WorkflowRunStatus.FAILED:
         raise typer.Exit(code=1)
@@ -139,6 +173,49 @@ def list_templates() -> None:
     typer.echo("Available internal template IDs:")
     for tid in ids:
         typer.echo(f"  - {tid}")
+
+
+@app.command("render-page")
+def render_page(
+    input_path: Path = typer.Option(
+        ..., "--input", "-i",
+        exists=True, file_okay=True, dir_okay=False, readable=True,
+        help="Path to workflow input JSON file.",
+    ),
+    output_dir: str = typer.Option(
+        "outputs/page_run", "--output-dir", "-o",
+        help="Output directory for generated artifacts.",
+    ),
+    pdf_backend: str = typer.Option(
+        "mock", "--pdf-backend",
+        help="PDF backend: mock, weasyprint, or playwright.",
+    ),
+) -> None:
+    """Run the full workflow and render a static index.html dashboard page."""
+
+    from resume_pdf_agent.frontend import render_frontend_workflow_page
+
+    workflow_input = load_workflow_input_from_json(input_path)
+    workflow_input.output_dir = output_dir
+    try:
+        workflow_input.pdf_backend = PDFBackend(pdf_backend)
+    except ValueError:
+        typer.echo(f"Error: Unknown PDF backend '{pdf_backend}'.", err=True)
+        raise typer.Exit(code=2)
+
+    result = run_resume_workflow(workflow_input)
+    _print_summary(result, output_dir)
+
+    page_result = render_frontend_workflow_page(
+        workflow_input=workflow_input,
+        workflow_result=result,
+        output_path=Path(output_dir) / "index.html",
+    )
+    if page_result.output_path:
+        typer.echo(f"Frontend page:       {page_result.output_path}")
+
+    if result.status == WorkflowRunStatus.FAILED:
+        raise typer.Exit(code=1)
 
 
 if __name__ == "__main__":

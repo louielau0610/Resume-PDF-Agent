@@ -2,25 +2,30 @@
 
 `resume_pdf_agent` is a criteria-aware AI resume PDF generation agent. The project now has foundations for schemas, static criteria, resume type classification, gap analysis, truthfulness checking, bullet enhancement, internal template metadata matching, HTML resume rendering, and M9 PDF Generation Pipeline v0.
 
-## Current Milestone: M10
+## Current Milestone: M11
 
-M10 adds CLI / Programmatic Workflow Integration, connecting all M0–M9 deterministic modules into a usable local pipeline.
+M11 adds Frontend Basic Workflow Page v0 — a static HTML dashboard for workflow runs.
 
-M10 provides:
+M11 provides:
 
-- **Programmatic API**: `resume_pdf_agent.workflow.run_resume_workflow` for end-to-end execution.
-- **CLI**: Typer-based CLI with `run-sample`, `run`, `list-criteria`, and `list-templates` commands.
-- **Structured intermediate outputs**: Optional JSON artifacts for criteria profile, classification, gap analysis, truthfulness, enhancement, and template selection.
-- **Final outputs**: `resume.html` and `resume.pdf` (mock PDF backend used for tests/sample runs).
-- **Deterministic sample**: Built-in `data/sample_inputs/sample_data_science_user.json`.
+- **Static dashboard page**: Shows workflow status, stage timeline, warnings/errors, and artifact links.
+- **Resume output links**: Direct links to `resume.html` and `resume.pdf`.
+- **Conversion reminder**: Shown in the dashboard area only, not in the resume body.
+- **No web server needed**: The HTML page opens directly in a browser.
 
-M10 does NOT implement frontend UI, UI polish, LLM API calls, online template search, or Word/JPG/PNG export.
+M11 does NOT implement React/FastAPI, UI polish, LLM API calls, or a web server.
 
 ## Windows Example Commands
 
 ```bash
+# Run workflow and generate frontend page
+py -m resume_pdf_agent run-sample --output-dir outputs/sample_page --pdf-backend mock --write-frontend-page
+
+# Generate frontend page (auto-runs workflow)
+py -m resume_pdf_agent render-page --input data/sample_inputs/sample_data_science_user.json -o outputs/page_run
+
+# Other commands
 py -m resume_pdf_agent run-sample --output-dir outputs/sample_run --pdf-backend mock
-py -m resume_pdf_agent run --input data/sample_inputs/sample_data_science_user.json -o outputs/custom_run
 py -m resume_pdf_agent list-criteria
 py -m resume_pdf_agent list-templates
 ```
@@ -38,7 +43,6 @@ py -m resume_pdf_agent list-templates
 
 ## Upcoming Milestones
 
-- M11: Frontend basic workflow page.
 - M12: Frontend UI polish based on user-provided sample images.
 
 ## Validation

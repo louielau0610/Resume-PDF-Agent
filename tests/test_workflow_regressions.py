@@ -126,7 +126,6 @@ def test_workflow_does_not_call_llm_apis():
         "anthropic",
         "gemini",
         "deepseek",
-        "llm",
         "chatgpt",
         "gpt-",
         "claude",

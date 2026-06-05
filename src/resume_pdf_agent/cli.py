@@ -59,6 +59,9 @@ def _print_summary(result, output_dir: str) -> None:
             typer.echo(f"Parsed JD:           {result.parsed_jd_path}")
         if result.jd_criteria_profile_path:
             typer.echo(f"JD criteria profile: {result.jd_criteria_profile_path}")
+    # M16 LLM
+    if result.llm_rewriting_used:
+        typer.echo(f"LLM rewriting:       Used (result: {result.llm_rewrite_result_path or 'N/A'})")
 
 
 def _write_frontend_page_if_enabled(
@@ -127,6 +130,19 @@ def run_workflow(
         True, "--write-jd-artifacts/--no-write-jd-artifacts",
         help="Write parsed JD and JD-derived criteria artifacts.",
     ),
+    # M16 LLM options
+    enable_llm_rewriting: bool = typer.Option(
+        False, "--enable-llm-rewriting/--no-enable-llm-rewriting",
+        help="Enable optional LLM-assisted bullet rewriting (disabled by default).",
+    ),
+    llm_provider: str = typer.Option(
+        "mock", "--llm-provider",
+        help="LLM provider: mock (deterministic test), external (placeholder), or disabled.",
+    ),
+    write_llm_artifacts: bool = typer.Option(
+        True, "--write-llm-artifacts/--no-write-llm-artifacts",
+        help="Write LLM rewrite result artifact.",
+    ),
 ) -> None:
     """Run the resume workflow from an explicit JSON input file."""
 
@@ -151,6 +167,10 @@ def run_workflow(
     if use_user_provided_jd:
         workflow_input.use_user_provided_jd = True
     workflow_input.write_jd_artifacts = write_jd_artifacts
+    # M16 LLM overrides
+    workflow_input.enable_llm_rewriting = enable_llm_rewriting
+    workflow_input.llm_provider = llm_provider
+    workflow_input.write_llm_artifacts = write_llm_artifacts
 
     result = run_resume_workflow(workflow_input)
     _print_summary(result, output_dir)
@@ -202,6 +222,19 @@ def run_sample(
         True, "--write-jd-artifacts/--no-write-jd-artifacts",
         help="Write parsed JD and JD-derived criteria artifacts.",
     ),
+    # M16 LLM options
+    enable_llm_rewriting: bool = typer.Option(
+        False, "--enable-llm-rewriting/--no-enable-llm-rewriting",
+        help="Enable optional LLM-assisted bullet rewriting (disabled by default).",
+    ),
+    llm_provider: str = typer.Option(
+        "mock", "--llm-provider",
+        help="LLM provider: mock (deterministic test), external (placeholder), or disabled.",
+    ),
+    write_llm_artifacts: bool = typer.Option(
+        True, "--write-llm-artifacts/--no-write-llm-artifacts",
+        help="Write LLM rewrite result artifact.",
+    ),
 ) -> None:
     """Run the resume workflow using built-in sample data."""
 
@@ -231,6 +264,10 @@ def run_sample(
     if use_user_provided_jd:
         workflow_input.use_user_provided_jd = True
     workflow_input.write_jd_artifacts = write_jd_artifacts
+    # M16 LLM overrides
+    workflow_input.enable_llm_rewriting = enable_llm_rewriting
+    workflow_input.llm_provider = llm_provider
+    workflow_input.write_llm_artifacts = write_llm_artifacts
 
     result = run_resume_workflow(workflow_input)
     _print_summary(result, output_dir)

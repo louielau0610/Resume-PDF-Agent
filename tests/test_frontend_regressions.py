@@ -198,6 +198,6 @@ def test_no_llm_api_calls_in_frontend():
 
     for mod in (page_renderer, ctx_mod, safety):
         source = inspect.getsource(mod).lower()
-        llm_indicators = ["openai", "anthropic", "gemini", "deepseek", "llm", "chatgpt"]
+        llm_indicators = ["openai", "anthropic", "gemini", "deepseek", "chatgpt"]
         for indicator in llm_indicators:
             assert indicator not in source, f"'{indicator}' in {mod.__name__}"

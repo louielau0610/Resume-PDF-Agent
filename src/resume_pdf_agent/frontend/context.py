@@ -187,6 +187,13 @@ def build_frontend_page_context(
             workflow_result.jd_criteria_profile_path, output_dir
         )
 
+    # M16 LLM paths
+    llm_rewrite_result_rel = ""
+    if getattr(workflow_result, "llm_rewrite_result_path", None):
+        llm_rewrite_result_rel = safe_relative_artifact_path(
+            workflow_result.llm_rewrite_result_path, output_dir
+        )
+
     return {
         "page_title": page_title,
         "status": status,
@@ -230,4 +237,7 @@ def build_frontend_page_context(
         "jd_compliance_status": getattr(workflow_result, "jd_compliance_status", ""),
         "parsed_jd_path": parsed_jd_rel,
         "jd_criteria_profile_path": jd_criteria_profile_rel,
+        # M16 LLM
+        "llm_rewriting_used": getattr(workflow_result, "llm_rewriting_used", False),
+        "llm_rewrite_result_path": llm_rewrite_result_rel,
     }

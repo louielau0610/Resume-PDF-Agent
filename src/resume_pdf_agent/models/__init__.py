@@ -56,6 +56,15 @@ from resume_pdf_agent.models.jd import (
     JDSourceType,
     ParsedJD,
 )
+from resume_pdf_agent.models.llm import (
+    LLMProviderType,
+    LLMRewriteCandidate,
+    LLMRewriteMode,
+    LLMRewriteOptions,
+    LLMRewriteRequest,
+    LLMRewriteResult,
+    LLMRewriteStatus,
+)
 from resume_pdf_agent.models.pdf import (
     PDFBackend,
     PDFGenerationOptions,
@@ -155,6 +164,13 @@ __all__ = [
     "JDToCriteriaBuildResult",
     "JDSourceType",
     "LanguageSkill",
+    "LLMProviderType",
+    "LLMRewriteCandidate",
+    "LLMRewriteMode",
+    "LLMRewriteOptions",
+    "LLMRewriteRequest",
+    "LLMRewriteResult",
+    "LLMRewriteStatus",
     "MatchLevel",
     "Metric",
     "MetricStatus",

@@ -100,6 +100,10 @@ class ResumeWorkflowInput(BaseModel):
     jd_file_path: str | None = None
     use_user_provided_jd: bool = False
     write_jd_artifacts: bool = True
+    # M16: Optional LLM rewriting
+    enable_llm_rewriting: bool = False
+    llm_provider: str | None = None
+    write_llm_artifacts: bool = True
 
     @model_validator(mode="after")
     def _output_dir_not_empty(self) -> ResumeWorkflowInput:
@@ -134,6 +138,9 @@ class ResumeWorkflowResult(BaseModel):
     jd_criteria_profile_path: str | None = None
     jd_compliance_status: str | None = None
     used_user_provided_jd: bool = False
+    # M16: Optional LLM rewriting
+    llm_rewrite_result_path: str | None = None
+    llm_rewriting_used: bool = False
 
     @model_validator(mode="after")
     def _summary_not_empty(self) -> ResumeWorkflowResult:

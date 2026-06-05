@@ -108,6 +108,9 @@ def run_resume_workflow(
     jd_criteria_profile_path: str | None = None
     jd_compliance_status: str | None = None
     used_user_provided_jd: bool = False
+    # M16 LLM
+    llm_rewrite_result_path: str | None = None
+    llm_rewriting_used: bool = False
 
     # ── A. User intake (setup) ─────────────────────────────────────────────
     stages.append(
@@ -654,6 +657,82 @@ def run_resume_workflow(
         )
         global_errors.append(str(exc))
 
+    # ── H6. LLM-assisted rewrite (M16) ──────────────────────────────────
+    try:
+        if workflow_input.enable_llm_rewriting:
+            from resume_pdf_agent.llm import rewrite_bullets_with_llm
+            from resume_pdf_agent.llm.config import default_llm_rewrite_options
+            from resume_pdf_agent.models.llm import LLMProviderType
+
+            llm_opts = default_llm_rewrite_options()
+            llm_opts.enabled = True
+
+            # Determine provider
+            provider_str = (workflow_input.llm_provider or "mock").lower()
+            if provider_str == "mock":
+                llm_opts.provider = LLMProviderType.MOCK
+            elif provider_str == "external":
+                llm_opts.provider = LLMProviderType.EXTERNAL
+            else:
+                llm_opts.provider = LLMProviderType.DISABLED
+
+            # Build confirmation packet for safety gate
+            cfm_packet = None
+            try:
+                cfm_packet = build_confirmation_packet(
+                    resume_content=workflow_input.resume_content,
+                    truthfulness_result=truthfulness_result,
+                    bullet_enhancement_result=enhancement_result,
+                    gap_analysis_result=gap_result,
+                )
+            except Exception:
+                pass
+
+            llm_result = rewrite_bullets_with_llm(
+                resume_content=workflow_input.resume_content,
+                bullet_enhancement_result=enhancement_result,
+                truthfulness_result=truthfulness_result,
+                confirmation_packet=cfm_packet,
+                criteria_profile=criteria_profile,
+                options=llm_opts,
+            )
+
+            llm_rewriting_used = True
+
+            # Write LLM artifact
+            if workflow_input.write_llm_artifacts and workflow_input.write_intermediate_json:
+                lr_art = write_json_artifact(
+                    llm_result,
+                    _json_path(output_dir, _artifact_filename("llm_rewrite_result", "json")),
+                )
+                all_artifacts.append(lr_art)
+                llm_rewrite_result_path = lr_art.path
+
+            # Add warnings
+            if llm_result.warnings:
+                global_warnings.extend(llm_result.warnings)
+
+            stages.append(
+                _stage_result(
+                    WorkflowStageName.CRITERIA_AWARE_CONTENT_ENHANCEMENT,
+                    WorkflowStageStatus.COMPLETED,
+                    f"LLM rewrite: {llm_result.candidates_generated} candidates; "
+                    f"status: {llm_result.status.value}; "
+                    f"provider: {llm_result.provider.value}",
+                    warnings=list(llm_result.warnings),
+                )
+            )
+    except Exception as exc:
+        stages.append(
+            _stage_result(
+                WorkflowStageName.CRITERIA_AWARE_CONTENT_ENHANCEMENT,
+                WorkflowStageStatus.COMPLETED_WITH_WARNINGS,
+                f"LLM rewrite skipped: {exc}",
+                warnings=[str(exc)],
+            )
+        )
+        global_warnings.append(f"LLM rewrite error: {exc}")
+
     # ── I. PDF generation ──────────────────────────────────────────────────
     # M14: Skip PDF if confirmation gate blocks
     if workflow_input.require_confirmation_before_pdf and not can_generate_final_pdf:
@@ -778,6 +857,8 @@ def run_resume_workflow(
         jd_criteria_profile_path=jd_criteria_profile_path,
         jd_compliance_status=jd_compliance_status,
         used_user_provided_jd=used_user_provided_jd,
+        llm_rewrite_result_path=llm_rewrite_result_path,
+        llm_rewriting_used=llm_rewriting_used,
     )
 
     # ── L. Write workflow_result.json if intermediate JSON is enabled ──────
@@ -817,6 +898,8 @@ def _build_result(
     jd_criteria_profile_path: str | None = None,
     jd_compliance_status: str | None = None,
     used_user_provided_jd: bool = False,
+    llm_rewrite_result_path: str | None = None,
+    llm_rewriting_used: bool = False,
 ) -> ResumeWorkflowResult:
     """Assemble the final ResumeWorkflowResult."""
 
@@ -863,4 +946,6 @@ def _build_result(
         jd_criteria_profile_path=jd_criteria_profile_path,
         jd_compliance_status=jd_compliance_status,
         used_user_provided_jd=used_user_provided_jd,
+        llm_rewrite_result_path=llm_rewrite_result_path,
+        llm_rewriting_used=llm_rewriting_used,
     )

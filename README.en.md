@@ -4,11 +4,11 @@
 
 `resume_pdf_agent` is a **criteria-aware AI resume PDF generation agent**. It does not call LLM APIs. Instead, it runs a deterministic 11-stage pipeline that compares a user's career profile against role-specific screening criteria, producing an ATS-friendly structured PDF resume and a static workflow dashboard.
 
-## Current Status: M15
+## Current Status: M19
 
-M15 adds a User-provided JD Parser with compliance checks, allowing users to provide local JD text files that are parsed into structured criteria profiles.
+M19 adds an optional API layer wrapping the existing workflow behind API-style request/response models. FastAPI/uvicorn are optional dependencies.
 
-**Completed Milestones**: M0 → M1 → M2 → M3 → M4 → M5 → M6 → M7 → M8 → M9 → M10 → M11 → M12 → M13 → M14 → **M15** ✅
+**Completed Milestones**: M0→M1→M2→M3→M4→M5→M6→M7→M8→M9→M10→M11→M12→M13→M14→M15→M16→M17→M18→**M19** ✅
 
 ## Architecture Overview
 

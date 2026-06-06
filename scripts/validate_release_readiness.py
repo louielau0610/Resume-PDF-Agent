@@ -24,6 +24,7 @@ _REQUIRED_DOCS: list[str] = [
     "docs/production_pdf_backend_setup_v0.md",
     "docs/visual_regression_testing_v0.md",
     "docs/optional_api_layer_v0.md",
+    "docs/browser_confirmation_ui_v0.md",
     "examples/README.md",
     "examples/sample_data_science_demo.md",
     "examples/demo_output_manifest_v0.md",
@@ -58,6 +59,7 @@ _EXPECTED_CORE_PACKAGES: list[str] = [
     "workflow",
     "frontend",
     "api",
+    "confirmation_ui",
     "visual_regression",
 ]
 

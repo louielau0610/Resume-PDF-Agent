@@ -17,6 +17,10 @@ dependencies = [
 dev = [
     "pytest",
 ]
+api = [
+    "fastapi",
+    "uvicorn",
+]
 
 [project.scripts]
 resume-pdf-agent = "resume_pdf_agent.cli:app"

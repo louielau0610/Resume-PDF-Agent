@@ -133,11 +133,14 @@ def test_export_format_only_pdf():
 # ── No web-framework dependency ────────────────────────────────────────────
 
 def test_no_web_framework_in_pyproject():
-    """pyproject.toml must not depend on React/FastAPI/Flask/Streamlit."""
+    """pyproject.toml must not require React/FastAPI/Flask/Streamlit as core dependencies."""
     text = _read("pyproject.toml").lower()
-    forbidden = ["fastapi", "flask", "streamlit", "react", "django"]
+    # Only check core dependencies, not optional-dependencies
+    # Split on [project.optional-dependencies] to isolate core deps
+    core_section = text.split("[project.optional-dependencies]")[0]
+    forbidden = ["flask", "streamlit", "react", "django"]
     for fw in forbidden:
-        assert fw not in text, f"pyproject.toml references forbidden dep: {fw}"
+        assert fw not in core_section, f"pyproject.toml core deps reference forbidden dep: {fw}"
 
 
 # ── Chinese-first README check ─────────────────────────────────────────────

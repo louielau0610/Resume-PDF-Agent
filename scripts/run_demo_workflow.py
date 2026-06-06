@@ -58,6 +58,24 @@ def main() -> None:
         action="store_true",
         help="Skip frontend page generation.",
     )
+    parser.add_argument(
+        "--include-jd",
+        action="store_true",
+        default=False,
+        help="Also run with user-provided JD from sample file.",
+    )
+    parser.add_argument(
+        "--include-llm-mock",
+        action="store_true",
+        default=False,
+        help="Also run with mock LLM rewriting enabled.",
+    )
+    parser.add_argument(
+        "--strict-confirmation-gate",
+        action="store_true",
+        default=False,
+        help="Require confirmation before PDF generation.",
+    )
     args = parser.parse_args()
 
     sample_input = _find_sample_input()
@@ -79,6 +97,25 @@ def main() -> None:
     # Apply CLI overrides
     workflow_input.output_dir = args.output_dir
     workflow_input.pdf_backend = PDFBackend(args.pdf_backend)
+
+    # M15 JD mode
+    if args.include_jd:
+        jd_path = Path("data/sample_inputs/sample_data_science_jd.txt")
+        if jd_path.is_file():
+            workflow_input.use_user_provided_jd = True
+            workflow_input.jd_file_path = str(jd_path)
+            print(f"JD mode enabled: {jd_path}")
+        else:
+            print("Warning: JD sample file not found, skipping JD mode.")
+    # M16 LLM mock mode
+    if args.include_llm_mock:
+        workflow_input.enable_llm_rewriting = True
+        workflow_input.llm_provider = "mock"
+        print("LLM mock mode enabled.")
+    # M14 confirmation gate
+    if args.strict_confirmation_gate:
+        workflow_input.require_confirmation_before_pdf = True
+        print("Strict confirmation gate enabled.")
 
     # --- Run workflow --------------------------------------------------
     print(f"Running workflow (pdf_backend={args.pdf_backend}) ...")
@@ -104,6 +141,14 @@ def main() -> None:
     print(f"  PDF output:          {result.pdf_output_path or 'N/A'}")
     print(f"  Warnings:            {len(result.warnings)}")
     print(f"  Errors:              {len(result.errors)}")
+    if result.confirmation_packet_path:
+        print(f"  Confirmation packet: {result.confirmation_packet_path}")
+    if result.parsed_jd_path:
+        print(f"  Parsed JD:           {result.parsed_jd_path}")
+    if result.jd_criteria_profile_path:
+        print(f"  JD criteria profile: {result.jd_criteria_profile_path}")
+    if result.llm_rewrite_result_path:
+        print(f"  LLM rewrite result:  {result.llm_rewrite_result_path}")
 
     # --- Frontend page ------------------------------------------------
     index_path: str | None = None

@@ -17,8 +17,16 @@ _REQUIRED_DOCS: list[str] = [
     "docs/github_project_overview_v0.md",
     "docs/release_checklist_v0.md",
     "docs/limitations_and_roadmap_v0.md",
+    "docs/commercial_product_roadmap_v0.md",
+    "docs/user_confirmation_workflow_v0.md",
+    "docs/user_provided_jd_parser_v0.md",
+    "docs/llm_assisted_rewriting_v0.md",
+    "docs/production_pdf_backend_setup_v0.md",
+    "docs/visual_regression_testing_v0.md",
+    "docs/optional_api_layer_v0.md",
     "examples/README.md",
     "examples/sample_data_science_demo.md",
+    "examples/demo_output_manifest_v0.md",
 ]
 
 _REQUIRED_SCRIPTS: list[str] = [
@@ -40,12 +48,37 @@ _EXPECTED_CORE_PACKAGES: list[str] = [
     "classifier",
     "gap_analysis",
     "truthfulness",
+    "confirmation",
     "enhancement",
+    "llm",
+    "jd",
     "templates",
     "rendering",
     "pdf",
     "workflow",
     "frontend",
+    "api",
+    "visual_regression",
+]
+
+_REQUIRED_SCRIPTS: list[str] = [
+    "scripts/run_demo_workflow.py",
+    "scripts/validate_release_readiness.py",
+    "scripts/run_visual_regression_checks.py",
+    "scripts/verify_pdf_backend.py",
+    "scripts/run_api_dev_server.py",
+]
+
+_REQUIRED_DOCS: list[str] = [
+    "docs/demo_walkthrough_v0.md",
+    "docs/architecture_diagram_v0.md",
+    "docs/github_project_overview_v0.md",
+    "docs/release_checklist_v0.md",
+    "docs/limitations_and_roadmap_v0.md",
+    "docs/commercial_product_roadmap_v0.md",
+    "examples/README.md",
+    "examples/sample_data_science_demo.md",
+    "examples/demo_output_manifest_v0.md",
 ]
 
 

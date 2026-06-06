@@ -1,8 +1,32 @@
 # 项目状态
 
-## Current Milestone
+## Current Documentation Milestone
 
-M19 Optional Web App / API Layer ✅
+M13 Retroactive Demo / Release Packaging（在 M19.1 之后实施）
+
+## 已完成里程碑
+
+**M0-M12**：项目基础 → 确定性管线 → 前端仪表板
+**M13**：Demo 打包 / GitHub 呈现 / 发布就绪（复刻）
+
+**M14-M19.1**：
+- M14：用户确认工作流 ✅
+- M15：用户提供 JD 解析器（含合规检查） ✅
+- M16：可选 LLM 改写适配器 ✅
+- M16.1：全量验证和 CLI 回归检查 ✅
+- M17：PDF Backend 设置验证 ✅
+- M18：视觉回归测试 ✅
+- M18.1：全量验证 ✅
+- M19：可选 API 层 ✅
+- M19.1：API 文档和可选依赖验证 ✅
+
+## 当前状态
+
+M13 复刻打包已完成 — 项目已具备完整的 GitHub 呈现、演示脚本、发布清单和商业化路线图文档。
+
+## 下一计划里程碑
+
+M20：浏览器端确认 UI
 
 ## M0-M15 已完成
 

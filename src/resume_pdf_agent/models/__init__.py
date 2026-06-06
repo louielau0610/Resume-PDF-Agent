@@ -17,6 +17,13 @@ from resume_pdf_agent.models.confirmation import (
     ConfirmationPriority,
     ConfirmationReviewResult,
 )
+from resume_pdf_agent.models.confirmation_ui import (
+    ConfirmationUIDecisionOption,
+    ConfirmationUIItemView,
+    ConfirmationUIOptions,
+    ConfirmationUIResult,
+    ConfirmationUIStatus,
+)
 from resume_pdf_agent.models.criteria import (
     RoleCriteriaProfile,
     ScreeningCriterion,
@@ -133,6 +140,11 @@ __all__ = [
     "ConfirmationPacket",
     "ConfirmationPriority",
     "ConfirmationReviewResult",
+    "ConfirmationUIDecisionOption",
+    "ConfirmationUIItemView",
+    "ConfirmationUIOptions",
+    "ConfirmationUIResult",
+    "ConfirmationUIStatus",
     "BulletEnhancementResult",
     "BulletEnhancementStatus",
     "ContactInfo",

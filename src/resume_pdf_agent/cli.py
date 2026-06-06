@@ -62,6 +62,9 @@ def _print_summary(result, output_dir: str) -> None:
     # M16 LLM
     if result.llm_rewriting_used:
         typer.echo(f"LLM rewriting:       Used (result: {result.llm_rewrite_result_path or 'N/A'})")
+    # M20 confirmation UI
+    if result.confirmation_ui_path:
+        typer.echo(f"Confirmation UI:     {result.confirmation_ui_path}")
 
 
 def _write_frontend_page_if_enabled(
@@ -143,6 +146,11 @@ def run_workflow(
         True, "--write-llm-artifacts/--no-write-llm-artifacts",
         help="Write LLM rewrite result artifact.",
     ),
+    # M20 confirmation UI
+    write_confirmation_ui: bool = typer.Option(
+        False, "--write-confirmation-ui/--no-write-confirmation-ui",
+        help="Write a browser confirmation review page (confirmation.html).",
+    ),
 ) -> None:
     """Run the resume workflow from an explicit JSON input file."""
 
@@ -171,6 +179,8 @@ def run_workflow(
     workflow_input.enable_llm_rewriting = enable_llm_rewriting
     workflow_input.llm_provider = llm_provider
     workflow_input.write_llm_artifacts = write_llm_artifacts
+    # M20 overrides
+    workflow_input.write_confirmation_ui = write_confirmation_ui
 
     result = run_resume_workflow(workflow_input)
     _print_summary(result, output_dir)
@@ -235,6 +245,11 @@ def run_sample(
         True, "--write-llm-artifacts/--no-write-llm-artifacts",
         help="Write LLM rewrite result artifact.",
     ),
+    # M20 confirmation UI
+    write_confirmation_ui: bool = typer.Option(
+        False, "--write-confirmation-ui/--no-write-confirmation-ui",
+        help="Write a browser confirmation review page (confirmation.html).",
+    ),
 ) -> None:
     """Run the resume workflow using built-in sample data."""
 
@@ -268,6 +283,8 @@ def run_sample(
     workflow_input.enable_llm_rewriting = enable_llm_rewriting
     workflow_input.llm_provider = llm_provider
     workflow_input.write_llm_artifacts = write_llm_artifacts
+    # M20 overrides
+    workflow_input.write_confirmation_ui = write_confirmation_ui
 
     result = run_resume_workflow(workflow_input)
     _print_summary(result, output_dir)
@@ -418,6 +435,31 @@ def check_pdf_backend(
 
     if strict and not all_available:
         typer.echo("\nStrict mode: some backends are unavailable.", err=True)
+        raise typer.Exit(code=1)
+
+
+@app.command("render-confirmation-ui")
+def render_confirmation_ui(
+    packet_path: str = typer.Option(
+        ..., "--packet",
+        help="Path to confirmation_packet.json file.",
+    ),
+    output: str = typer.Option(
+        ..., "--output",
+        help="Output path for confirmation.html.",
+    ),
+) -> None:
+    """Render a static browser confirmation review page from a confirmation packet."""
+    from resume_pdf_agent.confirmation_ui import render_confirmation_ui_from_packet_file
+
+    result = render_confirmation_ui_from_packet_file(packet_path, output)
+    if result.output_path:
+        typer.echo(f"Confirmation UI:      {result.output_path}")
+        typer.echo(f"Items:                {result.item_count}")
+        typer.echo(f"Blocking:             {result.blocking_count}")
+    if result.errors:
+        for e in result.errors:
+            typer.echo(f"Error: {e}", err=True)
         raise typer.Exit(code=1)
 
 

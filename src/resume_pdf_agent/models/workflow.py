@@ -104,6 +104,8 @@ class ResumeWorkflowInput(BaseModel):
     enable_llm_rewriting: bool = False
     llm_provider: str | None = None
     write_llm_artifacts: bool = True
+    # M20: Browser confirmation UI
+    write_confirmation_ui: bool = False
 
     @model_validator(mode="after")
     def _output_dir_not_empty(self) -> ResumeWorkflowInput:
@@ -141,6 +143,8 @@ class ResumeWorkflowResult(BaseModel):
     # M16: Optional LLM rewriting
     llm_rewrite_result_path: str | None = None
     llm_rewriting_used: bool = False
+    # M20: Browser confirmation UI
+    confirmation_ui_path: str | None = None
 
     @model_validator(mode="after")
     def _summary_not_empty(self) -> ResumeWorkflowResult:

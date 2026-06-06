@@ -111,6 +111,8 @@ def run_resume_workflow(
     # M16 LLM
     llm_rewrite_result_path: str | None = None
     llm_rewriting_used: bool = False
+    # M20 confirmation UI
+    confirmation_ui_path: str | None = None
 
     # ── A. User intake (setup) ─────────────────────────────────────────────
     stages.append(
@@ -657,6 +659,33 @@ def run_resume_workflow(
         )
         global_errors.append(str(exc))
 
+    # ── H5b. Confirmation UI render (M20) ──────────────────────────────
+    if workflow_input.write_confirmation_ui and confirmation_packet_path:
+        try:
+            from resume_pdf_agent.confirmation_ui import render_confirmation_ui_page
+
+            # Rebuild packet (or load from file)
+            packet = build_confirmation_packet(
+                resume_content=workflow_input.resume_content,
+                truthfulness_result=truthfulness_result,
+                bullet_enhancement_result=enhancement_result,
+                gap_analysis_result=gap_result,
+            )
+
+            ui_path = output_dir / "confirmation.html"
+            ui_result = render_confirmation_ui_page(packet, ui_path)
+            if ui_result.output_path:
+                confirmation_ui_path = str(ui_result.output_path)
+                all_artifacts.append(
+                    WorkflowArtifact(
+                        artifact_type="confirmation_ui",
+                        path=str(ui_result.output_path),
+                        description="Browser confirmation review page (static HTML)",
+                    )
+                )
+        except Exception as exc:
+            global_warnings.append(f"Confirmation UI render failed: {exc}")
+
     # ── H6. LLM-assisted rewrite (M16) ──────────────────────────────────
     try:
         if workflow_input.enable_llm_rewriting:
@@ -859,6 +888,7 @@ def run_resume_workflow(
         used_user_provided_jd=used_user_provided_jd,
         llm_rewrite_result_path=llm_rewrite_result_path,
         llm_rewriting_used=llm_rewriting_used,
+        confirmation_ui_path=confirmation_ui_path,
     )
 
     # ── L. Write workflow_result.json if intermediate JSON is enabled ──────
@@ -900,6 +930,7 @@ def _build_result(
     used_user_provided_jd: bool = False,
     llm_rewrite_result_path: str | None = None,
     llm_rewriting_used: bool = False,
+    confirmation_ui_path: str | None = None,
 ) -> ResumeWorkflowResult:
     """Assemble the final ResumeWorkflowResult."""
 
@@ -948,4 +979,5 @@ def _build_result(
         used_user_provided_jd=used_user_provided_jd,
         llm_rewrite_result_path=llm_rewrite_result_path,
         llm_rewriting_used=llm_rewriting_used,
+        confirmation_ui_path=confirmation_ui_path,
     )

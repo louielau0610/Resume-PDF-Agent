@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="{{ options.language }}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ page_title }}</title>
+<style>
+{{ css }}
+</style>
+</head>
+<body>
+
+<main class="app-shell">
+
+  <header class="top-bar">
+    <span class="top-bar-brand">Confirmation Review Console</span>
+    <span class="top-bar-badge {% if can_generate_final_pdf %}status-ok{% else %}status-warn{% endif %}">
+      {% if can_generate_final_pdf %}PDF Ready{% else %}PDF Blocked{% endif %}
+    </span>
+  </header>
+
+  <section class="hero-panel">
+    <h1 class="hero-title">{{ page_title }}</h1>
+    <p class="hero-subtitle">Review confirmation items and prepare your decisions JSON file.</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Packet ID</span>
+        <span class="hero-meta-value">{{ packet_id }}</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Items</span>
+        <span class="hero-meta-value">{{ item_count }}</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="metric-grid">
+    <div class="metric-card metric-blocking">
+      <div class="metric-card-label">Blocking</div>
+      <div class="metric-card-value">{{ blocking_count }}</div>
+    </div>
+    <div class="metric-card metric-high">
+      <div class="metric-card-label">High Priority</div>
+      <div class="metric-card-value">{{ high_priority_count }}</div>
+    </div>
+    <div class="metric-card metric-pending">
+      <div class="metric-card-label">Pending</div>
+      <div class="metric-card-value">{{ pending_count }}</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-card-label">Total</div>
+      <div class="metric-card-value">{{ item_count }}</div>
+    </div>
+  </section>
+
+  <section class="section-panel safety-notice">
+    <div class="safety-notice-icon">&#9888;</div>
+    <div class="safety-notice-text">
+      <strong>Safety Notice / 安全提示：</strong>
+      Only approve claims that you can personally verify.
+      This tool does NOT independently verify real-world truth.
+      It does NOT predict hiring probability or interview outcomes.
+    </div>
+  </section>
+
+  {% if options.include_priority_filters %}
+  <section class="section-panel">
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="filterItems('all')">All</button>
+      <button class="filter-btn" onclick="filterItems('blocking')">Blocking</button>
+      <button class="filter-btn" onclick="filterItems('high')">High</button>
+      <button class="filter-btn" onclick="filterItems('medium')">Medium</button>
+      <button class="filter-btn" onclick="filterItems('low')">Low</button>
+    </div>
+  </section>
+  {% endif %}
+
+  {% for group_key in ['blocking', 'high', 'medium', 'low', 'info'] %}
+  {% set group_items = groups[group_key] %}
+  {% if group_items %}
+  <section class="section-panel priority-group" data-priority="{{ group_key }}">
+    <div class="section-panel-header">
+      <h2 class="section-panel-title">{{ group_labels[group_key] }}</h2>
+      <span class="section-panel-count">{{ group_items|length }} items</span>
+    </div>
+
+    {% for item in group_items %}
+    <div class="confirm-item priority-{{ item.priority }}" data-item-id="{{ item.item_id }}">
+      <div class="confirm-item-header">
+        <span class="confirm-item-id">#{{ loop.index }}: {{ item.item_id }}</span>
+        <span class="pill pill-{{ item.priority }}">{{ item.priority }}</span>
+        {% if item.blocks_final_pdf %}
+        <span class="pill pill-block">BLOCKS PDF</span>
+        {% endif %}
+      </div>
+
+      <div class="confirm-item-body">
+        <div class="confirm-item-field">
+          <span class="field-label">Claim:</span>
+          <span class="field-value">{{ item.claim_text }}</span>
+        </div>
+        <div class="confirm-item-field">
+          <span class="field-label">Reason:</span>
+          <span class="field-value">{{ item.reason }}</span>
+        </div>
+        <div class="confirm-item-field">
+          <span class="field-label">Suggested Action:</span>
+          <span class="field-value">{{ item.suggested_user_action }}</span>
+        </div>
+        <div class="confirm-item-meta">
+          <span>Type: {{ item.item_type }}</span>
+          <span>Stage: {{ item.source_stage }}</span>
+        </div>
+      </div>
+
+      {% if options.include_decision_controls %}
+      <div class="confirm-item-decisions">
+        <select class="decision-select" data-item-id="{{ item.item_id }}">
+          <option value="">-- Choose Decision / 选择决策 --</option>
+          {% for opt in decision_options %}
+          <option value="{{ opt.value }}">{{ opt.label }}</option>
+          {% endfor %}
+        </select>
+        <input type="text" class="decision-note" data-item-id="{{ item.item_id }}" placeholder="User note / 备注 (optional)">
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </section>
+  {% endif %}
+  {% endfor %}
+
+  <section class="section-panel">
+    <div class="section-panel-header">
+      <h2 class="section-panel-title">Decisions JSON Preview</h2>
+    </div>
+    <textarea id="decisions-json" class="json-preview" readonly rows="15" placeholder="Make decisions above to generate JSON..."></textarea>
+    <div class="decision-actions">
+      {% if options.include_copy_button %}
+      <button class="action-btn" onclick="copyDecisions()">Copy to Clipboard</button>
+      {% endif %}
+      {% if options.include_download_button %}
+      <button class="action-btn" onclick="downloadDecisions()">Download confirmation_decisions.json</button>
+      {% endif %}
+      <button class="action-btn action-btn-secondary" onclick="generateDecisions()">Refresh JSON Preview</button>
+    </div>
+  </section>
+
+  <section class="section-panel">
+    <div class="section-panel-header">
+      <h2 class="section-panel-title">Instructions / 说明</h2>
+    </div>
+    <ol>
+      <li>Review each confirmation item above.</li>
+      <li>Select a decision for each item.</li>
+      <li>Click "Refresh JSON Preview" to generate the decisions JSON.</li>
+      <li>Download the JSON file as <code>confirmation_decisions.json</code>.</li>
+      <li>Rerun the workflow with: <code>--confirmation-decisions path/to/confirmation_decisions.json</code></li>
+    </ol>
+  </section>
+
+  <footer class="footer-note">
+    <p>Local static confirmation review page. No data is submitted to any server.</p>
+    <p>This tool does NOT verify real-world truth. It does NOT predict hiring probability.</p>
+  </footer>
+
+</main>
+
+<script>
+{{ js }}
+</script>
+</body>
+</html>

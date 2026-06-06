@@ -346,5 +346,80 @@ def render_page(
         raise typer.Exit(code=1)
 
 
+@app.command("check-pdf-backend")
+def check_pdf_backend(
+    backend: str = typer.Option(
+        "all", "--backend",
+        help="PDF backend to check: mock, weasyprint, playwright, or all.",
+    ),
+    output_dir: str | None = typer.Option(
+        None, "--output-dir", "-o",
+        help="Optional output directory for smoke test artifacts.",
+    ),
+    strict: bool = typer.Option(
+        False, "--strict/--no-strict",
+        help="Exit with non-zero if backend is unavailable.",
+    ),
+) -> None:
+    """Check availability of PDF backends."""
+    from resume_pdf_agent.models.pdf import PDFBackend
+    from resume_pdf_agent.pdf.diagnostics import (
+        get_all_pdf_backend_diagnostics,
+        get_pdf_backend_diagnostics,
+        summarize_pdf_backend_status,
+    )
+
+    typer.echo(summarize_pdf_backend_status())
+    typer.echo()
+
+    if backend == "all":
+        backends = [PDFBackend.MOCK, PDFBackend.WEASYPRINT, PDFBackend.PLAYWRIGHT]
+    else:
+        try:
+            backends = [PDFBackend(backend)]
+        except ValueError:
+            typer.echo(f"Error: Unknown backend '{backend}'.", err=True)
+            raise typer.Exit(code=2)
+
+    all_available = True
+    for b in backends:
+        diag = get_pdf_backend_diagnostics(b)
+        status = "OK" if diag["available"] else "MISSING"
+        typer.echo(f"[{status}] {b.value}: {diag['setup_hint']}")
+        if not diag["available"]:
+            all_available = False
+
+    if output_dir and PDFBackend.MOCK in backends:
+        typer.echo("\nRunning mock backend smoke test ...")
+        try:
+            from pathlib import Path
+            from resume_pdf_agent.models.pdf import PDFGenerationOptions
+            from resume_pdf_agent.models.rendering import HTMLRenderResult, HTMLRenderStatus
+            from resume_pdf_agent.pdf.generator import generate_pdf_from_html_result
+
+            od = Path(output_dir)
+            od.mkdir(parents=True, exist_ok=True)
+            html_result = HTMLRenderResult(
+                status=HTMLRenderStatus.RENDERED,
+                template_id="smoke_test",
+                html="<html><body><p>Smoke test</p></body></html>",
+                sections=[],
+                summary="Smoke test.",
+                output_path=str(od / "smoke_test.html"),
+            )
+            pdf_result = generate_pdf_from_html_result(
+                html_render_result=html_result,
+                output_path=od / "smoke_test.pdf",
+                options=PDFGenerationOptions(backend=PDFBackend.MOCK),
+            )
+            typer.echo(f"  Smoke test PDF: {pdf_result.output_path or 'not generated'}")
+        except Exception as exc:
+            typer.echo(f"  Smoke test error: {exc}")
+
+    if strict and not all_available:
+        typer.echo("\nStrict mode: some backends are unavailable.", err=True)
+        raise typer.Exit(code=1)
+
+
 if __name__ == "__main__":
     app()

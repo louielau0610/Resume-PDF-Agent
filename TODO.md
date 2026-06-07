@@ -27,7 +27,8 @@
 - M19.1：API Docs and Optional Deps Verification ✅。
 - M20：Browser Confirmation UI ✅。
 - M20.1：Confirmation UI Verification Fix ✅。
-- M21：Browser JD Upload UI ✅（当前）。
+- M21：Browser JD Upload UI ✅。
+- M21.1：JD Upload UI Verification and Test Coverage ✅（当前）。
 
 ## M21: Browser JD Upload UI ✅ (current)
 
@@ -43,7 +44,21 @@
 - 已创建 `docs/browser_jd_upload_ui_v0.md`：中文/英文文档。
 - 已更新 PROJECT_STATUS.md 和 TODO.md。
 - 未改变核心工作流逻辑。
-- 测试：598 通过，2 跳过。
+- 测试：702 通过，2 跳过。
+
+
+## M21.1: JD Upload UI Verification and Test Coverage ✅ (current)
+
+- 已完成 `tests/test_jd_ui_context.py`：21 个上下文测试（模型/标记/安全声明）。
+- 已完成 `tests/test_jd_ui_renderer.py`：22 个渲染器测试（HTML 结构/安全声明/CDN 检查）。
+- 已完成 `tests/test_jd_ui_safety.py`：27 个安全测试（escape/静态 JS/CSS/渲染后 HTML）。
+- 已完成 `tests/test_jd_ui_cli.py`：15 个 CLI 测试（render-jd-upload-ui/现有命令完整）。
+- 已完成 `tests/test_jd_ui_regressions.py`：19 个回归测试（ExportFormat/无强制 Web 框架/READ ME 安全/向后兼容）。
+- 手动 CLI 验证全部通过：render-jd-upload-ui、--write-jd-upload-ui、validate_release_readiness、后端 JD sanity workflow、ExportFormat。
+- M15 后端 JD 合规行为不变。
+- 默认工作流保持向后兼容。
+- 未添加新功能。
+- 全量测试：702 通过，2 跳过（新增 104 个 JD UI 测试）。
 
 ## Future Roadmap（路线图想法，尚未实现）
 

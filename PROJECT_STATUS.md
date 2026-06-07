@@ -2,7 +2,7 @@
 
 ## Current Documentation Milestone
 
-M21 Browser JD Upload UI（当前）
+M21.1 JD Upload UI Verification and Test Coverage（当前）
 
 ## 已完成里程碑
 
@@ -22,10 +22,11 @@ M21 Browser JD Upload UI（当前）
 - M20：浏览器端确认 UI ✅
 - M20.1：确认 UI 验证修复 ✅
 - M21：浏览器端 JD 上传 UI ✅
+- M21.1：JD 上传 UI 验证与测试覆盖 ✅
 
 ## 当前状态
 
-M21 浏览器 JD 上传 UI 已完成 — 项目现拥有两张纯静态浏览器页面（M20 确认审核、M21 JD 输入），M15 后端 JD 解析器，M16 可选 LLM 改写，M19 可选 API 层，以及完整的 PDF 生成管线。
+M21.1 JD 上传 UI 验证已完成 — 新增 104 个专用 JD UI 测试（上下文/渲染器/安全/CLI/回归），全量测试 702 通过，2 跳过。所有手动 CLI 验证通过，release readiness 检查通过，后端 M15 JD 合规检查行为不变。项目现已具备两张纯静态浏览器页面（M20 确认审核、M21 JD 输入），均经过完整测试覆盖和安全验证。
 
 ## 下一计划里程碑
 

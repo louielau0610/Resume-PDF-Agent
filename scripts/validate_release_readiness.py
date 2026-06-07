@@ -25,6 +25,7 @@ _REQUIRED_DOCS: list[str] = [
     "docs/visual_regression_testing_v0.md",
     "docs/optional_api_layer_v0.md",
     "docs/browser_confirmation_ui_v0.md",
+    "docs/browser_jd_upload_ui_v0.md",
     "examples/README.md",
     "examples/sample_data_science_demo.md",
     "examples/demo_output_manifest_v0.md",
@@ -60,6 +61,7 @@ _EXPECTED_CORE_PACKAGES: list[str] = [
     "frontend",
     "api",
     "confirmation_ui",
+    "jd_ui",
     "visual_regression",
 ]
 

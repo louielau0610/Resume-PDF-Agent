@@ -1,6 +1,6 @@
 # TODO
 
-## M0-M14 Completed ✅
+## M0-M21 Completed ✅
 
 - M0：Project foundation。
 - M1：Core schemas（UserProfile、ResumeContent、Criteria 等）。
@@ -16,19 +16,34 @@
 - M11：Frontend basic workflow page。
 - M12：Frontend UI Polish（cinematic dark 主题）。
 - M13：GitHub / Demo Packaging & Release Readiness。
-- M14：User Confirmation Workflow ✅（当前）。
+- M14：User Confirmation Workflow ✅。
+- M15：User-Provided JD Parser with Compliance ✅。
+- M16：Optional LLM-Assisted Rewriting ✅。
+- M16.1：Full Validation and CLI Regression ✅。
+- M17：PDF Backend Setup Verification ✅。
+- M18：Visual Regression Testing ✅。
+- M18.1：Full Validation ✅。
+- M19：Optional API Layer ✅。
+- M19.1：API Docs and Optional Deps Verification ✅。
+- M20：Browser Confirmation UI ✅。
+- M20.1：Confirmation UI Verification Fix ✅。
+- M21：Browser JD Upload UI ✅（当前）。
 
-## M14: User Confirmation Workflow ✅ (current)
+## M21: Browser JD Upload UI ✅ (current)
 
-- 已完成 `models/confirmation.py`：确认工作流 Pydantic 模型。
-- 已完成 `confirmation/packet.py`：从 truthfulness、enhancement、gap analysis、resume bullets 收集确认项。
-- 已完成 `confirmation/decisions.py`：加载并应用用户决策。
-- 已完成 `confirmation/markdown.py`：生成中文确认审核文档。
-- 已完成 `confirmation/gate.py`：确认门控判断。
-- 已集成到工作流编排器和 CLI。
-- 已完成 7 个测试文件和文档。
-- 未改变核心工作流逻辑（向后兼容）。
-- 未添加 LLM 调用、JD 解析、Word/JPG/PNG 导出、Web 应用。
+- 已完成 `models/jd_ui.py`：浏览器 JD 上传 UI Pydantic 模型。
+- 已完成 `jd_ui/safety.py`：客户端风险标记检测。
+- 已完成 `jd_ui/context.py`：UI 上下文构建器。
+- 已完成 `jd_ui/renderer.py`：Jinja2 模板渲染器。
+- 已完成 `jd_ui/templates/jd_upload_page.html.j2`：JD 输入页面模板。
+- 已完成 `jd_ui/static/jd_upload_page.css`：暗色高级 CSS 主题（与 M12/M20 一致）。
+- 已完成 `jd_ui/static/jd_upload_page.js`：本地 JS（标记检测、JSON 生成、复制/下载）。
+- 已完成 `jd_ui/__init__.py`：包导出。
+- 已集成到 models/__init__.py 和 CLI。
+- 已创建 `docs/browser_jd_upload_ui_v0.md`：中文/英文文档。
+- 已更新 PROJECT_STATUS.md 和 TODO.md。
+- 未改变核心工作流逻辑。
+- 测试：598 通过，2 跳过。
 
 ## Future Roadmap（路线图想法，尚未实现）
 
@@ -42,38 +57,15 @@
 
 ## Future Roadmap（路线图想法，尚未实现）
 
-### M14: User Confirmation Workflow
+### M22：产品打磨 / 稳定性
 
-- 在 PDF 生成前提供用户确认步骤。
-- 允许用户查看、编辑和批准增强后的 bullet。
-- 支持逐条确认需要用户确认的 claims。
+- 代码清理和重构。
+- 测试覆盖率提升。
+- 性能优化。
+- 文档完善。
 
-### M15: Real JD Parser with Compliance Checks
+### 未来轨道
 
-- 支持用户上传真实岗位描述（文本/PDF/URL）。
-- 从 JD 中提取结构化 criteria。
-- 添加合规检查，确保不违反招聘平台使用条款。
-
-### M16: Optional LLM-Assisted Rewriting After Safeguards
-
-- 在证据充足、风险可控的前提下，提供可选的 LLM 辅助 bullet 改写。
-- 改写前后都运行真实性检查。
-- 用户可选择不启用 LLM 功能。
-
-### M17: Production PDF Backend Setup Guide
-
-- WeasyPrint 安装和配置指南（Windows/macOS/Linux）。
-- 生产环境 PDF 渲染质量建议。
-- 字体嵌入和中英文混排最佳实践。
-
-### M18: Visual Regression Testing
-
-- 自动化 PDF 渲染截图比对。
-- HTML 输出结构回归测试。
-- 仪表板页面视觉一致性检查。
-
-### M19: Optional Web App / API Layer
-
-- 如需要，提供 FastAPI 后端和简单前端。
-- RESTful API 接口。
-- 用户会话管理和历史记录。
+- 轨道 2：生产部署（认证、HTTPS、Docker、CI/CD）。
+- 轨道 3：AI 增强（真实 LLM 集成、fine-tuning、多语言）。
+- 轨道 4：平台化（多租户、SaaS、企业版）。

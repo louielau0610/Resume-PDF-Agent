@@ -2,14 +2,14 @@
 
 ## Current Documentation Milestone
 
-M13 Retroactive Demo / Release Packaging（在 M19.1 之后实施）
+M21 Browser JD Upload UI（当前）
 
 ## 已完成里程碑
 
 **M0-M12**：项目基础 → 确定性管线 → 前端仪表板
 **M13**：Demo 打包 / GitHub 呈现 / 发布就绪（复刻）
 
-**M14-M19.1**：
+**M14-M21**：
 - M14：用户确认工作流 ✅
 - M15：用户提供 JD 解析器（含合规检查） ✅
 - M16：可选 LLM 改写适配器 ✅
@@ -19,14 +19,17 @@ M13 Retroactive Demo / Release Packaging（在 M19.1 之后实施）
 - M18.1：全量验证 ✅
 - M19：可选 API 层 ✅
 - M19.1：API 文档和可选依赖验证 ✅
+- M20：浏览器端确认 UI ✅
+- M20.1：确认 UI 验证修复 ✅
+- M21：浏览器端 JD 上传 UI ✅
 
 ## 当前状态
 
-M13 复刻打包已完成 — 项目已具备完整的 GitHub 呈现、演示脚本、发布清单和商业化路线图文档。
+M21 浏览器 JD 上传 UI 已完成 — 项目现拥有两张纯静态浏览器页面（M20 确认审核、M21 JD 输入），M15 后端 JD 解析器，M16 可选 LLM 改写，M19 可选 API 层，以及完整的 PDF 生成管线。
 
 ## 下一计划里程碑
 
-M20：浏览器端确认 UI
+M22：产品打磨 / 稳定性（已到达商业化路线图中的轨道 1）
 
 ## M0-M15 已完成
 

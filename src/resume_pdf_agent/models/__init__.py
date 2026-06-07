@@ -63,6 +63,12 @@ from resume_pdf_agent.models.jd import (
     JDSourceType,
     ParsedJD,
 )
+from resume_pdf_agent.models.jd_ui import (
+    JDClientComplianceHint,
+    JDUploadUIOptions,
+    JDUploadUIResult,
+    JDUploadUIStatus,
+)
 from resume_pdf_agent.models.llm import (
     LLMProviderType,
     LLMRewriteCandidate,
@@ -175,6 +181,10 @@ __all__ = [
     "JDComplianceStatus",
     "JDToCriteriaBuildResult",
     "JDSourceType",
+    "JDClientComplianceHint",
+    "JDUploadUIOptions",
+    "JDUploadUIResult",
+    "JDUploadUIStatus",
     "LanguageSkill",
     "LLMProviderType",
     "LLMRewriteCandidate",

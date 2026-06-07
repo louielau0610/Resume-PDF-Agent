@@ -463,5 +463,24 @@ def render_confirmation_ui(
         raise typer.Exit(code=1)
 
 
+@app.command("render-jd-upload-ui")
+def render_jd_upload_ui(
+    output: str = typer.Option(
+        "outputs/jd_upload_ui/jd_upload.html", "--output",
+        help="Output path for jd_upload.html.",
+    ),
+) -> None:
+    """Render a static browser JD intake page for preparing JD input."""
+    from resume_pdf_agent.jd_ui import render_jd_upload_ui_page
+
+    result = render_jd_upload_ui_page(output)
+    if result.output_path:
+        typer.echo(f"JD Upload UI:         {result.output_path}")
+    if result.errors:
+        for e in result.errors:
+            typer.echo(f"Error: {e}", err=True)
+        raise typer.Exit(code=1)
+
+
 if __name__ == "__main__":
     app()

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="{{ options.language }}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ page_title }}</title>
+<style>{{ css }}</style>
+</head>
+<body>
+<main class="app-shell">
+<header class="top-bar">
+  <span class="top-bar-brand">JD Intake Console</span>
+  <span class="top-bar-badge">Local Static Page</span>
+</header>
+
+<section class="hero-panel">
+  <h1 class="hero-title">{{ page_title }}</h1>
+  <p class="hero-subtitle">Paste a public job description to prepare it for the M15 backend parser.</p>
+</section>
+
+<section class="section-panel safety-notice">
+  <div class="safety-notice-text">
+    <strong>Safety Notice:</strong> {{ safety_notice }}
+  </div>
+</section>
+
+<section class="section-panel">
+  <div class="section-panel-header"><h2 class="section-panel-title">JD Text</h2></div>
+  <textarea id="jd-text" class="jd-textarea" rows="20" placeholder="Paste your public job description here..."></textarea>
+  <div class="metadata-row">
+    <input type="text" id="target-role" class="meta-input" placeholder="Target role (optional)">
+    <input type="text" id="output-dir" class="meta-input" placeholder="Output dir (default: outputs/jd_ui_run)">
+  </div>
+</section>
+
+{% if options.include_compliance_hints %}
+<section class="section-panel">
+  <div class="section-panel-header"><h2 class="section-panel-title">Compliance Hints / 合规提示</h2></div>
+  <div id="compliance-hints" class="compliance-hints">
+    <p class="hint-neutral">Enter JD text and click "Analyze Locally" to check for risky markers.</p>
+  </div>
+</section>
+{% endif %}
+
+<section class="section-panel">
+  <div class="section-panel-header"><h2 class="section-panel-title">Generated Artifacts</h2></div>
+  <div class="artifact-tabs">
+    <button class="tab-btn active" onclick="showTab('jd-text-output')">jd_text.txt</button>
+    <button class="tab-btn" onclick="showTab('json-output')">jd_payload.json</button>
+  </div>
+  <textarea id="jd-text-output" class="json-preview tab-content" rows="12" readonly placeholder="JD text preview..."></textarea>
+  <textarea id="json-output" class="json-preview tab-content" rows="12" readonly style="display:none" placeholder="JSON payload preview..."></textarea>
+  <div class="decision-actions">
+    {% if options.include_copy_buttons %}
+    <button class="action-btn" onclick="copyActiveTab()">Copy to Clipboard</button>
+    {% endif %}
+    {% if options.include_download_buttons %}
+    <button class="action-btn" onclick="downloadActiveTab()">Download File</button>
+    {% endif %}
+    <button class="action-btn action-btn-secondary" onclick="analyzeLocally()">Analyze Locally</button>
+  </div>
+</section>
+
+{% if options.include_cli_instructions %}
+<section class="section-panel">
+  <div class="section-panel-header"><h2 class="section-panel-title">CLI Instructions / 命令行说明</h2></div>
+  <ol>
+    {% for inst in cli_instructions %}
+    <li>{{ inst }}</li>
+    {% endfor %}
+  </ol>
+</section>
+{% endif %}
+
+<footer class="footer-note">
+  <p>Local static JD intake page. No data is submitted to any server.</p>
+  <p>This page does NOT verify compliance. Backend M15 check remains authoritative.</p>
+  <p>It does NOT predict hiring probability or access internal screening standards.</p>
+</footer>
+</main>
+<script>{{ js }}</script>
+</body>
+</html>

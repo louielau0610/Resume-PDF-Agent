@@ -82,6 +82,12 @@ def main() -> None:
         default=False,
         help="Write a browser confirmation review page (confirmation.html).",
     )
+    parser.add_argument(
+        "--write-jd-upload-ui",
+        action="store_true",
+        default=False,
+        help="Write a browser JD upload UI page (jd_upload.html).",
+    )
     args = parser.parse_args()
 
     sample_input = _find_sample_input()
@@ -126,6 +132,17 @@ def main() -> None:
     if args.write_confirmation_ui:
         workflow_input.write_confirmation_ui = True
         print("Confirmation UI enabled.")
+    # M21 JD upload UI
+    if args.write_jd_upload_ui:
+        try:
+            from resume_pdf_agent.jd_ui import render_jd_upload_ui_page
+
+            jd_ui_path = Path(args.output_dir) / "jd_upload.html"
+            jd_ui_result = render_jd_upload_ui_page(jd_ui_path)
+            if jd_ui_result.output_path:
+                print(f"JD Upload UI page:    {jd_ui_result.output_path}")
+        except Exception as exc:
+            print(f"JD Upload UI page:    ERROR ({exc})")
 
     # --- Run workflow --------------------------------------------------
     print(f"Running workflow (pdf_backend={args.pdf_backend}) ...")

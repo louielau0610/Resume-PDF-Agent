@@ -1,5 +1,9 @@
 # resume_pdf_agent
 
+## M24 LLM 候选应用规划层
+
+M24 已新增 plan-only 的 LLM candidate application planning layer，可根据 `llm_rewrite_result.json`、`llm_rewrite_review_decisions.json` 和可选 M23 summary 生成 `llm_rewrite_application_plan.json` / `.md`。该计划仅用于人工审阅和审计，不会自动应用 candidates，不会修改 `resume.html` 或 `resume.pdf`，也不会绕过 M5 真实性检查或 M14 确认门控。
+
 ## M23 LLM 审阅决策摘要
 
 M23 已新增本地 `llm_rewrite_review_decisions.json` 读取与摘要能力，可生成 `llm_rewrite_review_decision_summary.json` 和 `.md`，用于统计 approved / rejected / needs editing / ignored / notes / unknown IDs / duplicate entries。该能力仅生成 advisory summary，不会自动应用 LLM candidates，不会修改最终简历，也不会绕过 M5 真实性检查或 M14 确认门控。

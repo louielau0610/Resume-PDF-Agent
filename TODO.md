@@ -1,5 +1,10 @@
 # TODO
 
+## M24 Completed
+
+- M24 Candidate Application Planning Layer 已完成：可生成 plan-only `llm_rewrite_application_plan.json` / `.md`，用于人工审阅未来可能应用的 LLM candidates，但不自动修改最终简历。
+- M25 可作为下一阶段：Manual Candidate Application Review / Patch Preview UI 或 Strict Plan Validation Before Candidate Application；本次不实现 M25。
+
 ## M23 Completed
 
 - M23 LLM Review Decision Loader / Decision Summary 已完成：可本地读取 `llm_rewrite_review_decisions.json`，生成 advisory JSON/Markdown summary，并报告 undecided / unknown / duplicate / invalid decisions。

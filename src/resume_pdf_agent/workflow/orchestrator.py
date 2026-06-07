@@ -118,6 +118,9 @@ def run_resume_workflow(
     # M23 LLM review decision summary
     llm_review_decision_summary_json_path: str | None = None
     llm_review_decision_summary_md_path: str | None = None
+    # M24 LLM application plan
+    llm_application_plan_json_path: str | None = None
+    llm_application_plan_md_path: str | None = None
 
     # ── A. User intake (setup) ─────────────────────────────────────────────
     stages.append(
@@ -869,6 +872,90 @@ def run_resume_workflow(
                     )
                 )
 
+    # M24 plan-only LLM candidate application artifact. This never mutates resume content.
+    if workflow_input.write_llm_application_plan:
+        if not llm_rewrite_result_path:
+            global_warnings.append(
+                "write_llm_application_plan is true but no LLM rewrite result was generated."
+            )
+        elif not workflow_input.llm_review_decisions_path:
+            global_warnings.append(
+                "write_llm_application_plan is true but no LLM review decisions path was provided."
+            )
+        else:
+            try:
+                from resume_pdf_agent.llm_application_plan import (
+                    plan_llm_candidate_application_to_files,
+                )
+
+                plan_json_path = Path(
+                    workflow_input.llm_application_plan_json_path
+                    or (output_dir / "llm_rewrite_application_plan.json")
+                )
+                plan_md_path = Path(
+                    workflow_input.llm_application_plan_md_path
+                    or (output_dir / "llm_rewrite_application_plan.md")
+                )
+                summary_path_for_plan = (
+                    workflow_input.llm_review_decision_summary_json_path
+                    or llm_review_decision_summary_json_path
+                )
+                if not summary_path_for_plan or not Path(summary_path_for_plan).is_file():
+                    summary_path_for_plan = None
+
+                plan_result = plan_llm_candidate_application_to_files(
+                    result_path=llm_rewrite_result_path,
+                    decisions_path=workflow_input.llm_review_decisions_path,
+                    summary_path=summary_path_for_plan,
+                    output_json_path=plan_json_path,
+                    output_md_path=plan_md_path,
+                )
+                llm_application_plan_json_path = str(plan_json_path)
+                llm_application_plan_md_path = str(plan_md_path)
+                all_artifacts.extend(
+                    [
+                        WorkflowArtifact(
+                            artifact_type="llm_application_plan_json",
+                            path=str(plan_json_path),
+                            description="Plan-only LLM candidate application JSON",
+                        ),
+                        WorkflowArtifact(
+                            artifact_type="llm_application_plan_markdown",
+                            path=str(plan_md_path),
+                            description="Plan-only LLM candidate application Markdown",
+                        ),
+                    ]
+                )
+                stage_status = WorkflowStageStatus.COMPLETED
+                if plan_result.warnings:
+                    stage_status = WorkflowStageStatus.COMPLETED_WITH_WARNINGS
+                    global_warnings.extend(plan_result.warnings)
+                stages.append(
+                    _stage_result(
+                        WorkflowStageName.LLM_APPLICATION_PLAN,
+                        stage_status,
+                        (
+                            "LLM candidate application plan generated; "
+                            f"planned: {plan_result.planned_count}; "
+                            f"blocked: {plan_result.blocked_count}; "
+                            f"needs edit: {plan_result.needs_manual_edit_count}; "
+                            f"excluded: {plan_result.excluded_count}; "
+                            f"unmapped: {plan_result.unmapped_count}"
+                        ),
+                        warnings=list(plan_result.warnings),
+                    )
+                )
+            except Exception as exc:
+                global_warnings.append(f"LLM application plan failed: {exc}")
+                stages.append(
+                    _stage_result(
+                        WorkflowStageName.LLM_APPLICATION_PLAN,
+                        WorkflowStageStatus.COMPLETED_WITH_WARNINGS,
+                        f"LLM application plan skipped: {exc}",
+                        warnings=[str(exc)],
+                    )
+                )
+
     # M14: Skip PDF if confirmation gate blocks
     if workflow_input.require_confirmation_before_pdf and not can_generate_final_pdf:
         stages.append(
@@ -998,6 +1085,8 @@ def run_resume_workflow(
         llm_review_ui_path=llm_review_ui_path,
         llm_review_decision_summary_json_path=llm_review_decision_summary_json_path,
         llm_review_decision_summary_md_path=llm_review_decision_summary_md_path,
+        llm_application_plan_json_path=llm_application_plan_json_path,
+        llm_application_plan_md_path=llm_application_plan_md_path,
     )
 
     # ── L. Write workflow_result.json if intermediate JSON is enabled ──────
@@ -1043,6 +1132,8 @@ def _build_result(
     llm_review_ui_path: str | None = None,
     llm_review_decision_summary_json_path: str | None = None,
     llm_review_decision_summary_md_path: str | None = None,
+    llm_application_plan_json_path: str | None = None,
+    llm_application_plan_md_path: str | None = None,
 ) -> ResumeWorkflowResult:
     """Assemble the final ResumeWorkflowResult."""
 
@@ -1095,4 +1186,6 @@ def _build_result(
         llm_review_ui_path=llm_review_ui_path,
         llm_review_decision_summary_json_path=llm_review_decision_summary_json_path,
         llm_review_decision_summary_md_path=llm_review_decision_summary_md_path,
+        llm_application_plan_json_path=llm_application_plan_json_path,
+        llm_application_plan_md_path=llm_application_plan_md_path,
     )

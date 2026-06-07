@@ -65,6 +65,7 @@ _EXPECTED_CORE_PACKAGES: list[str] = [
     "jd_ui",
     "llm_review_ui",
     "llm_review_decisions",
+    "llm_application_plan",
     "visual_regression",
 ]
 
@@ -84,6 +85,7 @@ _REQUIRED_DOCS: list[str] = [
     "docs/limitations_and_roadmap_v0.md",
     "docs/commercial_product_roadmap_v0.md",
     "docs/llm_review_decision_summary_v0.md",
+    "docs/llm_candidate_application_planning_v0.md",
     "examples/README.md",
     "examples/sample_data_science_demo.md",
     "examples/demo_output_manifest_v0.md",
@@ -228,6 +230,8 @@ def main() -> int:
     # --- 8. No generated output requirement -----------------------------
     print("\n[8] CLI command checks:")
     if not _check_cli_command("summarize-llm-review-decisions"):
+        all_ok = False
+    if not _check_cli_command("plan-llm-candidate-application"):
         all_ok = False
 
     # --- 9. No generated output requirement -----------------------------

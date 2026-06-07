@@ -70,6 +70,11 @@ def _print_summary(result, output_dir: str) -> None:
         typer.echo(f"LLM review summary:  {result.llm_review_decision_summary_json_path}")
     if result.llm_review_decision_summary_md_path:
         typer.echo(f"LLM review summary:  {result.llm_review_decision_summary_md_path}")
+    # M24 LLM application plan
+    if result.llm_application_plan_json_path:
+        typer.echo(f"LLM app plan:        {result.llm_application_plan_json_path}")
+    if result.llm_application_plan_md_path:
+        typer.echo(f"LLM app plan:        {result.llm_application_plan_md_path}")
 
 
 def _write_frontend_page_if_enabled(
@@ -164,6 +169,10 @@ def run_workflow(
         False, "--write-llm-review-decision-summary/--no-write-llm-review-decision-summary",
         help="Write advisory LLM review decision summary artifacts.",
     ),
+    write_llm_application_plan: bool = typer.Option(
+        False, "--write-llm-application-plan/--no-write-llm-application-plan",
+        help="Write plan-only LLM candidate application artifacts.",
+    ),
 ) -> None:
     """Run the resume workflow from an explicit JSON input file."""
 
@@ -197,6 +206,7 @@ def run_workflow(
     # M23 overrides
     workflow_input.llm_review_decisions_path = llm_review_decisions
     workflow_input.write_llm_review_decision_summary = write_llm_review_decision_summary
+    workflow_input.write_llm_application_plan = write_llm_application_plan
 
     result = run_resume_workflow(workflow_input)
     _print_summary(result, output_dir)
@@ -274,6 +284,10 @@ def run_sample(
         False, "--write-llm-review-decision-summary/--no-write-llm-review-decision-summary",
         help="Write advisory LLM review decision summary artifacts.",
     ),
+    write_llm_application_plan: bool = typer.Option(
+        False, "--write-llm-application-plan/--no-write-llm-application-plan",
+        help="Write plan-only LLM candidate application artifacts.",
+    ),
 ) -> None:
     """Run the resume workflow using built-in sample data."""
 
@@ -312,6 +326,7 @@ def run_sample(
     # M23 overrides
     workflow_input.llm_review_decisions_path = llm_review_decisions
     workflow_input.write_llm_review_decision_summary = write_llm_review_decision_summary
+    workflow_input.write_llm_application_plan = write_llm_application_plan
 
     result = run_resume_workflow(workflow_input)
     _print_summary(result, output_dir)
@@ -585,6 +600,65 @@ def summarize_llm_review_decisions(
         typer.echo(f"JSON summary:         {output_json}")
     if output_md:
         typer.echo(f"Markdown summary:     {output_md}")
+
+
+@app.command("plan-llm-candidate-application")
+def plan_llm_candidate_application(
+    result_path: str = typer.Option(
+        ..., "--result",
+        help="Path to llm_rewrite_result.json.",
+    ),
+    decisions_path: str = typer.Option(
+        ..., "--decisions",
+        help="Path to llm_rewrite_review_decisions.json.",
+    ),
+    summary_path: str | None = typer.Option(
+        None, "--summary",
+        help="Optional path to llm_rewrite_review_decision_summary.json.",
+    ),
+    output_json: str | None = typer.Option(
+        None, "--output-json",
+        help="Optional output path for llm_rewrite_application_plan.json.",
+    ),
+    output_md: str | None = typer.Option(
+        None, "--output-md",
+        help="Optional output path for llm_rewrite_application_plan.md.",
+    ),
+    strict: bool = typer.Option(
+        False, "--strict/--no-strict",
+        help="Fail on unknown decision actions.",
+    ),
+) -> None:
+    """Create a plan-only LLM candidate application artifact."""
+    from resume_pdf_agent.llm_application_plan import plan_llm_candidate_application_to_files
+
+    try:
+        plan = plan_llm_candidate_application_to_files(
+            result_path=result_path,
+            decisions_path=decisions_path,
+            summary_path=summary_path,
+            output_json_path=output_json,
+            output_md_path=output_md,
+            strict=strict,
+        )
+    except Exception as exc:
+        typer.echo(f"Error: {exc}", err=True)
+        raise typer.Exit(code=1)
+
+    typer.echo("LLM Candidate Application Plan (plan-only)")
+    typer.echo("No candidates were applied; final resume artifacts were not modified.")
+    typer.echo(f"Candidates:           {plan.total_candidates}")
+    typer.echo(f"Decisions:            {plan.total_decisions}")
+    typer.echo(f"Planned:              {plan.planned_count}")
+    typer.echo(f"Blocked:              {plan.blocked_count}")
+    typer.echo(f"Needs manual edit:    {plan.needs_manual_edit_count}")
+    typer.echo(f"Excluded:             {plan.excluded_count}")
+    typer.echo(f"Unmapped:             {plan.unmapped_count}")
+    typer.echo(f"Warnings:             {len(plan.warnings)}")
+    if output_json:
+        typer.echo(f"JSON plan:            {output_json}")
+    if output_md:
+        typer.echo(f"Markdown plan:        {output_md}")
 
 
 if __name__ == "__main__":

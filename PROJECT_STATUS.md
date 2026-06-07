@@ -1,5 +1,9 @@
 # 项目状态
 
+## M24 Candidate Application Planning Layer
+
+M24 已完成：新增 plan-only LLM candidate application planning layer，可生成 `llm_rewrite_application_plan.json` / `.md`。该层只做人工应用规划与审计，不会应用 LLM candidates，不会修改 `resume.html`/`resume.pdf`，也不会绕过 M5/M14。
+
 ## M23 LLM Review Decision Loader / Decision Summary
 
 M23 已完成：新增本地 `llm_rewrite_review_decisions.json` loader、deterministic analyzer、JSON/Markdown summary artifacts，以及 `summarize-llm-review-decisions` CLI。M23 是 advisory decision summary workflow，不会应用 LLM candidates，不会修改 `resume.html`/`resume.pdf`，也不会绕过 M5/M14。

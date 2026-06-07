@@ -78,6 +78,12 @@ from resume_pdf_agent.models.llm import (
     LLMRewriteResult,
     LLMRewriteStatus,
 )
+from resume_pdf_agent.models.llm_application_plan import (
+    LLMApplicationBlockReason,
+    LLMApplicationPlanStatus,
+    LLMCandidateApplicationPlan,
+    LLMCandidateApplicationPlanItem,
+)
 from resume_pdf_agent.models.llm_review_ui import (
     LLMReviewCandidateView,
     LLMReviewDecisionType,
@@ -201,6 +207,10 @@ __all__ = [
     "JDUploadUIStatus",
     "LanguageSkill",
     "LLMProviderType",
+    "LLMApplicationBlockReason",
+    "LLMApplicationPlanStatus",
+    "LLMCandidateApplicationPlan",
+    "LLMCandidateApplicationPlanItem",
     "LLMRewriteCandidate",
     "LLMRewriteMode",
     "LLMRewriteOptions",

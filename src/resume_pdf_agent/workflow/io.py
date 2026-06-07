@@ -82,4 +82,7 @@ def load_workflow_input_from_json(input_path: str | Path) -> ResumeWorkflowInput
         write_llm_review_decision_summary=raw.get("write_llm_review_decision_summary", False),
         llm_review_decision_summary_json_path=raw.get("llm_review_decision_summary_json_path"),
         llm_review_decision_summary_md_path=raw.get("llm_review_decision_summary_md_path"),
+        write_llm_application_plan=raw.get("write_llm_application_plan", False),
+        llm_application_plan_json_path=raw.get("llm_application_plan_json_path"),
+        llm_application_plan_md_path=raw.get("llm_application_plan_md_path"),
     )

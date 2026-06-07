@@ -1,5 +1,9 @@
 # resume_pdf_agent
 
+## M24 LLM Candidate Application Planning
+
+M24 adds a plan-only LLM candidate application planning layer. It reads `llm_rewrite_result.json`, `llm_rewrite_review_decisions.json`, and an optional M23 summary to generate `llm_rewrite_application_plan.json` / `.md`. This is audit guidance only: it does not apply candidates, does not modify `resume.html` or `resume.pdf`, and does not bypass M5 truthfulness checks or the M14 confirmation gate.
+
 ## M23 LLM Review Decision Summary
 
 M23 adds local loading and deterministic summary generation for `llm_rewrite_review_decisions.json`. It can produce `llm_rewrite_review_decision_summary.json` and `.md` with approved/rejected/needs-edit/ignored/note counts, unknown candidate IDs, duplicate entries, and warnings. This is advisory only: it does not apply LLM candidates, does not mutate the final resume, and does not bypass M5 truthfulness checks or the M14 confirmation gate.

@@ -28,6 +28,7 @@ class WorkflowStageName(str, Enum):
     PDF_GENERATION = "pdf_generation"
     CONFIRMATION_REVIEW = "confirmation_review"
     LLM_REVIEW_DECISION_SUMMARY = "llm_review_decision_summary"
+    LLM_APPLICATION_PLAN = "llm_application_plan"
     ARTIFACT_WRITING = "artifact_writing"
     REMINDER_PANEL = "reminder_panel"
 
@@ -114,6 +115,10 @@ class ResumeWorkflowInput(BaseModel):
     write_llm_review_decision_summary: bool = False
     llm_review_decision_summary_json_path: str | None = None
     llm_review_decision_summary_md_path: str | None = None
+    # M24: Plan-only LLM candidate application
+    write_llm_application_plan: bool = False
+    llm_application_plan_json_path: str | None = None
+    llm_application_plan_md_path: str | None = None
 
     @model_validator(mode="after")
     def _output_dir_not_empty(self) -> ResumeWorkflowInput:
@@ -158,6 +163,9 @@ class ResumeWorkflowResult(BaseModel):
     # M23: Advisory LLM review decision summary
     llm_review_decision_summary_json_path: str | None = None
     llm_review_decision_summary_md_path: str | None = None
+    # M24: Plan-only LLM candidate application
+    llm_application_plan_json_path: str | None = None
+    llm_application_plan_md_path: str | None = None
 
     @model_validator(mode="after")
     def _summary_not_empty(self) -> ResumeWorkflowResult:

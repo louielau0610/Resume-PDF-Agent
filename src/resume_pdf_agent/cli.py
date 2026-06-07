@@ -482,5 +482,30 @@ def render_jd_upload_ui(
         raise typer.Exit(code=1)
 
 
+@app.command("render-llm-review-ui")
+def render_llm_review_ui(
+    result_path: str = typer.Option(
+        ..., "--result",
+        help="Path to llm_rewrite_result.json.",
+    ),
+    output: str = typer.Option(
+        "outputs/llm_review/llm_review.html", "--output",
+        help="Output path for llm_review.html.",
+    ),
+) -> None:
+    """Render a static browser LLM rewrite review page from an llm_rewrite_result.json."""
+    from resume_pdf_agent.llm_review_ui import render_llm_review_ui_from_result_file
+
+    result = render_llm_review_ui_from_result_file(result_path, output)
+    if result.output_path:
+        typer.echo(f"LLM Review UI:        {result.output_path}")
+        typer.echo(f"Candidates:           {result.candidate_count}")
+        typer.echo(f"Needs confirmation:   {result.candidates_requiring_confirmation}")
+    if result.errors:
+        for e in result.errors:
+            typer.echo(f"Error: {e}", err=True)
+        raise typer.Exit(code=1)
+
+
 if __name__ == "__main__":
     app()

@@ -2,7 +2,7 @@
 
 ## Current Documentation Milestone
 
-M21.1 JD Upload UI Verification and Test Coverage（当前）
+M22 Browser-based LLM Rewrite Review UI（当前）
 
 ## 已完成里程碑
 
@@ -23,10 +23,11 @@ M21.1 JD Upload UI Verification and Test Coverage（当前）
 - M20.1：确认 UI 验证修复 ✅
 - M21：浏览器端 JD 上传 UI ✅
 - M21.1：JD 上传 UI 验证与测试覆盖 ✅
+- M22：浏览器端 LLM 改写审阅 UI ✅
 
 ## 当前状态
 
-M21.1 JD 上传 UI 验证已完成 — 新增 104 个专用 JD UI 测试（上下文/渲染器/安全/CLI/回归），全量测试 702 通过，2 跳过。所有手动 CLI 验证通过，release readiness 检查通过，后端 M15 JD 合规检查行为不变。项目现已具备两张纯静态浏览器页面（M20 确认审核、M21 JD 输入），均经过完整测试覆盖和安全验证。
+M22 浏览器 LLM 改写审阅 UI 已完成 — 新增 76 个专用 LLM 审阅 UI 测试（上下文/渲染器/安全/CLI/回归），全量测试 778 通过，2 跳过。所有手动 CLI 验证通过：mock LLM 生成、render-llm-review-ui、demo 脚本 --write-llm-review-ui、ExportFormat 仅 pdf。M16 LLM 引擎行为不变，默认工作流保持向后兼容。项目现已具备三张纯静态浏览器页面（M20 确认审核、M21 JD 输入、M22 LLM 改写审阅）。
 
 ## 下一计划里程碑
 

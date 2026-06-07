@@ -28,7 +28,8 @@
 - M20：Browser Confirmation UI ✅。
 - M20.1：Confirmation UI Verification Fix ✅。
 - M21：Browser JD Upload UI ✅。
-- M21.1：JD Upload UI Verification and Test Coverage ✅（当前）。
+- M21.1：JD Upload UI Verification and Test Coverage ✅。
+- M22：Browser-based LLM Rewrite Review UI ✅（当前）。
 
 ## M21: Browser JD Upload UI ✅ (current)
 
@@ -59,6 +60,26 @@
 - 默认工作流保持向后兼容。
 - 未添加新功能。
 - 全量测试：702 通过，2 跳过（新增 104 个 JD UI 测试）。
+
+
+## M22: Browser-based LLM Rewrite Review UI ✅ (current)
+
+- 已完成 `models/llm_review_ui.py`：LLM 审阅 UI Pydantic 模型。
+- 已完成 `llm_review_ui/safety.py`：escape、路径安全、决策选项、验证函数。
+- 已完成 `llm_review_ui/context.py`：UI 上下文构建器（分组/安全通知/决策选项）。
+- 已完成 `llm_review_ui/renderer.py`：Jinja2 模板渲染器 + 从文件加载。
+- 已完成 `llm_review_ui/templates/llm_review_page.html.j2`：审阅页面模板。
+- 已完成 `llm_review_ui/static/llm_review_page.css`：暗色高级 CSS（与 M12/M20/M21 一致）。
+- 已完成 `llm_review_ui/static/llm_review_page.js`：本地 JS（决策生成/复制/下载/筛选/折叠）。
+- 已完成 `llm_review_ui/__init__.py`：包导出。
+- 已集成到 models/__init__.py、CLI（render-llm-review-ui）、workflow 模型/编排器。
+- 已更新 scripts/run_demo_workflow.py（--write-llm-review-ui）和 scripts/validate_release_readiness.py。
+- 已创建 `docs/browser_llm_rewrite_review_ui_v0.md`：中文/英文文档。
+- 已完成 5 个测试文件：context（18 个）、renderer（22 个）、safety（14 个）、CLI（8 个）、regressions（14 个）。
+- M16 LLM 引擎行为不变。
+- 默认工作流保持向后兼容。
+- 未添加新功能（仅为审阅 UI 渲染）。
+- 全量测试：778 通过，2 跳过（新增 76 个 LLM 审阅 UI 测试）。
 
 ## Future Roadmap（路线图想法，尚未实现）
 

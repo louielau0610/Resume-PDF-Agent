@@ -88,6 +88,12 @@ def main() -> None:
         default=False,
         help="Write a browser JD upload UI page (jd_upload.html).",
     )
+    parser.add_argument(
+        "--write-llm-review-ui",
+        action="store_true",
+        default=False,
+        help="Write a browser LLM rewrite review page (llm_review.html). Requires --include-llm-mock.",
+    )
     args = parser.parse_args()
 
     sample_input = _find_sample_input()
@@ -143,6 +149,13 @@ def main() -> None:
                 print(f"JD Upload UI page:    {jd_ui_result.output_path}")
         except Exception as exc:
             print(f"JD Upload UI page:    ERROR ({exc})")
+    # M22 LLM review UI (requires --include-llm-mock)
+    if args.write_llm_review_ui:
+        if not args.include_llm_mock:
+            print("Warning: --write-llm-review-ui requires --include-llm-mock. Skipping.")
+        else:
+            workflow_input.write_llm_review_ui = True
+            print("LLM review UI enabled (post-workflow).")
 
     # --- Run workflow --------------------------------------------------
     print(f"Running workflow (pdf_backend={args.pdf_backend}) ...")
@@ -176,6 +189,8 @@ def main() -> None:
         print(f"  JD criteria profile: {result.jd_criteria_profile_path}")
     if result.llm_rewrite_result_path:
         print(f"  LLM rewrite result:  {result.llm_rewrite_result_path}")
+    if result.llm_review_ui_path:
+        print(f"  LLM review UI:       {result.llm_review_ui_path}")
 
     # --- Frontend page ------------------------------------------------
     index_path: str | None = None

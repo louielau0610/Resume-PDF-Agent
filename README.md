@@ -1,5 +1,9 @@
 # resume_pdf_agent
 
+## M23 LLM 审阅决策摘要
+
+M23 已新增本地 `llm_rewrite_review_decisions.json` 读取与摘要能力，可生成 `llm_rewrite_review_decision_summary.json` 和 `.md`，用于统计 approved / rejected / needs editing / ignored / notes / unknown IDs / duplicate entries。该能力仅生成 advisory summary，不会自动应用 LLM candidates，不会修改最终简历，也不会绕过 M5 真实性检查或 M14 确认门控。
+
 ## M22.1 安全加固说明
 
 M22.1 已完成浏览器端 LLM 改写审阅 UI 的安全加固：`llm_review.html` 现在在 Jinja2 模板层启用 autoescape，并继续保持纯本地静态页面。LLM 候选内容仍然只是审阅建议，不会自动应用到简历，不会调用真实 LLM API，也不会绕过 M5 真实性检查或 M14 用户确认门控。

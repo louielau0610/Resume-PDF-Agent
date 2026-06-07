@@ -78,4 +78,8 @@ def load_workflow_input_from_json(input_path: str | Path) -> ResumeWorkflowInput
         pdf_backend=raw.get("pdf_backend", "mock"),
         include_preview_reminder_panel=raw.get("include_preview_reminder_panel", False),
         write_intermediate_json=raw.get("write_intermediate_json", True),
+        llm_review_decisions_path=raw.get("llm_review_decisions_path"),
+        write_llm_review_decision_summary=raw.get("write_llm_review_decision_summary", False),
+        llm_review_decision_summary_json_path=raw.get("llm_review_decision_summary_json_path"),
+        llm_review_decision_summary_md_path=raw.get("llm_review_decision_summary_md_path"),
     )

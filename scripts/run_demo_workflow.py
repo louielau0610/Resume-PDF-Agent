@@ -94,6 +94,12 @@ def main() -> None:
         default=False,
         help="Write a browser LLM rewrite review page (llm_review.html). Requires --include-llm-mock.",
     )
+    parser.add_argument(
+        "--write-llm-review-decision-summary",
+        action="store_true",
+        default=False,
+        help="Create deterministic sample LLM review decisions and write advisory summary artifacts. Requires --include-llm-mock.",
+    )
     args = parser.parse_args()
 
     sample_input = _find_sample_input()
@@ -156,6 +162,8 @@ def main() -> None:
         else:
             workflow_input.write_llm_review_ui = True
             print("LLM review UI enabled (post-workflow).")
+    if args.write_llm_review_decision_summary and not args.include_llm_mock:
+        print("Warning: --write-llm-review-decision-summary requires --include-llm-mock. Skipping.")
 
     # --- Run workflow --------------------------------------------------
     print(f"Running workflow (pdf_backend={args.pdf_backend}) ...")
@@ -191,6 +199,69 @@ def main() -> None:
         print(f"  LLM rewrite result:  {result.llm_rewrite_result_path}")
     if result.llm_review_ui_path:
         print(f"  LLM review UI:       {result.llm_review_ui_path}")
+
+    if args.write_llm_review_decision_summary and args.include_llm_mock:
+        try:
+            import json
+
+            from resume_pdf_agent.llm_review_decisions import (
+                summarize_llm_review_decisions_to_files,
+            )
+
+            result_path = Path(result.llm_rewrite_result_path or "")
+            if not result_path.is_file():
+                raise FileNotFoundError("LLM rewrite result was not generated.")
+            raw_result = json.loads(result_path.read_text(encoding="utf-8"))
+            candidate_ids = [c["candidate_id"] for c in raw_result.get("candidates", [])]
+            action_cycle = [
+                "approve_candidate",
+                "reject_candidate",
+                "needs_editing",
+                "provide_note",
+                "ignore_for_now",
+            ]
+            decisions = []
+            for idx, candidate_id in enumerate(candidate_ids):
+                action = action_cycle[idx % len(action_cycle)]
+                decisions.append(
+                    {
+                        "candidate_id": candidate_id,
+                        "decision": action,
+                        "reviewer_note": (
+                            f"Demo note for {candidate_id}"
+                            if action == "provide_note"
+                            else None
+                        ),
+                        "replacement_text": None,
+                    }
+                )
+            decisions_path = Path(args.output_dir) / "llm_rewrite_review_decisions.json"
+            decisions_path.write_text(
+                json.dumps(
+                    {
+                        "reviewer_name": "demo",
+                        "reviewed_at": "demo-static",
+                        "notes": "Deterministic demo decisions; advisory only.",
+                        "decisions": decisions,
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                ),
+                encoding="utf-8",
+            )
+            summary_json = Path(args.output_dir) / "llm_rewrite_review_decision_summary.json"
+            summary_md = Path(args.output_dir) / "llm_rewrite_review_decision_summary.md"
+            summarize_llm_review_decisions_to_files(
+                decisions_path=decisions_path,
+                result_path=result_path,
+                output_json_path=summary_json,
+                output_md_path=summary_md,
+            )
+            print(f"  LLM decisions:       {decisions_path}")
+            print(f"  LLM summary JSON:    {summary_json}")
+            print(f"  LLM summary MD:      {summary_md}")
+        except Exception as exc:
+            print(f"  LLM summary:         ERROR ({exc})")
 
     # --- Frontend page ------------------------------------------------
     index_path: str | None = None

@@ -85,6 +85,13 @@ from resume_pdf_agent.models.llm_review_ui import (
     LLMReviewUIResult,
     LLMReviewUIStatus,
 )
+from resume_pdf_agent.models.llm_review_decisions import (
+    LLMReviewCandidateDecisionSummary,
+    LLMReviewDecision,
+    LLMReviewDecisionAction,
+    LLMReviewDecisionFile,
+    LLMReviewDecisionSummary,
+)
 from resume_pdf_agent.models.pdf import (
     PDFBackend,
     PDFGenerationOptions,
@@ -201,6 +208,11 @@ __all__ = [
     "LLMRewriteResult",
     "LLMRewriteStatus",
     "LLMReviewCandidateView",
+    "LLMReviewCandidateDecisionSummary",
+    "LLMReviewDecision",
+    "LLMReviewDecisionAction",
+    "LLMReviewDecisionFile",
+    "LLMReviewDecisionSummary",
     "LLMReviewDecisionType",
     "LLMReviewUIOptions",
     "LLMReviewUIResult",

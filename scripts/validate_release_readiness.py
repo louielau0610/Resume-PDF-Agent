@@ -64,6 +64,7 @@ _EXPECTED_CORE_PACKAGES: list[str] = [
     "confirmation_ui",
     "jd_ui",
     "llm_review_ui",
+    "llm_review_decisions",
     "visual_regression",
 ]
 
@@ -82,6 +83,7 @@ _REQUIRED_DOCS: list[str] = [
     "docs/release_checklist_v0.md",
     "docs/limitations_and_roadmap_v0.md",
     "docs/commercial_product_roadmap_v0.md",
+    "docs/llm_review_decision_summary_v0.md",
     "examples/README.md",
     "examples/sample_data_science_demo.md",
     "examples/demo_output_manifest_v0.md",
@@ -124,6 +126,20 @@ def _check_readme_content(path: str, must_contain: list[str], must_not_contain: 
             issues.append(f"{path}: contains forbidden phrase '{phrase}'")
 
     return issues
+
+
+def _check_cli_command(command_name: str) -> bool:
+    try:
+        from resume_pdf_agent.cli import app
+
+        commands = {cmd.name for cmd in app.registered_commands}
+        ok = command_name in commands
+    except Exception as exc:
+        print(f"  [FAIL] CLI command check crashed: {exc}")
+        return False
+    status = "OK" if ok else "MISSING"
+    print(f"  [{status}] CLI command: {command_name}")
+    return ok
 
 
 def main() -> int:
@@ -210,7 +226,12 @@ def main() -> int:
         all_ok = False
 
     # --- 8. No generated output requirement -----------------------------
-    print("\n[8] Generated output directory check:")
+    print("\n[8] CLI command checks:")
+    if not _check_cli_command("summarize-llm-review-decisions"):
+        all_ok = False
+
+    # --- 9. No generated output requirement -----------------------------
+    print("\n[9] Generated output directory check:")
     outputs_dir = _REPO_ROOT / "outputs"
     if outputs_dir.is_dir():
         contents = list(outputs_dir.iterdir())

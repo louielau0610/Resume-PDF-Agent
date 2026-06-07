@@ -1,5 +1,9 @@
 # resume_pdf_agent
 
+## M23 LLM Review Decision Summary
+
+M23 adds local loading and deterministic summary generation for `llm_rewrite_review_decisions.json`. It can produce `llm_rewrite_review_decision_summary.json` and `.md` with approved/rejected/needs-edit/ignored/note counts, unknown candidate IDs, duplicate entries, and warnings. This is advisory only: it does not apply LLM candidates, does not mutate the final resume, and does not bypass M5 truthfulness checks or the M14 confirmation gate.
+
 ## M22.1 Safety Hardening
 
 M22.1 hardens the browser LLM rewrite review UI by enabling Jinja2 template-level autoescaping for `llm_review.html`. LLM candidates remain advisory only: the review UI does not automatically apply candidates, does not call any real LLM API, and does not bypass M5 truthfulness checks or the M14 confirmation gate.

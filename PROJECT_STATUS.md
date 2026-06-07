@@ -1,5 +1,9 @@
 # 项目状态
 
+## M23 LLM Review Decision Loader / Decision Summary
+
+M23 已完成：新增本地 `llm_rewrite_review_decisions.json` loader、deterministic analyzer、JSON/Markdown summary artifacts，以及 `summarize-llm-review-decisions` CLI。M23 是 advisory decision summary workflow，不会应用 LLM candidates，不会修改 `resume.html`/`resume.pdf`，也不会绕过 M5/M14。
+
 ## M22.1 Safety Hardening / Autoescape Refactor
 
 M22.1 已完成：浏览器端 LLM 改写审阅 UI 现在在 Jinja2 模板层启用 autoescape，并使用模板 JSON 转义保护嵌入的候选数据。该里程碑是安全加固，不是新功能里程碑；LLM 候选仍仅为建议，不会自动应用，不会调用真实 LLM API，也不会绕过 M5/M14。

@@ -4,6 +4,10 @@
 
 M22.1 updates the renderer to enable Jinja2 template-level autoescaping and to embed candidate data with Jinja's HTML-safe JSON serialization. This is a safety-hardening refactor only: the page remains local static HTML, does not call a real LLM API, does not automatically apply candidates, and does not bypass M5 truthfulness checks or M14 confirmation.
 
+## M23 Decision Summary
+
+M23 can load the locally exported `llm_rewrite_review_decisions.json` and generate advisory `llm_rewrite_review_decision_summary.json` / `.md` artifacts. The summary reports decisions, notes, unknown candidate IDs, duplicate entries, and warnings, but still does not apply candidates or verify factual truth.
+
 ## 概述 / Overview
 
 M22 浏览器 LLM 改写审阅页面是一张纯静态 HTML 页面，用于审阅 M16 可选的 LLM 改写候选结果。该页面：

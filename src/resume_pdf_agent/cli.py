@@ -65,6 +65,11 @@ def _print_summary(result, output_dir: str) -> None:
     # M20 confirmation UI
     if result.confirmation_ui_path:
         typer.echo(f"Confirmation UI:     {result.confirmation_ui_path}")
+    # M23 LLM review decision summary
+    if result.llm_review_decision_summary_json_path:
+        typer.echo(f"LLM review summary:  {result.llm_review_decision_summary_json_path}")
+    if result.llm_review_decision_summary_md_path:
+        typer.echo(f"LLM review summary:  {result.llm_review_decision_summary_md_path}")
 
 
 def _write_frontend_page_if_enabled(
@@ -151,6 +156,14 @@ def run_workflow(
         False, "--write-confirmation-ui/--no-write-confirmation-ui",
         help="Write a browser confirmation review page (confirmation.html).",
     ),
+    llm_review_decisions: str | None = typer.Option(
+        None, "--llm-review-decisions",
+        help="Path to llm_rewrite_review_decisions.json for advisory summary generation.",
+    ),
+    write_llm_review_decision_summary: bool = typer.Option(
+        False, "--write-llm-review-decision-summary/--no-write-llm-review-decision-summary",
+        help="Write advisory LLM review decision summary artifacts.",
+    ),
 ) -> None:
     """Run the resume workflow from an explicit JSON input file."""
 
@@ -181,6 +194,9 @@ def run_workflow(
     workflow_input.write_llm_artifacts = write_llm_artifacts
     # M20 overrides
     workflow_input.write_confirmation_ui = write_confirmation_ui
+    # M23 overrides
+    workflow_input.llm_review_decisions_path = llm_review_decisions
+    workflow_input.write_llm_review_decision_summary = write_llm_review_decision_summary
 
     result = run_resume_workflow(workflow_input)
     _print_summary(result, output_dir)
@@ -250,6 +266,14 @@ def run_sample(
         False, "--write-confirmation-ui/--no-write-confirmation-ui",
         help="Write a browser confirmation review page (confirmation.html).",
     ),
+    llm_review_decisions: str | None = typer.Option(
+        None, "--llm-review-decisions",
+        help="Path to llm_rewrite_review_decisions.json for advisory summary generation.",
+    ),
+    write_llm_review_decision_summary: bool = typer.Option(
+        False, "--write-llm-review-decision-summary/--no-write-llm-review-decision-summary",
+        help="Write advisory LLM review decision summary artifacts.",
+    ),
 ) -> None:
     """Run the resume workflow using built-in sample data."""
 
@@ -285,6 +309,9 @@ def run_sample(
     workflow_input.write_llm_artifacts = write_llm_artifacts
     # M20 overrides
     workflow_input.write_confirmation_ui = write_confirmation_ui
+    # M23 overrides
+    workflow_input.llm_review_decisions_path = llm_review_decisions
+    workflow_input.write_llm_review_decision_summary = write_llm_review_decision_summary
 
     result = run_resume_workflow(workflow_input)
     _print_summary(result, output_dir)
@@ -505,6 +532,59 @@ def render_llm_review_ui(
         for e in result.errors:
             typer.echo(f"Error: {e}", err=True)
         raise typer.Exit(code=1)
+
+
+@app.command("summarize-llm-review-decisions")
+def summarize_llm_review_decisions(
+    decisions_path: str = typer.Option(
+        ..., "--decisions",
+        help="Path to llm_rewrite_review_decisions.json.",
+    ),
+    result_path: str | None = typer.Option(
+        None, "--result",
+        help="Optional path to llm_rewrite_result.json for candidate ID cross-checking.",
+    ),
+    output_json: str | None = typer.Option(
+        None, "--output-json",
+        help="Optional output path for llm_rewrite_review_decision_summary.json.",
+    ),
+    output_md: str | None = typer.Option(
+        None, "--output-md",
+        help="Optional output path for llm_rewrite_review_decision_summary.md.",
+    ),
+    strict: bool = typer.Option(
+        False, "--strict/--no-strict",
+        help="Fail on unknown decision actions.",
+    ),
+) -> None:
+    """Summarize local LLM rewrite review decisions without applying candidates."""
+    from resume_pdf_agent.llm_review_decisions import summarize_llm_review_decisions_to_files
+
+    try:
+        summary = summarize_llm_review_decisions_to_files(
+            decisions_path=decisions_path,
+            result_path=result_path,
+            output_json_path=output_json,
+            output_md_path=output_md,
+            strict=strict,
+        )
+    except Exception as exc:
+        typer.echo(f"Error: {exc}", err=True)
+        raise typer.Exit(code=1)
+
+    typer.echo("LLM Review Decision Summary")
+    typer.echo(f"Candidates:           {summary.total_candidates}")
+    typer.echo(f"Decisions:            {summary.total_decisions}")
+    typer.echo(f"Approved:             {summary.approved_count}")
+    typer.echo(f"Rejected:             {summary.rejected_count}")
+    typer.echo(f"Needs edit:           {summary.needs_edit_count}")
+    typer.echo(f"Notes:                {summary.note_count}")
+    typer.echo(f"Ignored:              {summary.ignored_count}")
+    typer.echo(f"Warnings:             {len(summary.warnings)}")
+    if output_json:
+        typer.echo(f"JSON summary:         {output_json}")
+    if output_md:
+        typer.echo(f"Markdown summary:     {output_md}")
 
 
 if __name__ == "__main__":

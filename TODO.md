@@ -1,5 +1,10 @@
 # TODO
 
+## M23 Completed
+
+- M23 LLM Review Decision Loader / Decision Summary 已完成：可本地读取 `llm_rewrite_review_decisions.json`，生成 advisory JSON/Markdown summary，并报告 undecided / unknown / duplicate / invalid decisions。
+- M24 可作为下一阶段计划层：Candidate Application Planning Layer。M24 仍应保持 plan-only，不自动修改最终简历。
+
 ## M22.1 Completed
 
 - M22.1 Safety Hardening / Autoescape Refactor 已完成：LLM 审阅 UI 启用 Jinja2 template-level autoescape，并保留候选仅供审阅、不自动应用、不调用真实 LLM API、不绕过 M5/M14 的安全边界。

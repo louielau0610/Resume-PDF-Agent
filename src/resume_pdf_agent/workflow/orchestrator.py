@@ -115,6 +115,9 @@ def run_resume_workflow(
     confirmation_ui_path: str | None = None
     # M22 LLM review UI
     llm_review_ui_path: str | None = None
+    # M23 LLM review decision summary
+    llm_review_decision_summary_json_path: str | None = None
+    llm_review_decision_summary_md_path: str | None = None
 
     # ── A. User intake (setup) ─────────────────────────────────────────────
     stages.append(
@@ -791,6 +794,81 @@ def run_resume_workflow(
         )
 
     # ── I. PDF generation ──────────────────────────────────────────────────
+    # M23 advisory LLM review decision summary. This never mutates resume content.
+    if workflow_input.write_llm_review_decision_summary:
+        if not workflow_input.llm_review_decisions_path:
+            global_warnings.append(
+                "write_llm_review_decision_summary is true but no LLM review decisions path was provided."
+            )
+        else:
+            try:
+                from resume_pdf_agent.llm_review_decisions import (
+                    summarize_llm_review_decisions_to_files,
+                )
+
+                summary_json_path = Path(
+                    workflow_input.llm_review_decision_summary_json_path
+                    or (output_dir / "llm_rewrite_review_decision_summary.json")
+                )
+                summary_md_path = Path(
+                    workflow_input.llm_review_decision_summary_md_path
+                    or (output_dir / "llm_rewrite_review_decision_summary.md")
+                )
+                result_path_for_summary = (
+                    llm_rewrite_result_path
+                    if llm_rewrite_result_path and Path(llm_rewrite_result_path).is_file()
+                    else None
+                )
+                summary_result = summarize_llm_review_decisions_to_files(
+                    decisions_path=workflow_input.llm_review_decisions_path,
+                    result_path=result_path_for_summary,
+                    output_json_path=summary_json_path,
+                    output_md_path=summary_md_path,
+                )
+                llm_review_decision_summary_json_path = str(summary_json_path)
+                llm_review_decision_summary_md_path = str(summary_md_path)
+                all_artifacts.extend(
+                    [
+                        WorkflowArtifact(
+                            artifact_type="llm_review_decision_summary_json",
+                            path=str(summary_json_path),
+                            description="Advisory LLM review decision summary JSON",
+                        ),
+                        WorkflowArtifact(
+                            artifact_type="llm_review_decision_summary_markdown",
+                            path=str(summary_md_path),
+                            description="Advisory LLM review decision summary Markdown",
+                        ),
+                    ]
+                )
+                stage_status = WorkflowStageStatus.COMPLETED
+                if summary_result.warnings:
+                    stage_status = WorkflowStageStatus.COMPLETED_WITH_WARNINGS
+                    global_warnings.extend(summary_result.warnings)
+                stages.append(
+                    _stage_result(
+                        WorkflowStageName.LLM_REVIEW_DECISION_SUMMARY,
+                        stage_status,
+                        (
+                            "LLM review decisions summarized; "
+                            f"decisions: {summary_result.total_decisions}; "
+                            f"approved: {summary_result.approved_count}; "
+                            f"ignored: {summary_result.ignored_count}"
+                        ),
+                        warnings=list(summary_result.warnings),
+                    )
+                )
+            except Exception as exc:
+                global_warnings.append(f"LLM review decision summary failed: {exc}")
+                stages.append(
+                    _stage_result(
+                        WorkflowStageName.LLM_REVIEW_DECISION_SUMMARY,
+                        WorkflowStageStatus.COMPLETED_WITH_WARNINGS,
+                        f"LLM review decision summary skipped: {exc}",
+                        warnings=[str(exc)],
+                    )
+                )
+
     # M14: Skip PDF if confirmation gate blocks
     if workflow_input.require_confirmation_before_pdf and not can_generate_final_pdf:
         stages.append(
@@ -918,6 +996,8 @@ def run_resume_workflow(
         llm_rewriting_used=llm_rewriting_used,
         confirmation_ui_path=confirmation_ui_path,
         llm_review_ui_path=llm_review_ui_path,
+        llm_review_decision_summary_json_path=llm_review_decision_summary_json_path,
+        llm_review_decision_summary_md_path=llm_review_decision_summary_md_path,
     )
 
     # ── L. Write workflow_result.json if intermediate JSON is enabled ──────
@@ -961,6 +1041,8 @@ def _build_result(
     llm_rewriting_used: bool = False,
     confirmation_ui_path: str | None = None,
     llm_review_ui_path: str | None = None,
+    llm_review_decision_summary_json_path: str | None = None,
+    llm_review_decision_summary_md_path: str | None = None,
 ) -> ResumeWorkflowResult:
     """Assemble the final ResumeWorkflowResult."""
 
@@ -1011,4 +1093,6 @@ def _build_result(
         llm_rewriting_used=llm_rewriting_used,
         confirmation_ui_path=confirmation_ui_path,
         llm_review_ui_path=llm_review_ui_path,
+        llm_review_decision_summary_json_path=llm_review_decision_summary_json_path,
+        llm_review_decision_summary_md_path=llm_review_decision_summary_md_path,
     )

@@ -76,6 +76,12 @@ def main() -> None:
         default=False,
         help="Require confirmation before PDF generation.",
     )
+    parser.add_argument(
+        "--write-confirmation-ui",
+        action="store_true",
+        default=False,
+        help="Write a browser confirmation review page (confirmation.html).",
+    )
     args = parser.parse_args()
 
     sample_input = _find_sample_input()
@@ -116,6 +122,10 @@ def main() -> None:
     if args.strict_confirmation_gate:
         workflow_input.require_confirmation_before_pdf = True
         print("Strict confirmation gate enabled.")
+    # M20 confirmation UI
+    if args.write_confirmation_ui:
+        workflow_input.write_confirmation_ui = True
+        print("Confirmation UI enabled.")
 
     # --- Run workflow --------------------------------------------------
     print(f"Running workflow (pdf_backend={args.pdf_backend}) ...")

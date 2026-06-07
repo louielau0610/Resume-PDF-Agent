@@ -1,5 +1,9 @@
 # 项目状态
 
+## M22.1 Safety Hardening / Autoescape Refactor
+
+M22.1 已完成：浏览器端 LLM 改写审阅 UI 现在在 Jinja2 模板层启用 autoescape，并使用模板 JSON 转义保护嵌入的候选数据。该里程碑是安全加固，不是新功能里程碑；LLM 候选仍仅为建议，不会自动应用，不会调用真实 LLM API，也不会绕过 M5/M14。
+
 ## Current Documentation Milestone
 
 M22 Browser-based LLM Rewrite Review UI（当前）

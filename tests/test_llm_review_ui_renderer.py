@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 from resume_pdf_agent.llm_review_ui.renderer import (
+    _create_env,
     render_llm_review_ui_from_result_file,
     render_llm_review_ui_page,
 )
@@ -59,6 +60,14 @@ def _make_mock_result() -> LLMRewriteResult:
 def test_render_llm_review_ui_page_importable():
     """render_llm_review_ui_page is importable and callable."""
     assert callable(render_llm_review_ui_page)
+
+
+def test_renderer_jinja_env_autoescape_enabled():
+    """LLM review UI renderer enables template-level autoescaping."""
+    env = _create_env()
+    template = env.from_string("{{ value }}")
+    assert env.autoescape is not False
+    assert template.render(value="<script>alert(1)</script>") == "&lt;script&gt;alert(1)&lt;/script&gt;"
 
 
 def test_render_creates_html_file(tmp_path: Path):

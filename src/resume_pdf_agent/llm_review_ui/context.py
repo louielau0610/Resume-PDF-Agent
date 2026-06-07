@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from resume_pdf_agent.llm_review_ui.safety import (
-    escape_llm_review_ui_text,
     get_llm_review_decision_options,
     validate_llm_rewrite_result_for_ui,
 )
@@ -16,10 +15,10 @@ from resume_pdf_agent.models.llm_review_ui import (
 
 def _build_candidate_view(c) -> LLMReviewCandidateView:
     return LLMReviewCandidateView(
-        candidate_id=escape_llm_review_ui_text(c.candidate_id),
-        source_experience_id=escape_llm_review_ui_text(c.source_experience_id) if c.source_experience_id else None,
-        original_text=escape_llm_review_ui_text(c.original_text),
-        rewritten_text=escape_llm_review_ui_text(c.rewritten_text),
+        candidate_id=c.candidate_id,
+        source_experience_id=c.source_experience_id if c.source_experience_id else None,
+        original_text=c.original_text,
+        rewritten_text=c.rewritten_text,
         provider=c.provider.value if hasattr(c.provider, "value") else str(c.provider),
         mode=c.mode.value if hasattr(c.mode, "value") else str(c.mode),
         status=c.status.value if hasattr(c.status, "value") else str(c.status),

@@ -1,5 +1,9 @@
 # resume_pdf_agent
 
+## M22.1 安全加固说明
+
+M22.1 已完成浏览器端 LLM 改写审阅 UI 的安全加固：`llm_review.html` 现在在 Jinja2 模板层启用 autoescape，并继续保持纯本地静态页面。LLM 候选内容仍然只是审阅建议，不会自动应用到简历，不会调用真实 LLM API，也不会绕过 M5 真实性检查或 M14 用户确认门控。
+
 > 基于岗位筛选指标的 AI 简历 PDF 生成 Agent：从职业画像、岗位 criteria、真实性检查到 HTML/PDF 输出的确定性工作流。
 
 `resume_pdf_agent` 是一个 **criteria-aware 的 AI 简历 PDF 生成 Agent**。它不调用 LLM API，而是通过 11 阶段确定性工作流，将用户职业画像与岗位筛选指标（criteria）进行系统比对，经过分类、差距分析、真实性检查、Bullet 增强、模板匹配、HTML 渲染等步骤，最终输出 ATS 友好的结构化 PDF 简历和静态工作流仪表板。

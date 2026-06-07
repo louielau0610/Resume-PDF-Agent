@@ -1,5 +1,9 @@
 # resume_pdf_agent
 
+## M22.1 Safety Hardening
+
+M22.1 hardens the browser LLM rewrite review UI by enabling Jinja2 template-level autoescaping for `llm_review.html`. LLM candidates remain advisory only: the review UI does not automatically apply candidates, does not call any real LLM API, and does not bypass M5 truthfulness checks or the M14 confirmation gate.
+
 > Criteria-aware AI resume PDF generation agent with role-fit analysis, truthfulness checks, template matching, HTML rendering, and deterministic PDF workflow.
 
 `resume_pdf_agent` is a **criteria-aware AI resume PDF generation agent**. It does not call LLM APIs. Instead, it runs a deterministic 11-stage pipeline that compares a user's career profile against role-specific screening criteria, producing an ATS-friendly structured PDF resume and a static workflow dashboard.

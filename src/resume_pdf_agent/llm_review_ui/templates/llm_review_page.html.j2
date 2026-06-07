@@ -94,10 +94,10 @@
       {% if options.include_decision_controls %}
       <div class="decision-controls">
         {% for dopt in decision_options %}
-        <label class="decision-radio"><input type="radio" name="decision-{{ c.candidate_id }}" value="{{ dopt.value }}" onchange="updateDecision('{{ c.candidate_id }}', '{{ dopt.value }}')"> {{ dopt.label }}</label>
+        <label class="decision-radio"><input type="radio" name="decision-{{ c.candidate_id }}" value="{{ dopt.value }}" onchange='updateDecision({{ c.candidate_id|tojson }}, {{ dopt.value|tojson }})'> {{ dopt.label }}</label>
         {% endfor %}
-        <input type="text" class="decision-note" placeholder="Reviewer note (optional)" onchange="updateNote('{{ c.candidate_id }}', this.value)">
-        <input type="text" class="decision-replacement" placeholder="Replacement text (optional)" onchange="updateReplacement('{{ c.candidate_id }}', this.value)">
+        <input type="text" class="decision-note" placeholder="Reviewer note (optional)" onchange='updateNote({{ c.candidate_id|tojson }}, this.value)'>
+        <input type="text" class="decision-replacement" placeholder="Replacement text (optional)" onchange='updateReplacement({{ c.candidate_id|tojson }}, this.value)'>
       </div>
       {% endif %}
     </div>
@@ -138,7 +138,7 @@
   <p>It does NOT predict hiring probability or access internal screening standards.</p>
 </footer>
 </main>
-<script>var CANDIDATES = {{ candidates_json }};</script>
+<script>var CANDIDATES = {{ candidates|tojson }};</script>
 <script>{{ js }}</script>
 </body>
 </html>

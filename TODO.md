@@ -1,5 +1,10 @@
 # TODO
 
+## M22.1 Completed
+
+- M22.1 Safety Hardening / Autoescape Refactor 已完成：LLM 审阅 UI 启用 Jinja2 template-level autoescape，并保留候选仅供审阅、不自动应用、不调用真实 LLM API、不绕过 M5/M14 的安全边界。
+- M23 仍作为下一阶段可选里程碑；本次不实现自动应用候选或真实 LLM provider 集成。
+
 ## M0-M21 Completed ✅
 
 - M0：Project foundation。

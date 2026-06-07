@@ -41,6 +41,30 @@ def _make_mock_result() -> LLMRewriteResult:
     )
 
 
+def _make_malicious_result() -> LLMRewriteResult:
+    return LLMRewriteResult(
+        status=LLMRewriteStatus.REWRITTEN,
+        provider=LLMProviderType.MOCK,
+        candidates=[
+            LLMRewriteCandidate(
+                candidate_id='" onmouseover="alert(1)',
+                source_experience_id="</script><script>alert(\"xss\")</script>",
+                original_text="<script>alert(\"xss\")</script>",
+                rewritten_text="</textarea><script>alert(\"xss\")</script>",
+                provider=LLMProviderType.MOCK,
+                mode=LLMRewriteMode.CONSERVATIVE_POLISH,
+                status=LLMRewriteStatus.REWRITTEN,
+                validation_warnings=["javascript:alert(1)"],
+                risk_flags=["</script><script>alert(\"xss\")</script>"],
+                rationale='" onmouseover="alert(1)',
+            ),
+        ],
+        candidates_generated=1,
+        candidates_requiring_confirmation=1,
+        summary="</script><script>alert(\"xss\")</script>",
+    )
+
+
 # ---------------------------------------------------------------------------
 # escape_llm_review_ui_text
 # ---------------------------------------------------------------------------
@@ -150,6 +174,30 @@ def test_html_escapes_malicious_original_text(tmp_path: Path):
     assert "&lt;script&gt;" in html
 
 
+def test_html_autoescapes_malicious_candidate_contexts(tmp_path: Path):
+    """Template autoescape protects visible text, attributes, and textarea-adjacent strings."""
+    r = render_llm_review_ui_page(_make_malicious_result(), tmp_path / "xss_contexts.html")
+    html = r.html
+
+    assert "<script>alert" not in html
+    assert "</textarea><script" not in html
+    assert '" onmouseover="alert(1)' not in html
+    assert "&lt;script&gt;alert" in html
+    assert "&lt;/textarea&gt;&lt;script&gt;alert" in html
+    assert "&#34; onmouseover=&#34;alert(1)" in html
+
+
+def test_candidates_json_uses_html_safe_json(tmp_path: Path):
+    """Embedded candidate JSON cannot close the script tag or inject HTML."""
+    r = render_llm_review_ui_page(_make_malicious_result(), tmp_path / "xss_json.html")
+    html = r.html
+
+    assert "</script><script>alert" not in html
+    assert "\\u003c/script\\u003e\\u003cscript\\u003ealert" in html
+    assert "\\u003cscript\\u003ealert" in html
+    assert "var CANDIDATES =" in html
+
+
 # ---------------------------------------------------------------------------
 # static JS safety
 # ---------------------------------------------------------------------------
@@ -164,6 +212,7 @@ def test_static_js_no_network_primitives():
     assert "fetch(" not in js
     assert "xmlhttprequest" not in js
     assert "navigator.sendbeacon" not in js
+    assert "websocket" not in js
 
 
 def test_static_js_no_eval():
@@ -200,13 +249,13 @@ def test_static_js_has_decisions_json_logic():
 
 
 def test_static_css_no_external_import():
-    """The llm_review_page.css has no @import url()."""
+    """The llm_review_page.css has no external imports."""
     css_path = (
         Path(__file__).resolve().parent.parent
         / "src" / "resume_pdf_agent" / "llm_review_ui" / "static" / "llm_review_page.css"
     )
-    css = css_path.read_text(encoding="utf-8")
-    assert "@import url(" not in css
+    css = css_path.read_text(encoding="utf-8").lower()
+    assert "@import" not in css
 
 
 def test_static_css_no_external_urls():
@@ -215,5 +264,8 @@ def test_static_css_no_external_urls():
         Path(__file__).resolve().parent.parent
         / "src" / "resume_pdf_agent" / "llm_review_ui" / "static" / "llm_review_page.css"
     )
-    css = css_path.read_text(encoding="utf-8")
+    css = css_path.read_text(encoding="utf-8").lower()
+    assert "url(" not in css
     assert "url(http" not in css
+    assert "http://" not in css
+    assert "https://" not in css

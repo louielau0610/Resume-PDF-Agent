@@ -1,258 +1,131 @@
 # resume_pdf_agent
 
-## M29 人工最终编辑指引包
+安全优先、人工审阅驱动的简历 PDF 生成与 LLM 改写候选审阅工具。
 
-M29 已新增人工最终编辑指引包，可从 M28 审批检查清单生成 `llm_rewrite_human_final_edit_instruction_pack.json`、`.md` 和 `.html`。每个 `instruction_ready` 候选包含 8 个人工操作指引（证据收集/目标核实/原文检查/建议文本审阅/不支持声明检查/格式审阅/手动编辑指引/人工最终决定），默认状态均为 `not_started`。该指引包仅用于人工操作 — 系统不会授予任何最终批准，不会应用任何候选，任何实际编辑必须由人类在系统外部手动完成。
+`resume_pdf_agent` 是一个本地运行的 Python 项目，用于从结构化用户资料生成 ATS 友好的简历 HTML/PDF，并提供一条完整的 LLM 候选改写审阅链路：生成候选、浏览器本地审阅、汇总决策、生成应用计划、预览、验证、人工补丁预览、人工审批清单，以及最终人工编辑指引。系统不会自动把 LLM 候选写入最终简历。
 
-## M28 人工补丁审批检查清单
+## 核心价值
 
-M28 已新增人工审批检查清单，可从 M27 人工补丁预览生成 `llm_rewrite_manual_patch_approval_checklist.json`、`.md` 和 `.html`。每个 `review_required` 候选包含 8 个检查清单问题（真实性证据/目标映射/原文匹配/文本质量/不支持声明风险/确认门控/格式一致性/人工最终决定），默认答案均为 `not_reviewed`。该检查清单仅用于人工审阅 — 系统不会授予任何最终批准，不会应用任何候选，不会生成可执行补丁。
+- 生成结构化 `resume.html` 和 `resume.pdf`。
+- 使用 mock LLM workflow 生成可审阅的改写候选。
+- 通过本地静态 HTML 页面审阅候选，不上传数据。
+- 汇总本地审阅决策，生成 advisory summary。
+- 生成 plan / preview / validation / manual checklist / final edit instruction artifacts。
+- 始终保持 human-in-the-loop：最终简历内容不会被候选链路自动修改。
 
-## M27 人工补丁预览（不修改简历）
+## 安全承诺
 
-M27 已新增人工补丁预览层，可从 M24 应用计划和 M26 验证报告生成 `llm_rewrite_manual_patch_preview.json`、`.md` 和 `.html`。每个预览就绪的候选会显示原文、建议替换文本、目标段落/条目和显示专用的差异预览。该预览仅用于人工查看：不会生成可执行补丁，不会应用任何候选，不会修改 `resume.html` 或 `resume.pdf`，也不会绕过 M5 真实性检查或 M14 确认门控。
-
-## M26 严格预应用验证层
-
-M26 已新增严格预应用验证层，可对 M24 应用计划执行确定性安全检查。运行 `validate-llm-pre-application` 会生成 `llm_rewrite_pre_application_validation.json` 和 `.md`，明确列出哪些候选通过/阻塞/需要人工编辑/已排除/未映射。该验证仅用于验证目的：不会应用任何 LLM 候选，不会生成补丁，不会修改 `resume.html` 或 `resume.pdf`，也不会绕过 M5 真实性检查或 M14 确认门控。
-
-## M25 LLM 候选应用预览 UI
-
-M25 已新增本地静态 `llm_rewrite_application_preview.html`，可从 M24 的 `llm_rewrite_application_plan.json` 预览 planned / blocked / needs_manual_edit / excluded / unmapped 候选改写。该页面只用于人工检查和审计，不会应用 candidates，不会修改 `resume.html` 或 `resume.pdf`，也不会绕过 M5 真实性检查或 M14 确认门控。
-
-## M24 LLM 候选应用规划层
-
-M24 已新增 plan-only 的 LLM candidate application planning layer，可根据 `llm_rewrite_result.json`、`llm_rewrite_review_decisions.json` 和可选 M23 summary 生成 `llm_rewrite_application_plan.json` / `.md`。该计划仅用于人工审阅和审计，不会自动应用 candidates，不会修改 `resume.html` 或 `resume.pdf`，也不会绕过 M5 真实性检查或 M14 确认门控。
-
-## M23 LLM 审阅决策摘要
-
-M23 已新增本地 `llm_rewrite_review_decisions.json` 读取与摘要能力，可生成 `llm_rewrite_review_decision_summary.json` 和 `.md`，用于统计 approved / rejected / needs editing / ignored / notes / unknown IDs / duplicate entries。该能力仅生成 advisory summary，不会自动应用 LLM candidates，不会修改最终简历，也不会绕过 M5 真实性检查或 M14 确认门控。
-
-## M22.1 安全加固说明
-
-M22.1 已完成浏览器端 LLM 改写审阅 UI 的安全加固：`llm_review.html` 现在在 Jinja2 模板层启用 autoescape，并继续保持纯本地静态页面。LLM 候选内容仍然只是审阅建议，不会自动应用到简历，不会调用真实 LLM API，也不会绕过 M5 真实性检查或 M14 用户确认门控。
-
-> 基于岗位筛选指标的 AI 简历 PDF 生成 Agent：从职业画像、岗位 criteria、真实性检查到 HTML/PDF 输出的确定性工作流。
-
-`resume_pdf_agent` 是一个 **criteria-aware 的 AI 简历 PDF 生成 Agent**。它不调用 LLM API，而是通过 11 阶段确定性工作流，将用户职业画像与岗位筛选指标（criteria）进行系统比对，经过分类、差距分析、真实性检查、Bullet 增强、模板匹配、HTML 渲染等步骤，最终输出 ATS 友好的结构化 PDF 简历和静态工作流仪表板。
-
-## 当前状态：M29
-
-M29 人工最终编辑指引包为当前最新里程碑。全量测试 1023 通过，2 跳过。
-
-**已完成里程碑**：M0→M1→M2→M3→M4→M5→M6→M7→M8→M9→M10→M11→M12→M13→M14→M15→M16→M17→M18→M19→M20→M20.1→M21→M21.1→M22→M22.1→M23→M24→M25→M26→M26.1→M27→M27.1→M28→**M29** ✅
-
-## 架构概要
-
-```
-用户 JSON 输入
-→ Criteria 选择（6 个角色 profile）
-→ 简历类型分类（8 种类型）
-→ 差距分析
-→ 真实性检查
-→ Bullet 增强
-→ 模板匹配（8 个模板）
-→ HTML 渲染
-→ PDF 生成（Mock/WeasyPrint/Playwright）
-→ 前端仪表板（cinematic dark 主题）
-```
-
-详见 [`docs/architecture_diagram_v0.md`](docs/architecture_diagram_v0.md) 查看完整 Mermaid 架构图。
-
-## 核心特性
-
-| 特性 | 说明 |
-|------|------|
-| 🎯 Criteria-Aware | 以岗位筛选指标为导向，非简单模板填空 |
-| 🔍 真实性优先 | 内置 truthfulness checker，检测无证据声明 |
-| 📊 可解释性 | 每个决策都有 JSON 产物记录原因 |
-| 🔒 完全本地 | 无 LLM API 调用、无网络依赖、不上传数据 |
-| 🎨 Cinematic Dark 仪表板 | 纯 CSS 静态工作流仪表板，无外部依赖 |
-| 🧪 305+ 测试 | 完整测试覆盖，确定性可复现 |
+- 不自动应用 LLM candidates。
+- 不生成可执行 patch。
+- 系统不授予最终批准。
+- 仅支持 PDF 导出格式。
+- 所有 LLM 候选都需要人工审阅。
+- 浏览器页面均为本地静态 HTML，无服务器提交。
+- 不调用真实 LLM API；mock workflow 可离线运行。
+- 不声称了解公司内部筛选标准。
+- 不预测录用、面试或 offer 结果。
 
 ## 快速开始
 
-### 环境要求
-
-- Python 3.11+
-- 无需 GPU、无需 LLM API key、无需网络
-
-### 安装
-
 ```bash
-git clone https://github.com/louielau0610/Resume-PDF-Agent.git
-cd Resume-PDF-Agent
-pip install -e ".[dev]"
+py -m resume_pdf_agent run-sample --output-dir outputs/quickstart --pdf-backend mock --write-frontend-page
 ```
 
-### 运行演示
-
-**Windows：**
+完整 release demo：
 
 ```bash
-# 编译检查
-py -m compileall src tests
-
-# 运行测试
-py -m pytest -q
-
-# 运行示例工作流并生成仪表板
-py -m resume_pdf_agent run-sample --output-dir outputs/demo_run --pdf-backend mock --write-frontend-page
+py scripts/run_demo_workflow.py --output-dir outputs/release_demo --pdf-backend mock --include-llm-mock --write-llm-review-ui --write-llm-review-decision-summary --write-llm-application-plan --write-llm-application-preview-ui --write-llm-pre-application-validation --write-llm-manual-patch-preview --write-llm-manual-approval-checklist --write-llm-human-final-edit-pack
 ```
 
-**macOS / Linux：**
+## 主要输出
+
+基础 workflow：
+
+- `resume.html`: 结构化简历 HTML。
+- `resume.pdf`: mock / WeasyPrint / Playwright 后端生成的 PDF。
+- `index.html`: 本地 workflow dashboard。
+- `workflow_result.json`: 完整运行结果。
+
+LLM 审阅链路：
+
+- `llm_rewrite_result.json`: LLM 改写候选。
+- `llm_review.html`: 本地候选审阅 UI。
+- `llm_rewrite_review_decisions.json`: 本地审阅决策。
+- `llm_rewrite_review_decision_summary.json/.md`: 决策汇总。
+- `llm_rewrite_application_plan.json/.md`: plan-only 应用计划。
+- `llm_rewrite_application_preview.html`: 人工预览 UI。
+- `llm_rewrite_pre_application_validation.json/.md`: 严格预应用验证。
+- `llm_rewrite_manual_patch_preview.json/.md/.html`: 展示用人工补丁预览。
+- `llm_rewrite_manual_patch_approval_checklist.json/.md/.html`: 人工审批清单。
+- `llm_rewrite_human_final_edit_instruction_pack.json/.md/.html`: 最终人工编辑指引。
+
+## CLI 概览
 
 ```bash
-python -m compileall src tests
-pytest -q
-python -m resume_pdf_agent run-sample --output-dir outputs/demo_run --pdf-backend mock --write-frontend-page
+py -m resume_pdf_agent run-sample --output-dir outputs/demo --pdf-backend mock
+py -m resume_pdf_agent run --input data/sample_inputs/sample_data_science_user.json --output-dir outputs/custom
+py -m resume_pdf_agent render-llm-review-ui --result outputs/demo/llm_rewrite_result.json --output outputs/demo/llm_review.html
+py -m resume_pdf_agent summarize-llm-review-decisions --decisions outputs/demo/llm_rewrite_review_decisions.json --result outputs/demo/llm_rewrite_result.json
+py -m resume_pdf_agent plan-llm-candidate-application --result outputs/demo/llm_rewrite_result.json --decisions outputs/demo/llm_rewrite_review_decisions.json
+py -m resume_pdf_agent render-llm-application-preview-ui --plan outputs/demo/llm_rewrite_application_plan.json --output outputs/demo/llm_rewrite_application_preview.html
+py -m resume_pdf_agent validate-llm-pre-application --plan outputs/demo/llm_rewrite_application_plan.json
+py -m resume_pdf_agent preview-llm-manual-patch --plan outputs/demo/llm_rewrite_application_plan.json --validation outputs/demo/llm_rewrite_pre_application_validation.json
+py -m resume_pdf_agent build-llm-manual-approval-checklist --preview outputs/demo/llm_rewrite_manual_patch_preview.json
+py -m resume_pdf_agent build-llm-human-final-edit-pack --checklist outputs/demo/llm_rewrite_manual_patch_approval_checklist.json
 ```
 
-### 在浏览器中查看
+## 架构摘要
 
-```bash
-# 查看简历 HTML
-# 打开 outputs/demo_run/resume.html
+```text
+UserProfile + ResumeContent
+  -> criteria selection
+  -> resume type classification
+  -> gap analysis
+  -> truthfulness check
+  -> bullet enhancement
+  -> template matching
+  -> HTML rendering
+  -> PDF generation
+  -> optional static dashboards
 
-# 查看工作流仪表板
-# 打开 outputs/demo_run/index.html
+Optional LLM review chain:
+  M16 rewrite candidates
+  -> M22 local review UI
+  -> M23 decision summary
+  -> M24 application plan
+  -> M25 preview UI
+  -> M26 validation
+  -> M27 manual patch preview
+  -> M28 manual approval checklist
+  -> M29 human final edit instruction pack
 ```
 
-## CLI 命令
+## 当前发布状态
 
-```bash
-# 使用内置示例数据运行
-py -m resume_pdf_agent run-sample --output-dir outputs/my_run --pdf-backend mock --write-frontend-page
-
-# 使用自定义 JSON 输入运行
-py -m resume_pdf_agent run --input path/to/input.json --output-dir outputs/my_run
-
-# 查看可用的 criteria profile
-py -m resume_pdf_agent list-criteria
-
-# 查看可用的模板
-py -m resume_pdf_agent list-templates
-```
-
-## 输出产物
-
-运行演示后，`outputs/demo_run/` 目录包含：
-
-| 产物 | 说明 |
-|------|------|
-| `criteria_profile.json` | 匹配的岗位 criteria profile |
-| `classification.json` | 简历类型分类结果 |
-| `gap_analysis.json` | Criteria 差距分析 |
-| `truthfulness.json` | 真实性检查结果 |
-| `enhancement.json` | Bullet 增强候选项 |
-| `template_selection.json` | 模板匹配结果 |
-| `workflow_result.json` | 完整工作流结果 |
-| `resume.html` | ATS 友好的结构化 HTML 简历 |
-| `resume.pdf` | PDF 简历 |
-| `index.html` | 静态工作流仪表板 |
-
-## 支持的 Criteria Profile
-
-- `data_science_intern` — 数据科学实习
-- `software_engineering_intern` — 软件工程实习
-- `product_manager_intern` — 产品经理实习
-- `finance_intern` — 金融实习
-- `consulting_intern` — 咨询实习
-- `research_assistant` — 研究助理
-
-## 支持的模板
-
-- `data_science_technical` — 数据科学技术类
-- `software_engineering_technical` — 软件工程技术类
-- `finance_business` — 金融商务类
-- `consulting_business` — 咨询商务类
-- `research_cv` — 学术研究 CV
-- `product_manager` — 产品经理
-- `design_portfolio_light` — 设计作品集轻量版
-- `ats_student_basic` — ATS 基础学生模板
-
-## 安全边界
-
-✅ **我们做的：**
-- 确定性规则分析（无 LLM 幻觉风险）
-- 完全本地运行（无数据上传）
-- 真实性检查（标注 unsupported claims）
-- 所有决策可追溯（JSON 产物）
-
-❌ **我们不做的：**
-- 不调用 LLM API（GPT-4、Claude、Gemini 等）
-- 不声称知道任何公司的内部筛选标准
-- 不预测录用概率、面试概率或 offer 概率
-- 不导出 Word (.docx)、JPG、PNG
-- 不提供 Web 应用（无 FastAPI/Flask/React）
-- 不联网搜索或抓取数据
+- Release candidate: v0.1.0
+- Scope: M0-M30 complete
+- Baseline: full pytest expected at `1023 passed, 2 skipped`
+- Export format: `pdf` only
+- README: Chinese-first
+- No more checklist layers are planned for v0.1.0. Future work should be based on real user feedback.
 
 ## 已知限制
 
-- 静态 criteria knowledge base（6 个角色 profile）
-- 无真实 JD（岗位描述）解析
-- 无 LLM 辅助改写
-- Mock PDF backend 用于演示（WeasyPrint 可选）
-- 仅 PDF 导出格式
-- 静态前端仪表板（无浏览器端工作流执行）
-- ~~无用户确认工作流~~ → M14 已实现 ✅
-- 无视觉回归测试
-- 无浏览器端确认 UI
+- 默认演示使用 mock PDF / mock LLM workflow。
+- 真实 LLM provider integration 不在 v0.1.0 范围内。
+- LLM 候选链路只产生审阅与人工操作 artifacts，不修改最终简历。
+- 不导出 DOCX/JPG/PNG。
+- 浏览器页面是本地静态页面，不是生产 Web 应用。
 
-详见 [`docs/limitations_and_roadmap_v0.md`](docs/limitations_and_roadmap_v0.md)。
+## 文档
 
-## 路线图
+- [`docs/demo_walkthrough_v0.md`](docs/demo_walkthrough_v0.md)
+- [`docs/launch_notes_v0.md`](docs/launch_notes_v0.md)
+- [`docs/release_validation_report_v0.md`](docs/release_validation_report_v0.md)
+- [`docs/promotion_copy_v0.md`](docs/promotion_copy_v0.md)
+- [`docs/architecture_diagram_v0.md`](docs/architecture_diagram_v0.md)
+- [`docs/limitations_and_roadmap_v0.md`](docs/limitations_and_roadmap_v0.md)
 
-| 里程碑 | 内容 | 状态 |
-|--------|------|------|
-| M0-M19 | 项目基础 → 完整管线 + 文档 + API 层 | ✅ 已完成 |
-| M20 | 浏览器端确认 UI | 🔜 规划中 |
-
-## 测试
-
-```bash
-# Windows
-py -m compileall src tests scripts
-py -m pytest -q
-
-# macOS / Linux
-python -m compileall src tests scripts
-pytest -q
-```
-
-## 项目结构
-
-```
-resume_pdf_agent/
-├── src/resume_pdf_agent/   # 核心源代码
-│   ├── models/             # Pydantic 数据模型 (M1)
-│   ├── criteria/           # Criteria knowledge base (M2)
-│   ├── classifier/         # 简历类型分类 (M3)
-│   ├── gap_analysis/       # 差距分析 (M4)
-│   ├── truthfulness/       # 真实性检查 (M5)
-│   ├── enhancement/        # Bullet 增强 (M6)
-│   ├── templates/          # 模板匹配 (M7)
-│   ├── rendering/          # HTML 渲染 (M8)
-│   ├── pdf/                # PDF 生成 (M9)
-│   ├── workflow/           # 工作流编排 (M10)
-│   └── frontend/           # 前端仪表板 (M11/M12)
-├── data/                   # 示例输入和 profile 数据
-├── docs/                   # 文档 (M13)
-├── examples/               # 示例说明 (M13)
-├── scripts/                # 演示和验证脚本 (M13)
-└── tests/                  # 测试
-```
-
-## 文档索引
-
-- [`docs/demo_walkthrough_v0.md`](docs/demo_walkthrough_v0.md) — 演示导览
-- [`docs/architecture_diagram_v0.md`](docs/architecture_diagram_v0.md) — 架构图
-- [`docs/github_project_overview_v0.md`](docs/github_project_overview_v0.md) — 项目概览
-- [`docs/limitations_and_roadmap_v0.md`](docs/limitations_and_roadmap_v0.md) — 限制与路线图
-- [`docs/release_checklist_v0.md`](docs/release_checklist_v0.md) — 发布检查清单
-- [`PROJECT_STATUS.md`](PROJECT_STATUS.md) — 项目状态
-- [`TODO.md`](TODO.md) — 待办与路线图
-
-## 许可证
+## License
 
 MIT

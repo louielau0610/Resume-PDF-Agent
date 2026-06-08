@@ -1,90 +1,125 @@
-﻿# 演示导览 (Demo Walkthrough v0)
+# Demo Walkthrough v0
 
-> 中文优先 | Chinese-first
+This walkthrough demonstrates the v0.1.0 release workflow. It uses local sample data, mock PDF generation, and mock LLM rewrite candidates. No real LLM API is called.
 
-本文档说明如何在本地完整运行 `resume_pdf_agent` 的各种演示模式。
-
-## 环境要求
-
-- Python 3.11+
-- Windows（`py` launcher）或 macOS/Linux（`python3`）
-- 无需 GPU、无需 LLM API key、无需网络
-
-## 安装
+## 1. Run the basic sample
 
 ```bash
-git clone https://github.com/louielau0610/Resume-PDF-Agent.git
-cd Resume-PDF-Agent
-pip install -e ".[dev]"
+py -m resume_pdf_agent run-sample --output-dir outputs/quickstart --pdf-backend mock --write-frontend-page
 ```
 
-## 验证环境
+Expected core artifacts:
+
+- `outputs/quickstart/resume.html`
+- `outputs/quickstart/resume.pdf`
+- `outputs/quickstart/index.html`
+- `outputs/quickstart/workflow_result.json`
+
+## 2. Run the full release demo
 
 ```bash
-py -m compileall src tests scripts
-py -m pytest -q
+py scripts/run_demo_workflow.py --output-dir outputs/release_demo --pdf-backend mock --include-llm-mock --write-llm-review-ui --write-llm-review-decision-summary --write-llm-application-plan --write-llm-application-preview-ui --write-llm-pre-application-validation --write-llm-manual-patch-preview --write-llm-manual-approval-checklist --write-llm-human-final-edit-pack
 ```
 
-## 演示模式
+This command runs the normal resume workflow and then generates the complete safe LLM candidate review chain.
 
-### 1. 基线工作流
+## 3. Generate PDF
 
-```bash
-py -m resume_pdf_agent run-sample --output-dir outputs/demo_run --pdf-backend mock --write-frontend-page
-```
+The workflow writes:
 
-产物：`resume.html`, `resume.pdf`, `index.html`, `confirmation_packet.json`
+- `resume.html`
+- `resume.pdf`
 
-### 2. JD 增强模式
+The mock backend writes a deterministic PDF-like artifact beginning with `%PDF`, which is sufficient for local test and release validation.
 
-```bash
-py -m resume_pdf_agent run-sample --output-dir outputs/demo_jd --pdf-backend mock --jd-file data/sample_inputs/sample_data_science_jd.txt --use-user-provided-jd --write-frontend-page
-```
+## 4. Generate mock LLM candidates
 
-额外产物：`parsed_jd.json`, `jd_criteria_profile.json`
+With `--include-llm-mock`, the demo writes:
 
-### 3. Mock LLM 改写模式
+- `llm_rewrite_result.json`
 
-```bash
-py -m resume_pdf_agent run-sample --output-dir outputs/demo_llm --pdf-backend mock --enable-llm-rewriting --llm-provider mock --write-frontend-page
-```
+These candidates are suggestions only. They are not applied to the final resume.
 
-额外产物：`llm_rewrite_result.json`
+## 5. Review UI
 
-### 4. 确认门控模式
+With `--write-llm-review-ui`, the demo writes:
 
-```bash
-py -m resume_pdf_agent run-sample --output-dir outputs/demo_gate --pdf-backend mock --require-confirmation-before-pdf --write-frontend-page
-```
+- `llm_review.html`
 
-### 5. 视觉回归检查
+This is a local static browser page for inspecting LLM rewrite candidates. It does not submit data and does not modify resume files.
 
-```bash
-py scripts/run_visual_regression_checks.py --output-dir outputs/visual_regression_check
-```
+## 6. Decision summary
 
-### 6. PDF Backend 诊断
+With `--write-llm-review-decision-summary`, the demo creates deterministic sample decisions and writes:
 
-```bash
-py -m resume_pdf_agent check-pdf-backend
-```
+- `llm_rewrite_review_decisions.json`
+- `llm_rewrite_review_decision_summary.json`
+- `llm_rewrite_review_decision_summary.md`
 
-### 7. API 烟雾测试（无需 FastAPI）
+The summary is advisory and does not apply candidates.
 
-```bash
-py -c "from resume_pdf_agent.api import APIWorkflowRequest, APIWorkflowMode, run_workflow_from_api_request; req=APIWorkflowRequest(mode=APIWorkflowMode.SAMPLE, output_dir='outputs/api_demo', pdf_backend='mock', write_frontend_page=True); res=run_workflow_from_api_request(req); print(res.status)"
-```
+## 7. Application plan
 
-## Mock PDF Backend
+With `--write-llm-application-plan`, the demo writes:
 
-演示默认使用 `--pdf-backend mock`，生成最小有效 PDF，无需 WeasyPrint。
+- `llm_rewrite_application_plan.json`
+- `llm_rewrite_application_plan.md`
 
-## v0 限制
+This plan classifies candidates as planned, blocked, needs manual edit, excluded, or unmapped. It remains plan-only.
 
-- 无真实外部 LLM 集成（仅 mock）
-- 无生产 Web 应用
-- 无浏览器端确认/JD上传/改写审阅 UI
-- 无 Word/JPG/PNG 导出
-- 无认证/数据库
+## 8. Application preview
 
-详见 `limitations_and_roadmap_v0.md` 和 `commercial_product_roadmap_v0.md`。
+With `--write-llm-application-preview-ui`, the demo writes:
+
+- `llm_rewrite_application_preview.html`
+
+This page previews candidate text and target mapping for manual inspection only.
+
+## 9. Pre-application validation
+
+With `--write-llm-pre-application-validation`, the demo writes:
+
+- `llm_rewrite_pre_application_validation.json`
+- `llm_rewrite_pre_application_validation.md`
+
+This validation checks whether candidate application would be safe to consider manually. It does not change the resume.
+
+## 10. Manual patch preview
+
+With `--write-llm-manual-patch-preview`, the demo writes:
+
+- `llm_rewrite_manual_patch_preview.json`
+- `llm_rewrite_manual_patch_preview.md`
+- `llm_rewrite_manual_patch_preview.html`
+
+This is a display-only preview. It is not an executable patch.
+
+## 11. Manual approval checklist
+
+With `--write-llm-manual-approval-checklist`, the demo writes:
+
+- `llm_rewrite_manual_patch_approval_checklist.json`
+- `llm_rewrite_manual_patch_approval_checklist.md`
+- `llm_rewrite_manual_patch_approval_checklist.html`
+
+The checklist requires human review. The system does not grant approval.
+
+## 12. Human final edit instruction pack
+
+With `--write-llm-human-final-edit-pack`, the demo writes:
+
+- `llm_rewrite_human_final_edit_instruction_pack.json`
+- `llm_rewrite_human_final_edit_instruction_pack.md`
+- `llm_rewrite_human_final_edit_instruction_pack.html`
+
+This is the final human-only instruction layer. Any actual edit must be performed manually outside the system.
+
+## Safety Checks
+
+The release demo should preserve these boundaries:
+
+- `resume.html` and `resume.pdf` are not modified by LLM candidate artifacts.
+- No `.patch` or `.diff` files are generated.
+- No `applied_candidates` field appears in final workflow artifacts.
+- No `patch_operations` field appears in final workflow artifacts.
+- Export format remains `pdf` only.

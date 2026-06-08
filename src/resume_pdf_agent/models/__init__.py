@@ -91,6 +91,13 @@ from resume_pdf_agent.models.llm_application_preview_ui import (
     LLMApplicationPreviewUIResult,
     LLMApplicationPreviewUIStatus,
 )
+from resume_pdf_agent.models.llm_human_final_edit_pack import (
+    LLMHumanFinalEditInstruction,
+    LLMHumanFinalEditInstructionPack,
+    LLMHumanFinalEditInstructionType,
+    LLMHumanFinalEditItem,
+    LLMHumanFinalEditItemStatus,
+)
 from resume_pdf_agent.models.llm_manual_approval_checklist import (
     LLMManualApprovalChecklistItem,
     LLMManualApprovalChecklistItemStatus,
@@ -271,6 +278,11 @@ __all__ = [
     "LLMManualApprovalChecklistQuestion",
     "LLMManualApprovalChecklistQuestionType",
     "LLMManualApprovalChecklistReport",
+    "LLMHumanFinalEditInstruction",
+    "LLMHumanFinalEditInstructionPack",
+    "LLMHumanFinalEditInstructionType",
+    "LLMHumanFinalEditItem",
+    "LLMHumanFinalEditItemStatus",
     "MatchLevel",
     "Metric",
     "MetricStatus",

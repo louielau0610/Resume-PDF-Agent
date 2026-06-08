@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLM Human Final Edit Instruction Pack / LLM人工最终编辑指引包</title>
+<style>{{ css }}</style>
+</head>
+<body>
+<main class="app-shell">
+<header class="top-bar">
+  <span class="top-bar-brand">Human Final Edit Instruction Pack</span>
+  <span class="top-bar-badge">Local Static Page — Instructions Only</span>
+</header>
+
+<section class="hero-panel">
+  <h1 class="hero-title">LLM Human Final Edit Instruction Pack / LLM人工最终编辑指引包</h1>
+  <p class="hero-subtitle">Human-instruction-only — no candidates applied, no final approval granted, no executable patch generated.</p>
+</section>
+
+<section class="section-panel safety-notice">
+  <div class="safety-notice-text">{{ pack.safety_notice }}</div>
+</section>
+
+<section class="section-panel">
+  <div class="section-panel-header"><h2 class="section-panel-title">Summary / 摘要</h2></div>
+  <div class="summary-cards">
+    <div class="summary-card"><span class="sc-label">Total</span><span class="sc-value">{{ pack.total_items }}</span></div>
+    <div class="summary-card"><span class="sc-label">Instruction Ready</span><span class="sc-value">{{ pack.instruction_ready_count }}</span></div>
+    <div class="summary-card"><span class="sc-label">Blocked</span><span class="sc-value">{{ pack.blocked_count }}</span></div>
+    <div class="summary-card"><span class="sc-label">Needs Edit</span><span class="sc-value">{{ pack.needs_manual_edit_count }}</span></div>
+    <div class="summary-card"><span class="sc-label">Excluded</span><span class="sc-value">{{ pack.excluded_count }}</span></div>
+    <div class="summary-card"><span class="sc-label">Unmapped</span><span class="sc-value">{{ pack.unmapped_count }}</span></div>
+  </div>
+</section>
+
+<section class="section-panel">
+  <div class="section-panel-header"><h2 class="section-panel-title">Items / 项目</h2></div>
+  <div id="candidates-container">
+    {% for item in pack.items %}
+    <div class="candidate-card" data-status="{{ item.item_status.value }}">
+      <div class="candidate-header">
+        <span class="candidate-id">{{ item.candidate_id }}</span>
+        <span class="candidate-status {{ item.item_status.value }}">{{ item.item_status.value }}</span>
+      </div>
+      {% if item.original_text %}
+      <div class="text-block"><div class="text-label">Original</div><div class="text-content">{{ item.original_text }}</div></div>
+      {% endif %}
+      {% if item.proposed_text %}
+      <div class="text-block proposed"><div class="text-label">Proposed (copy for manual review only)</div><div class="text-content">{{ item.proposed_text }}</div></div>
+      {% endif %}
+      {% if item.required_evidence %}
+      <div class="evidence-section">
+        <div class="text-label">Required Evidence / 需要收集的证据</div>
+        {% for e in item.required_evidence %}<div class="evidence-item">{{ e }}</div>{% endfor %}
+      </div>
+      {% endif %}
+      {% if item.human_instructions %}
+      <div class="instructions-section">
+        <div class="text-label">Human Instructions / 人工操作指引</div>
+        {% for inst in item.human_instructions %}
+        <div class="instruction-item">
+          <div class="inst-title">{{ inst.title }} <span class="inst-status">[{{ inst.default_status }}]</span></div>
+          <div class="inst-desc">{{ inst.description }}</div>
+          {% if inst.safety_note %}<div class="inst-safety">{{ inst.safety_note }}</div>{% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<footer class="footer-note">
+  <p>Human-instruction-only local static page. No final approval has been granted. No candidates have been applied. No executable patch has been generated.</p>
+  <p>M5 truthfulness and M14 confirmation safeguards still apply.</p>
+</footer>
+</main>
+<script>var ITEMS = {{ items_json }};</script>
+<script>{{ js }}</script>
+</body>
+</html>

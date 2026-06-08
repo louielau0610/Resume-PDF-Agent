@@ -71,6 +71,7 @@ _EXPECTED_CORE_PACKAGES: list[str] = [
     "llm_pre_application_validation",
     "llm_manual_patch_preview",
     "llm_manual_approval_checklist",
+    "llm_human_final_edit_pack",
     "visual_regression",
 ]
 

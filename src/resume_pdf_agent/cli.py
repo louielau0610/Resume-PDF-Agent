@@ -886,5 +886,59 @@ def build_llm_manual_approval_checklist(
         typer.echo(f"HTML checklist:       {output_html}")
 
 
+@app.command("build-llm-human-final-edit-pack")
+def build_llm_human_final_edit_pack(
+    checklist_path: str = typer.Option(
+        ..., "--checklist",
+        help="Path to llm_rewrite_manual_patch_approval_checklist.json.",
+    ),
+    output_json: str | None = typer.Option(
+        None, "--output-json",
+        help="Optional output path for llm_rewrite_human_final_edit_instruction_pack.json.",
+    ),
+    output_md: str | None = typer.Option(
+        None, "--output-md",
+        help="Optional output path for llm_rewrite_human_final_edit_instruction_pack.md.",
+    ),
+    output_html: str | None = typer.Option(
+        None, "--output-html",
+        help="Optional output path for llm_rewrite_human_final_edit_instruction_pack.html.",
+    ),
+    strict: bool = typer.Option(
+        False, "--strict/--no-strict",
+        help="Not used; reserved for future strict-mode checks.",
+    ),
+) -> None:
+    """Build a human-only final edit instruction pack from M28 checklist. Instructions only — no candidates applied, no final approval granted."""
+    from resume_pdf_agent.llm_human_final_edit_pack import write_human_final_edit_pack_to_files
+
+    try:
+        pack = write_human_final_edit_pack_to_files(
+            checklist_path=checklist_path,
+            output_json_path=output_json,
+            output_md_path=output_md,
+            output_html_path=output_html,
+        )
+    except Exception as exc:
+        typer.echo(f"Error: {exc}", err=True)
+        raise typer.Exit(code=1)
+
+    typer.echo("Human Final Edit Instruction Pack (human-instruction-only)")
+    typer.echo("No final approval granted; no candidates applied; no executable patch generated.")
+    typer.echo(f"Total items:          {pack.total_items}")
+    typer.echo(f"Instruction ready:    {pack.instruction_ready_count}")
+    typer.echo(f"Blocked:              {pack.blocked_count}")
+    typer.echo(f"Needs manual edit:    {pack.needs_manual_edit_count}")
+    typer.echo(f"Excluded:             {pack.excluded_count}")
+    typer.echo(f"Unmapped:             {pack.unmapped_count}")
+    typer.echo(f"Skipped:              {pack.skipped_count}")
+    if output_json:
+        typer.echo(f"JSON pack:            {output_json}")
+    if output_md:
+        typer.echo(f"Markdown pack:        {output_md}")
+    if output_html:
+        typer.echo(f"HTML pack:            {output_html}")
+
+
 if __name__ == "__main__":
     app()

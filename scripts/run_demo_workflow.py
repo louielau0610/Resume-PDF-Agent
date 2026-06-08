@@ -130,6 +130,12 @@ def main() -> None:
         default=False,
         help="Build a manual approval checklist from patch preview. Requires --include-llm-mock.",
     )
+    parser.add_argument(
+        "--write-llm-human-final-edit-pack",
+        action="store_true",
+        default=False,
+        help="Build a human-only final edit instruction pack from checklist. Requires --include-llm-mock.",
+    )
     args = parser.parse_args()
 
     sample_input = _find_sample_input()
@@ -241,6 +247,7 @@ def main() -> None:
         or args.write_llm_pre_application_validation
         or args.write_llm_manual_patch_preview
         or args.write_llm_manual_approval_checklist
+        or args.write_llm_human_final_edit_pack
     ) and args.include_llm_mock:
         try:
             import json
@@ -386,6 +393,24 @@ def main() -> None:
                     print(f"  M28 checklist MD:    {cl_md}")
                     print(f"  M28 checklist HTML:  {cl_html}")
                     print(f"  M28 review/blocked:  {cl_report.review_required_count}/{cl_report.blocked_count}")
+                if args.write_llm_human_final_edit_pack:
+                    from resume_pdf_agent.llm_human_final_edit_pack import (
+                        write_human_final_edit_pack_to_files,
+                    )
+                    cl_for_ep = Path(args.output_dir) / "llm_rewrite_manual_patch_approval_checklist.json"
+                    ep_json = Path(args.output_dir) / "llm_rewrite_human_final_edit_instruction_pack.json"
+                    ep_md = Path(args.output_dir) / "llm_rewrite_human_final_edit_instruction_pack.md"
+                    ep_html = Path(args.output_dir) / "llm_rewrite_human_final_edit_instruction_pack.html"
+                    ep_report = write_human_final_edit_pack_to_files(
+                        checklist_path=cl_for_ep,
+                        output_json_path=ep_json,
+                        output_md_path=ep_md,
+                        output_html_path=ep_html,
+                    )
+                    print(f"  M29 edit pack JSON:  {ep_json}")
+                    print(f"  M29 edit pack MD:    {ep_md}")
+                    print(f"  M29 edit pack HTML:  {ep_html}")
+                    print(f"  M29 ready/blocked:   {ep_report.instruction_ready_count}/{ep_report.blocked_count}")
         except Exception as exc:
             print(f"  LLM planning:        ERROR ({exc})")
 

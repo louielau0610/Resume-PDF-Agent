@@ -1,5 +1,9 @@
 # resume_pdf_agent
 
+## M29 Human-Only Final Edit Instruction Pack
+
+M29 adds a human-only final edit instruction pack that generates `llm_rewrite_human_final_edit_instruction_pack.json`, `.md`, and `.html` from M28 approval checklists. Each `instruction_ready` candidate includes 8 human instructions (evidence collection, target verification, original text check, proposed text review, unsupported claim review, formatting review, manual edit guidance, final human decision), with all defaults set to `not_started`. This is instructions-only — no final approval is granted, no candidates are applied, and any actual edit must be made manually by a human outside this system.
+
 ## M28 Manual Patch Approval Checklist
 
 M28 adds a manual approval checklist that generates `llm_rewrite_manual_patch_approval_checklist.json`, `.md`, and `.html` from M27 manual patch previews. Each `review_required` candidate includes 8 checklist questions (truthfulness evidence, target mapping, original text match, text quality, unsupported claim risk, confirmation gate, formatting consistency, human final decision), with all defaults set to `not_reviewed`. This is checklist-only — no final approval is granted by the system, no candidates are applied, and no executable patch is generated.
@@ -32,11 +36,11 @@ M22.1 hardens the browser LLM rewrite review UI by enabling Jinja2 template-leve
 
 `resume_pdf_agent` is a **criteria-aware AI resume PDF generation agent**. It does not call LLM APIs. Instead, it runs a deterministic 11-stage pipeline that compares a user's career profile against role-specific screening criteria, producing an ATS-friendly structured PDF resume and a static workflow dashboard.
 
-## Current Status: M28
+## Current Status: M29
 
-M28 manual approval checklist is the current milestone. Full test suite: 1005 passed, 2 skipped.
+M29 human-only final edit instruction pack is the current milestone. Full test suite: 1023 passed, 2 skipped.
 
-**Completed Milestones**: M0→M1→M2→M3→M4→M5→M6→M7→M8→M9→M10→M11→M12→M13→M14→M15→M16→M17→M18→M19→M20→M20.1→M21→M21.1→M22→M22.1→M23→M24→M25→M26→M26.1→M27→M27.1→**M28** ✅
+**Completed Milestones**: M0→M1→M2→M3→M4→M5→M6→M7→M8→M9→M10→M11→M12→M13→M14→M15→M16→M17→M18→M19→M20→M20.1→M21→M21.1→M22→M22.1→M23→M24→M25→M26→M26.1→M27→M27.1→M28→**M29** ✅
 
 ## Architecture Overview
 

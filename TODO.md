@@ -58,7 +58,8 @@
 - M26.1：Verification and Documentation Completion ✅。
 - M27：Manual Patch Preview Without Resume Mutation ✅。
 - M27.1：Strict Validation for M27 ✅。
-- M28：Manual Patch Approval Checklist ✅（当前）。
+- M28：Manual Patch Approval Checklist ✅。
+- M29：Human-Only Final Edit Instruction Pack ✅（当前）。
 
 ## M21: Browser JD Upload UI ✅ (current)
 

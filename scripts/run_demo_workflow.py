@@ -106,6 +106,12 @@ def main() -> None:
         default=False,
         help="Create a plan-only LLM candidate application artifact. Requires --include-llm-mock.",
     )
+    parser.add_argument(
+        "--write-llm-application-preview-ui",
+        action="store_true",
+        default=False,
+        help="Write a local static manual LLM application preview page. Requires --include-llm-mock.",
+    )
     args = parser.parse_args()
 
     sample_input = _find_sample_input()
@@ -172,6 +178,8 @@ def main() -> None:
         print("Warning: --write-llm-review-decision-summary requires --include-llm-mock. Skipping.")
     if args.write_llm_application_plan and not args.include_llm_mock:
         print("Warning: --write-llm-application-plan requires --include-llm-mock. Skipping.")
+    if args.write_llm_application_preview_ui and not args.include_llm_mock:
+        print("Warning: --write-llm-application-preview-ui requires --include-llm-mock. Skipping.")
 
     # --- Run workflow --------------------------------------------------
     print(f"Running workflow (pdf_backend={args.pdf_backend}) ...")
@@ -208,12 +216,19 @@ def main() -> None:
     if result.llm_review_ui_path:
         print(f"  LLM review UI:       {result.llm_review_ui_path}")
 
-    if (args.write_llm_review_decision_summary or args.write_llm_application_plan) and args.include_llm_mock:
+    if (
+        args.write_llm_review_decision_summary
+        or args.write_llm_application_plan
+        or args.write_llm_application_preview_ui
+    ) and args.include_llm_mock:
         try:
             import json
 
             from resume_pdf_agent.llm_application_plan import (
                 plan_llm_candidate_application_to_files,
+            )
+            from resume_pdf_agent.llm_application_preview_ui import (
+                render_llm_application_preview_ui_from_plan_file,
             )
             from resume_pdf_agent.llm_review_decisions import (
                 summarize_llm_review_decisions_to_files,
@@ -271,18 +286,31 @@ def main() -> None:
             print(f"  LLM decisions:       {decisions_path}")
             print(f"  LLM summary JSON:    {summary_json}")
             print(f"  LLM summary MD:      {summary_md}")
-            if args.write_llm_application_plan:
+            if args.write_llm_application_plan or args.write_llm_application_preview_ui:
                 plan_json = Path(args.output_dir) / "llm_rewrite_application_plan.json"
                 plan_md = Path(args.output_dir) / "llm_rewrite_application_plan.md"
-                plan_llm_candidate_application_to_files(
-                    result_path=result_path,
-                    decisions_path=decisions_path,
-                    summary_path=summary_json,
-                    output_json_path=plan_json,
-                    output_md_path=plan_md,
-                )
+                if not plan_json.is_file() or not plan_md.is_file():
+                    plan_llm_candidate_application_to_files(
+                        result_path=result_path,
+                        decisions_path=decisions_path,
+                        summary_path=summary_json,
+                        output_json_path=plan_json,
+                        output_md_path=plan_md,
+                    )
                 print(f"  LLM app plan JSON:   {plan_json}")
                 print(f"  LLM app plan MD:     {plan_md}")
+                if args.write_llm_application_preview_ui:
+                    preview_html = (
+                        Path(args.output_dir) / "llm_rewrite_application_preview.html"
+                    )
+                    preview_result = render_llm_application_preview_ui_from_plan_file(
+                        plan_json,
+                        preview_html,
+                    )
+                    if preview_result.output_path:
+                        print(f"  LLM app preview UI:  {preview_result.output_path}")
+                    if preview_result.errors:
+                        print(f"  LLM app preview UI:  ERROR ({'; '.join(preview_result.errors)})")
         except Exception as exc:
             print(f"  LLM planning:        ERROR ({exc})")
 

@@ -1,5 +1,9 @@
 # resume_pdf_agent
 
+## M25 LLM Candidate Application Preview UI
+
+M25 adds a local static `llm_rewrite_application_preview.html` page rendered from the M24 `llm_rewrite_application_plan.json`. It lets users inspect planned, blocked, needs-manual-edit, excluded, and unmapped candidates. It is a manual preview only: it does not apply candidates, does not modify `resume.html` or `resume.pdf`, and does not bypass M5 truthfulness checks or the M14 confirmation gate.
+
 ## M24 LLM Candidate Application Planning
 
 M24 adds a plan-only LLM candidate application planning layer. It reads `llm_rewrite_result.json`, `llm_rewrite_review_decisions.json`, and an optional M23 summary to generate `llm_rewrite_application_plan.json` / `.md`. This is audit guidance only: it does not apply candidates, does not modify `resume.html` or `resume.pdf`, and does not bypass M5 truthfulness checks or the M14 confirmation gate.

@@ -66,6 +66,7 @@ _EXPECTED_CORE_PACKAGES: list[str] = [
     "llm_review_ui",
     "llm_review_decisions",
     "llm_application_plan",
+    "llm_application_preview_ui",
     "visual_regression",
 ]
 
@@ -86,6 +87,7 @@ _REQUIRED_DOCS: list[str] = [
     "docs/commercial_product_roadmap_v0.md",
     "docs/llm_review_decision_summary_v0.md",
     "docs/llm_candidate_application_planning_v0.md",
+    "docs/browser_llm_application_preview_ui_v0.md",
     "examples/README.md",
     "examples/sample_data_science_demo.md",
     "examples/demo_output_manifest_v0.md",
@@ -142,6 +144,48 @@ def _check_cli_command(command_name: str) -> bool:
     status = "OK" if ok else "MISSING"
     print(f"  [{status}] CLI command: {command_name}")
     return ok
+
+
+def _check_export_format_pdf_only() -> bool:
+    try:
+        from resume_pdf_agent.models.enums import ExportFormat
+
+        values = [item.value for item in ExportFormat]
+    except Exception as exc:
+        print(f"  [FAIL] ExportFormat check crashed: {exc}")
+        return False
+    ok = values == ["pdf"]
+    status = "OK" if ok else "FAIL"
+    print(f"  [{status}] ExportFormat values: {values}")
+    return ok
+
+
+def _check_no_forbidden_core_dependencies() -> bool:
+    pyproject = _REPO_ROOT / "pyproject.toml"
+    if not pyproject.is_file():
+        print("  [FAIL] pyproject.toml not found")
+        return False
+    text = pyproject.read_text(encoding="utf-8").lower()
+    core_section = text.split("[project.optional-dependencies]")[0]
+    forbidden = [
+        "fastapi",
+        "flask",
+        "react",
+        "vite",
+        "next",
+        "vue",
+        "svelte",
+        "streamlit",
+        "openai",
+        "anthropic",
+        "google-generativeai",
+    ]
+    found = [dep for dep in forbidden if dep in core_section]
+    if found:
+        print(f"  [FAIL] Forbidden core dependencies found: {', '.join(found)}")
+        return False
+    print("  [OK] No forbidden core frontend/server/LLM dependencies found.")
+    return True
 
 
 def main() -> int:
@@ -233,9 +277,18 @@ def main() -> int:
         all_ok = False
     if not _check_cli_command("plan-llm-candidate-application"):
         all_ok = False
+    if not _check_cli_command("render-llm-application-preview-ui"):
+        all_ok = False
 
-    # --- 9. No generated output requirement -----------------------------
-    print("\n[9] Generated output directory check:")
+    # --- 9. Safety boundary checks --------------------------------------
+    print("\n[9] Safety boundary checks:")
+    if not _check_export_format_pdf_only():
+        all_ok = False
+    if not _check_no_forbidden_core_dependencies():
+        all_ok = False
+
+    # --- 10. No generated output requirement ----------------------------
+    print("\n[10] Generated output directory check:")
     outputs_dir = _REPO_ROOT / "outputs"
     if outputs_dir.is_dir():
         contents = list(outputs_dir.iterdir())

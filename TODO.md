@@ -1,5 +1,10 @@
 # TODO
 
+## M25 Completed
+
+- M25 Manual Candidate Application Preview UI 已完成：可从 M24 `llm_rewrite_application_plan.json` 生成本地静态 `llm_rewrite_application_preview.html`，用于人工检查候选改写状态、原文、候选文本、阻止原因、验证警告和人工备注。
+- M26 可作为下一阶段：Strict Pre-Application Validation Layer 或 Manual Patch Preview Without Resume Mutation；本次不实现 M26。
+
 ## M24 Completed
 
 - M24 Candidate Application Planning Layer 已完成：可生成 plan-only `llm_rewrite_application_plan.json` / `.md`，用于人工审阅未来可能应用的 LLM candidates，但不自动修改最终简历。

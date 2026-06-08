@@ -121,6 +121,8 @@ def run_resume_workflow(
     # M24 LLM application plan
     llm_application_plan_json_path: str | None = None
     llm_application_plan_md_path: str | None = None
+    # M25 LLM application preview UI
+    llm_application_preview_ui_path: str | None = None
 
     # ── A. User intake (setup) ─────────────────────────────────────────────
     stages.append(
@@ -956,6 +958,89 @@ def run_resume_workflow(
                     )
                 )
 
+    # M25 local static manual preview UI. This never mutates resume content.
+    if workflow_input.write_llm_application_preview_ui:
+        plan_path_for_preview = (
+            llm_application_plan_json_path
+            or workflow_input.llm_application_plan_json_path
+        )
+        if not plan_path_for_preview or not Path(plan_path_for_preview).is_file():
+            global_warnings.append(
+                "write_llm_application_preview_ui is true but no LLM application plan JSON was available."
+            )
+            stages.append(
+                _stage_result(
+                    WorkflowStageName.LLM_APPLICATION_PREVIEW_UI,
+                    WorkflowStageStatus.COMPLETED_WITH_WARNINGS,
+                    "LLM application preview UI skipped: missing application plan JSON.",
+                    warnings=[
+                        "No LLM application plan JSON was available for preview rendering."
+                    ],
+                )
+            )
+        else:
+            try:
+                from resume_pdf_agent.llm_application_preview_ui import (
+                    render_llm_application_preview_ui_from_plan_file,
+                )
+
+                preview_path = Path(
+                    workflow_input.llm_application_preview_ui_path
+                    or (output_dir / "llm_rewrite_application_preview.html")
+                )
+                preview_result = render_llm_application_preview_ui_from_plan_file(
+                    plan_path_for_preview,
+                    preview_path,
+                )
+                if preview_result.output_path:
+                    llm_application_preview_ui_path = str(preview_result.output_path)
+                    all_artifacts.append(
+                        WorkflowArtifact(
+                            artifact_type="llm_application_preview_ui",
+                            path=str(preview_result.output_path),
+                            description="Manual plan-only LLM candidate application preview UI",
+                        )
+                    )
+                    stage_status = WorkflowStageStatus.COMPLETED
+                    if preview_result.warnings:
+                        stage_status = WorkflowStageStatus.COMPLETED_WITH_WARNINGS
+                        global_warnings.extend(preview_result.warnings)
+                    stages.append(
+                        _stage_result(
+                            WorkflowStageName.LLM_APPLICATION_PREVIEW_UI,
+                            stage_status,
+                            (
+                                "LLM application preview UI rendered; "
+                                f"planned: {preview_result.planned_count}; "
+                                f"blocked: {preview_result.blocked_count}; "
+                                f"needs edit: {preview_result.needs_manual_edit_count}; "
+                                f"excluded: {preview_result.excluded_count}; "
+                                f"unmapped: {preview_result.unmapped_count}"
+                            ),
+                            warnings=list(preview_result.warnings),
+                        )
+                    )
+                else:
+                    global_warnings.extend(preview_result.errors)
+                    stages.append(
+                        _stage_result(
+                            WorkflowStageName.LLM_APPLICATION_PREVIEW_UI,
+                            WorkflowStageStatus.COMPLETED_WITH_WARNINGS,
+                            f"LLM application preview UI skipped: {preview_result.summary}",
+                            warnings=list(preview_result.errors),
+                        )
+                    )
+            except Exception as exc:
+                global_warnings.append(f"LLM application preview UI failed: {exc}")
+                stages.append(
+                    _stage_result(
+                        WorkflowStageName.LLM_APPLICATION_PREVIEW_UI,
+                        WorkflowStageStatus.COMPLETED_WITH_WARNINGS,
+                        f"LLM application preview UI skipped: {exc}",
+                        warnings=[str(exc)],
+                    )
+                )
+
     # M14: Skip PDF if confirmation gate blocks
     if workflow_input.require_confirmation_before_pdf and not can_generate_final_pdf:
         stages.append(
@@ -1087,6 +1172,7 @@ def run_resume_workflow(
         llm_review_decision_summary_md_path=llm_review_decision_summary_md_path,
         llm_application_plan_json_path=llm_application_plan_json_path,
         llm_application_plan_md_path=llm_application_plan_md_path,
+        llm_application_preview_ui_path=llm_application_preview_ui_path,
     )
 
     # ── L. Write workflow_result.json if intermediate JSON is enabled ──────
@@ -1134,6 +1220,7 @@ def _build_result(
     llm_review_decision_summary_md_path: str | None = None,
     llm_application_plan_json_path: str | None = None,
     llm_application_plan_md_path: str | None = None,
+    llm_application_preview_ui_path: str | None = None,
 ) -> ResumeWorkflowResult:
     """Assemble the final ResumeWorkflowResult."""
 
@@ -1188,4 +1275,5 @@ def _build_result(
         llm_review_decision_summary_md_path=llm_review_decision_summary_md_path,
         llm_application_plan_json_path=llm_application_plan_json_path,
         llm_application_plan_md_path=llm_application_plan_md_path,
+        llm_application_preview_ui_path=llm_application_preview_ui_path,
     )

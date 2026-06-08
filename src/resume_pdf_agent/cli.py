@@ -75,6 +75,9 @@ def _print_summary(result, output_dir: str) -> None:
         typer.echo(f"LLM app plan:        {result.llm_application_plan_json_path}")
     if result.llm_application_plan_md_path:
         typer.echo(f"LLM app plan:        {result.llm_application_plan_md_path}")
+    # M25 LLM application preview UI
+    if result.llm_application_preview_ui_path:
+        typer.echo(f"LLM app preview UI:  {result.llm_application_preview_ui_path}")
 
 
 def _write_frontend_page_if_enabled(
@@ -173,6 +176,10 @@ def run_workflow(
         False, "--write-llm-application-plan/--no-write-llm-application-plan",
         help="Write plan-only LLM candidate application artifacts.",
     ),
+    write_llm_application_preview_ui: bool = typer.Option(
+        False, "--write-llm-application-preview-ui/--no-write-llm-application-preview-ui",
+        help="Write a local static manual LLM candidate application preview page.",
+    ),
 ) -> None:
     """Run the resume workflow from an explicit JSON input file."""
 
@@ -207,6 +214,7 @@ def run_workflow(
     workflow_input.llm_review_decisions_path = llm_review_decisions
     workflow_input.write_llm_review_decision_summary = write_llm_review_decision_summary
     workflow_input.write_llm_application_plan = write_llm_application_plan
+    workflow_input.write_llm_application_preview_ui = write_llm_application_preview_ui
 
     result = run_resume_workflow(workflow_input)
     _print_summary(result, output_dir)
@@ -288,6 +296,10 @@ def run_sample(
         False, "--write-llm-application-plan/--no-write-llm-application-plan",
         help="Write plan-only LLM candidate application artifacts.",
     ),
+    write_llm_application_preview_ui: bool = typer.Option(
+        False, "--write-llm-application-preview-ui/--no-write-llm-application-preview-ui",
+        help="Write a local static manual LLM candidate application preview page.",
+    ),
 ) -> None:
     """Run the resume workflow using built-in sample data."""
 
@@ -327,6 +339,7 @@ def run_sample(
     workflow_input.llm_review_decisions_path = llm_review_decisions
     workflow_input.write_llm_review_decision_summary = write_llm_review_decision_summary
     workflow_input.write_llm_application_plan = write_llm_application_plan
+    workflow_input.write_llm_application_preview_ui = write_llm_application_preview_ui
 
     result = run_resume_workflow(workflow_input)
     _print_summary(result, output_dir)
@@ -659,6 +672,41 @@ def plan_llm_candidate_application(
         typer.echo(f"JSON plan:            {output_json}")
     if output_md:
         typer.echo(f"Markdown plan:        {output_md}")
+
+
+@app.command("render-llm-application-preview-ui")
+def render_llm_application_preview_ui(
+    plan_path: str = typer.Option(
+        ..., "--plan",
+        help="Path to llm_rewrite_application_plan.json.",
+    ),
+    output: str = typer.Option(
+        "outputs/llm_application_preview/llm_rewrite_application_preview.html",
+        "--output",
+        help="Output path for llm_rewrite_application_preview.html.",
+    ),
+) -> None:
+    """Render a local static manual preview page from an M24 application plan."""
+    from resume_pdf_agent.llm_application_preview_ui import (
+        render_llm_application_preview_ui_from_plan_file,
+    )
+
+    result = render_llm_application_preview_ui_from_plan_file(plan_path, output)
+    if result.output_path:
+        typer.echo("LLM Candidate Application Preview UI (plan-only)")
+        typer.echo("No candidates were applied; final resume artifacts were not modified.")
+        typer.echo(f"Preview UI:           {result.output_path}")
+        typer.echo(f"Candidates:           {result.total_candidates}")
+        typer.echo(f"Planned:              {result.planned_count}")
+        typer.echo(f"Blocked:              {result.blocked_count}")
+        typer.echo(f"Needs manual edit:    {result.needs_manual_edit_count}")
+        typer.echo(f"Excluded:             {result.excluded_count}")
+        typer.echo(f"Unmapped:             {result.unmapped_count}")
+        typer.echo(f"Warnings:             {len(result.warnings)}")
+    if result.errors:
+        for e in result.errors:
+            typer.echo(f"Error: {e}", err=True)
+        raise typer.Exit(code=1)
 
 
 if __name__ == "__main__":

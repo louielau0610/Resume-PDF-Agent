@@ -1,5 +1,9 @@
 # 项目状态
 
+## M25 Manual Candidate Application Preview UI
+
+M25 已完成：新增本地静态 `llm_rewrite_application_preview.html`，从 M24 `llm_rewrite_application_plan.json` 渲染人工预览页面，用于检查 planned / blocked / needs_manual_edit / excluded / unmapped candidates。M25 是 manual preview UI，不是 application engine；不会应用 LLM candidates，不会修改 `resume.html`/`resume.pdf`，也不会绕过 M5/M14。
+
 ## M24 Candidate Application Planning Layer
 
 M24 已完成：新增 plan-only LLM candidate application planning layer，可生成 `llm_rewrite_application_plan.json` / `.md`。该层只做人工应用规划与审计，不会应用 LLM candidates，不会修改 `resume.html`/`resume.pdf`，也不会绕过 M5/M14。

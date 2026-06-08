@@ -1,5 +1,9 @@
 # resume_pdf_agent
 
+## M25 LLM 候选应用预览 UI
+
+M25 已新增本地静态 `llm_rewrite_application_preview.html`，可从 M24 的 `llm_rewrite_application_plan.json` 预览 planned / blocked / needs_manual_edit / excluded / unmapped 候选改写。该页面只用于人工检查和审计，不会应用 candidates，不会修改 `resume.html` 或 `resume.pdf`，也不会绕过 M5 真实性检查或 M14 确认门控。
+
 ## M24 LLM 候选应用规划层
 
 M24 已新增 plan-only 的 LLM candidate application planning layer，可根据 `llm_rewrite_result.json`、`llm_rewrite_review_decisions.json` 和可选 M23 summary 生成 `llm_rewrite_application_plan.json` / `.md`。该计划仅用于人工审阅和审计，不会自动应用 candidates，不会修改 `resume.html` 或 `resume.pdf`，也不会绕过 M5 真实性检查或 M14 确认门控。

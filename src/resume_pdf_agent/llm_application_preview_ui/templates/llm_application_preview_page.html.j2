@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ page_title }}</title>
+<style>{{ static_css }}</style>
+</head>
+<body>
+<main class="app-shell">
+  <header class="top-bar">
+    <span class="top-bar-brand">LLM Application Preview</span>
+    <span class="top-bar-badge">Local Static Page</span>
+  </header>
+
+  <section class="hero-panel">
+    <h1>{{ page_title }}</h1>
+    <p>从 M24 plan-only artifact 检查候选改写。No candidates were applied; final resume artifacts were not modified.</p>
+  </section>
+
+  <section class="section-panel safety-panel">
+    <h2>安全提示 / Safety Notice</h2>
+    <p>{{ safety_notice }}</p>
+    <div class="safety-labels">
+      <span>Plan only</span>
+      <span>Manual review required</span>
+      <span>Not factually verified</span>
+      <span>M5/M14 safeguards still apply</span>
+    </div>
+  </section>
+
+  <section class="section-panel">
+    <div class="section-header">
+      <h2>计数摘要 / Count Summary</h2>
+      <span class="muted">Generated from: {{ generated_from }}</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card"><span>Total</span><strong>{{ total_candidates }}</strong></div>
+      <div class="metric-card"><span>Planned</span><strong>{{ planned_count }}</strong></div>
+      <div class="metric-card"><span>Blocked</span><strong>{{ blocked_count }}</strong></div>
+      <div class="metric-card"><span>Needs edit</span><strong>{{ needs_manual_edit_count }}</strong></div>
+      <div class="metric-card"><span>Excluded</span><strong>{{ excluded_count }}</strong></div>
+      <div class="metric-card"><span>Unmapped</span><strong>{{ unmapped_count }}</strong></div>
+    </div>
+  </section>
+
+  <section class="section-panel">
+    <h2>来源文件 / Source Files</h2>
+    {% if source_files %}
+    <ul class="source-list">
+      {% for key, value in source_files.items() %}
+      <li><strong>{{ key }}</strong>: <code>{{ value or "not provided" }}</code></li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="muted">No source files recorded.</p>
+    {% endif %}
+  </section>
+
+  {% if warnings %}
+  <section class="section-panel warning-panel">
+    <h2>警告 / Warnings</h2>
+    <ul>
+      {% for warning in warnings %}
+      <li>{{ warning }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  <section class="section-panel controls-panel">
+    <div class="section-header">
+      <h2>筛选 / Inspect</h2>
+      <button class="secondary-btn" type="button" onclick="toggleAllCards()">Expand / Collapse</button>
+    </div>
+    <div class="filter-row">
+      <button class="filter-btn active" type="button" data-status="all" onclick="setStatusFilter('all')">All ({{ total_candidates }})</button>
+      {% for group in status_groups %}
+      <button class="filter-btn" type="button" data-status="{{ group.status }}" onclick='setStatusFilter({{ group.status|tojson }})'>{{ group.title }} ({{ group.count }})</button>
+      {% endfor %}
+    </div>
+    <input id="search-input" class="search-input" type="search" placeholder="Search candidate ID, status, target, original, or proposed text" oninput="applyFilters()">
+  </section>
+
+  <section class="section-panel">
+    <h2>状态分组 / Status Groups</h2>
+    <div class="group-grid">
+      {% for group in status_groups %}
+      <article class="group-card">
+        <h3>{{ group.title }}</h3>
+        <p>{{ group.description }}</p>
+        <strong>{{ group.count }}</strong>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="section-panel">
+    <h2>候选预览 / Candidate Preview</h2>
+    <div id="candidate-list">
+      {% for item in items %}
+      <article class="candidate-card" data-status="{{ item.plan_status }}" data-search="{{ (item.candidate_id ~ ' ' ~ item.plan_status ~ ' ' ~ (item.source_action or '') ~ ' ' ~ (item.target_item_id or '') ~ ' ' ~ (item.original_text or '') ~ ' ' ~ (item.candidate_text or ''))|lower }}">
+        <button class="candidate-header" type="button" onclick='toggleCard({{ item.candidate_id|tojson }})' aria-expanded="true">
+          <span class="candidate-id">#{{ item.candidate_id }}</span>
+          <span class="status-badge status-{{ item.plan_status }}">{{ item.plan_status }}</span>
+          {% if item.source_action %}<span class="meta-pill">{{ item.source_action }}</span>{% endif %}
+          {% if item.needs_confirmation %}<span class="meta-pill warn">Needs confirmation</span>{% endif %}
+        </button>
+        <div class="candidate-body" id="body-{{ item.candidate_id }}">
+          <div class="target-row">
+            <span><strong>Target section:</strong> {{ item.target_section or "unmapped" }}</span>
+            <span><strong>Target item ID:</strong> {{ item.target_item_id or "unmapped" }}</span>
+            <span><strong>Provider:</strong> {{ item.provider or "unknown" }}</span>
+            <span><strong>Risk:</strong> {{ item.risk_level or "not flagged" }}</span>
+          </div>
+          <div class="text-grid">
+            <div class="text-panel">
+              <h3>Original text</h3>
+              <pre>{{ item.original_text or "No original text recorded." }}</pre>
+            </div>
+            <div class="text-panel proposed">
+              <h3>Proposed candidate text</h3>
+              <pre>{{ item.candidate_text or "No candidate text recorded." }}</pre>
+              {% if item.can_copy_candidate_text %}
+              <button class="copy-btn" type="button" onclick='copyCandidateText({{ item.candidate_id|tojson }}, {{ item.candidate_text|tojson }})'>Copy candidate text for manual review</button>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="detail-grid">
+            <div>
+              <h3>Block reasons</h3>
+              {% if item.block_reasons %}
+              <ul>{% for reason in item.block_reasons %}<li>{{ reason }}</li>{% endfor %}</ul>
+              {% else %}
+              <p class="muted">None recorded.</p>
+              {% endif %}
+            </div>
+            <div>
+              <h3>Validation warnings</h3>
+              {% if item.validation_warnings %}
+              <ul>{% for warning in item.validation_warnings %}<li>{{ warning }}</li>{% endfor %}</ul>
+              {% else %}
+              <p class="muted">None recorded.</p>
+              {% endif %}
+            </div>
+            <div>
+              <h3>Manual review notes</h3>
+              {% if item.manual_review_notes %}
+              <ul>{% for note in item.manual_review_notes %}<li>{{ note }}</li>{% endfor %}</ul>
+              {% else %}
+              <p class="muted">None recorded.</p>
+              {% endif %}
+              {% if item.decision_note %}<p><strong>Decision note:</strong> {{ item.decision_note }}</p>{% endif %}
+            </div>
+            <div>
+              <h3>Safety gates still required</h3>
+              <ul>{% for label in item.safety_labels %}<li>{{ label }}</li>{% endfor %}</ul>
+              {% if item.application_instruction %}<p><strong>Instruction:</strong> {{ item.application_instruction }}</p>{% endif %}
+            </div>
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+
+  <footer class="footer-note">
+    <p>Local static preview page. No server, no network calls, no file upload, no form submission.</p>
+    <p>This page does not verify truth, does not change final resume content, and does not predict hiring outcomes.</p>
+  </footer>
+</main>
+<script>var PREVIEW_ITEMS = {{ items_json|tojson }};</script>
+<script>{{ static_js }}</script>
+</body>
+</html>

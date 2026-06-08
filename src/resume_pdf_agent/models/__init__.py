@@ -91,6 +91,13 @@ from resume_pdf_agent.models.llm_application_preview_ui import (
     LLMApplicationPreviewUIResult,
     LLMApplicationPreviewUIStatus,
 )
+from resume_pdf_agent.models.llm_manual_approval_checklist import (
+    LLMManualApprovalChecklistItem,
+    LLMManualApprovalChecklistItemStatus,
+    LLMManualApprovalChecklistQuestion,
+    LLMManualApprovalChecklistQuestionType,
+    LLMManualApprovalChecklistReport,
+)
 from resume_pdf_agent.models.llm_manual_patch_preview import (
     LLMManualPatchPreviewBlockReason,
     LLMManualPatchPreviewItem,
@@ -259,6 +266,11 @@ __all__ = [
     "LLMManualPatchPreviewItem",
     "LLMManualPatchPreviewReport",
     "LLMManualPatchPreviewStatus",
+    "LLMManualApprovalChecklistItem",
+    "LLMManualApprovalChecklistItemStatus",
+    "LLMManualApprovalChecklistQuestion",
+    "LLMManualApprovalChecklistQuestionType",
+    "LLMManualApprovalChecklistReport",
     "MatchLevel",
     "Metric",
     "MetricStatus",

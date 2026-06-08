@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLM Manual Approval Checklist / LLM人工审批检查清单</title>
+<style>{{ css }}</style>
+</head>
+<body>
+<main class="app-shell">
+<header class="top-bar">
+  <span class="top-bar-brand">Manual Approval Checklist Console</span>
+  <span class="top-bar-badge">Local Static Page — Checklist Only</span>
+</header>
+
+<section class="hero-panel">
+  <h1 class="hero-title">LLM Manual Approval Checklist / LLM人工审批检查清单</h1>
+  <p class="hero-subtitle">Checklist only — no final approval granted, no candidates applied, no executable patch generated.</p>
+</section>
+
+<section class="section-panel safety-notice">
+  <div class="safety-notice-text">{{ report.safety_notice }}</div>
+</section>
+
+<section class="section-panel">
+  <div class="section-panel-header"><h2 class="section-panel-title">Summary / 摘要</h2></div>
+  <div class="summary-cards">
+    <div class="summary-card"><span class="sc-label">Total</span><span class="sc-value">{{ report.total_items }}</span></div>
+    <div class="summary-card"><span class="sc-label">Review Required</span><span class="sc-value">{{ report.review_required_count }}</span></div>
+    <div class="summary-card"><span class="sc-label">Blocked</span><span class="sc-value">{{ report.blocked_count }}</span></div>
+    <div class="summary-card"><span class="sc-label">Needs Edit</span><span class="sc-value">{{ report.needs_manual_edit_count }}</span></div>
+    <div class="summary-card"><span class="sc-label">Excluded</span><span class="sc-value">{{ report.excluded_count }}</span></div>
+    <div class="summary-card"><span class="sc-label">Unmapped</span><span class="sc-value">{{ report.unmapped_count }}</span></div>
+  </div>
+</section>
+
+<section class="section-panel">
+  <div class="section-panel-header"><h2 class="section-panel-title">Filter / 筛选</h2></div>
+  <div class="filter-row">
+    <button class="filter-btn active" onclick="filterItems('all')">All</button>
+    <button class="filter-btn" onclick="filterItems('review_required')">Review Required</button>
+    <button class="filter-btn" onclick="filterItems('blocked')">Blocked</button>
+    <button class="filter-btn" onclick="filterItems('needs_manual_edit')">Needs Edit</button>
+    <button class="filter-btn" onclick="filterItems('excluded')">Excluded</button>
+    <button class="filter-btn" onclick="filterItems('unmapped')">Unmapped</button>
+  </div>
+</section>
+
+<section class="section-panel">
+  <div class="section-panel-header"><h2 class="section-panel-title">Checklist Items / 检查清单项目</h2></div>
+  <div id="candidates-container">
+    {% for item in report.items %}
+    <div class="candidate-card" data-status="{{ item.checklist_status.value }}">
+      <div class="candidate-header">
+        <span class="candidate-id">{{ item.candidate_id }}</span>
+        <span class="candidate-status {{ item.checklist_status.value }}">{{ item.checklist_status.value }}</span>
+      </div>
+      {% if item.original_text %}
+      <div class="text-block original"><div class="text-label">Original</div><div class="text-content">{{ item.original_text }}</div></div>
+      {% endif %}
+      {% if item.proposed_text %}
+      <div class="text-block proposed"><div class="text-label">Proposed</div><div class="text-content">{{ item.proposed_text }}</div></div>
+      {% endif %}
+      {% if item.questions %}
+      <div class="questions-section">
+        <div class="text-label">Checklist Questions</div>
+        {% for q in item.questions %}
+        <div class="question-item">
+          <div class="question-prompt">{{ q.prompt }}</div>
+          <div class="question-meta">
+            <span class="question-type {{ q.question_type.value }}">{{ q.question_type.value }}</span>
+            <span class="question-required">{{ 'Required' if q.required else 'Optional' }}</span>
+            <span class="question-default">Default: {{ q.default_answer }}</span>
+          </div>
+          {% if q.safety_note %}<div class="question-safety">{{ q.safety_note }}</div>{% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      <div class="manual-instruction">{{ item.manual_instruction }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<footer class="footer-note">
+  <p>Checklist-only local static page. No final approval has been granted. No candidates have been applied. No executable patch has been generated.</p>
+  <p>M5 truthfulness and M14 confirmation safeguards still apply.</p>
+  <p>It does NOT predict hiring probability or access internal screening standards.</p>
+</footer>
+</main>
+<script>var ITEMS = {{ items_json }};</script>
+<script>{{ js }}</script>
+</body>
+</html>

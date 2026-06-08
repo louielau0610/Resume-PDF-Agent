@@ -124,6 +124,12 @@ def main() -> None:
         default=False,
         help="Generate manual patch-preview artifacts (JSON/MD/HTML). Requires --include-llm-mock.",
     )
+    parser.add_argument(
+        "--write-llm-manual-approval-checklist",
+        action="store_true",
+        default=False,
+        help="Build a manual approval checklist from patch preview. Requires --include-llm-mock.",
+    )
     args = parser.parse_args()
 
     sample_input = _find_sample_input()
@@ -234,6 +240,7 @@ def main() -> None:
         or args.write_llm_application_preview_ui
         or args.write_llm_pre_application_validation
         or args.write_llm_manual_patch_preview
+        or args.write_llm_manual_approval_checklist
     ) and args.include_llm_mock:
         try:
             import json
@@ -361,6 +368,24 @@ def main() -> None:
                     print(f"  M27 preview MD:      {pv_md}")
                     print(f"  M27 preview HTML:    {pv_html}")
                     print(f"  M27 ready/blocked:   {pv_report.preview_ready_count}/{pv_report.blocked_count}")
+                if args.write_llm_manual_approval_checklist:
+                    from resume_pdf_agent.llm_manual_approval_checklist import (
+                        write_manual_approval_checklist_to_files,
+                    )
+                    pv_for_cl = Path(args.output_dir) / "llm_rewrite_manual_patch_preview.json"
+                    cl_json = Path(args.output_dir) / "llm_rewrite_manual_patch_approval_checklist.json"
+                    cl_md = Path(args.output_dir) / "llm_rewrite_manual_patch_approval_checklist.md"
+                    cl_html = Path(args.output_dir) / "llm_rewrite_manual_patch_approval_checklist.html"
+                    cl_report = write_manual_approval_checklist_to_files(
+                        preview_path=pv_for_cl,
+                        output_json_path=cl_json,
+                        output_md_path=cl_md,
+                        output_html_path=cl_html,
+                    )
+                    print(f"  M28 checklist JSON:  {cl_json}")
+                    print(f"  M28 checklist MD:    {cl_md}")
+                    print(f"  M28 checklist HTML:  {cl_html}")
+                    print(f"  M28 review/blocked:  {cl_report.review_required_count}/{cl_report.blocked_count}")
         except Exception as exc:
             print(f"  LLM planning:        ERROR ({exc})")
 

@@ -57,7 +57,8 @@
 - M26：Strict Pre-Application Validation Layer ✅。
 - M26.1：Verification and Documentation Completion ✅。
 - M27：Manual Patch Preview Without Resume Mutation ✅。
-- M27.1：Strict Validation for M27 ✅（当前）。
+- M27.1：Strict Validation for M27 ✅。
+- M28：Manual Patch Approval Checklist ✅（当前）。
 
 ## M21: Browser JD Upload UI ✅ (current)
 

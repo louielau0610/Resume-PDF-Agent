@@ -130,6 +130,10 @@ def run_resume_workflow(
     llm_manual_patch_preview_json_path: str | None = None
     llm_manual_patch_preview_md_path: str | None = None
     llm_manual_patch_preview_html_path: str | None = None
+    # M28 manual approval checklist
+    llm_manual_approval_checklist_json_path: str | None = None
+    llm_manual_approval_checklist_md_path: str | None = None
+    llm_manual_approval_checklist_html_path: str | None = None
 
     # ── A. User intake (setup) ─────────────────────────────────────────────
     stages.append(
@@ -1222,6 +1226,80 @@ def run_resume_workflow(
             "write_llm_manual_patch_preview is true but plan or validation is missing."
         )
 
+    # ── M28. Manual approval checklist ───────────────────────────────
+    _m28_preview = (
+        workflow_input.llm_manual_patch_preview_json_path
+        or str(output_dir / "llm_rewrite_manual_patch_preview.json")
+    )
+
+    if (
+        workflow_input.write_llm_manual_approval_checklist
+        and Path(_m28_preview).is_file()
+    ):
+        try:
+            from resume_pdf_agent.llm_manual_approval_checklist import (
+                write_manual_approval_checklist_to_files,
+            )
+
+            cl_json = Path(
+                workflow_input.llm_manual_approval_checklist_json_path
+                or (output_dir / "llm_rewrite_manual_patch_approval_checklist.json")
+            )
+            cl_md = Path(
+                workflow_input.llm_manual_approval_checklist_md_path
+                or (output_dir / "llm_rewrite_manual_patch_approval_checklist.md")
+            )
+            cl_html = Path(
+                workflow_input.llm_manual_approval_checklist_html_path
+                or (output_dir / "llm_rewrite_manual_patch_approval_checklist.html")
+            )
+
+            cl_report = write_manual_approval_checklist_to_files(
+                preview_path=_m28_preview,
+                output_json_path=cl_json,
+                output_md_path=cl_md,
+                output_html_path=cl_html,
+            )
+
+            llm_manual_approval_checklist_json_path = str(cl_json)
+            llm_manual_approval_checklist_md_path = str(cl_md)
+            llm_manual_approval_checklist_html_path = str(cl_html)
+
+            all_artifacts.append(WorkflowArtifact(
+                artifact_type="llm_manual_approval_checklist",
+                path=str(cl_json),
+                description="Manual approval checklist (JSON) — checklist only",
+            ))
+            all_artifacts.append(WorkflowArtifact(
+                artifact_type="llm_manual_approval_checklist",
+                path=str(cl_md),
+                description="Manual approval checklist (Markdown) — checklist only",
+            ))
+            all_artifacts.append(WorkflowArtifact(
+                artifact_type="llm_manual_approval_checklist",
+                path=str(cl_html),
+                description="Manual approval checklist (HTML) — checklist only",
+            ))
+
+            stages.append(_stage_result(
+                WorkflowStageName.LLM_MANUAL_APPROVAL_CHECKLIST,
+                WorkflowStageStatus.COMPLETED_WITH_WARNINGS if cl_report.global_warnings else WorkflowStageStatus.COMPLETED,
+                (
+                    f"Manual approval checklist: {cl_report.review_required_count} review required, "
+                    f"{cl_report.blocked_count} blocked, "
+                    f"{cl_report.needs_manual_edit_count} needs edit"
+                ),
+                warnings=list(cl_report.global_warnings),
+            ))
+            if cl_report.global_warnings:
+                global_warnings.extend(cl_report.global_warnings)
+        except Exception as exc:
+            global_warnings.append(f"Manual approval checklist failed: {exc}")
+    elif workflow_input.write_llm_manual_approval_checklist:
+        global_warnings.append(
+            "write_llm_manual_approval_checklist is true but patch preview is missing."
+        )
+
     # M14: Skip PDF if confirmation gate blocks
     if workflow_input.require_confirmation_before_pdf and not can_generate_final_pdf:
         stages.append(
@@ -1359,6 +1437,9 @@ def run_resume_workflow(
         llm_manual_patch_preview_json_path=llm_manual_patch_preview_json_path,
         llm_manual_patch_preview_md_path=llm_manual_patch_preview_md_path,
         llm_manual_patch_preview_html_path=llm_manual_patch_preview_html_path,
+        llm_manual_approval_checklist_json_path=llm_manual_approval_checklist_json_path,
+        llm_manual_approval_checklist_md_path=llm_manual_approval_checklist_md_path,
+        llm_manual_approval_checklist_html_path=llm_manual_approval_checklist_html_path,
     )
 
     # ── L. Write workflow_result.json if intermediate JSON is enabled ──────
@@ -1412,6 +1493,9 @@ def _build_result(
     llm_manual_patch_preview_json_path: str | None = None,
     llm_manual_patch_preview_md_path: str | None = None,
     llm_manual_patch_preview_html_path: str | None = None,
+    llm_manual_approval_checklist_json_path: str | None = None,
+    llm_manual_approval_checklist_md_path: str | None = None,
+    llm_manual_approval_checklist_html_path: str | None = None,
 ) -> ResumeWorkflowResult:
     """Assemble the final ResumeWorkflowResult."""
 
@@ -1472,4 +1556,7 @@ def _build_result(
         llm_manual_patch_preview_json_path=None,
         llm_manual_patch_preview_md_path=None,
         llm_manual_patch_preview_html_path=None,
+        llm_manual_approval_checklist_json_path=None,
+        llm_manual_approval_checklist_md_path=None,
+        llm_manual_approval_checklist_html_path=None,
     )

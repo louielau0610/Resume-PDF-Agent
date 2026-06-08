@@ -18,7 +18,7 @@ M22.1 已完成：浏览器端 LLM 改写审阅 UI 现在在 Jinja2 模板层启
 
 ## Current Documentation Milestone
 
-M27.1 Strict Validation for M27（当前）
+M28 Manual Patch Approval Checklist（当前）
 
 ## 已完成里程碑
 
@@ -48,8 +48,11 @@ M27.1 Strict Validation for M27（当前）
 - M26.1：验证与文档完成 ✅
 - M27：人工补丁预览（不修改简历） ✅
 - M27.1：M27 严格验证 ✅
+- M28：人工补丁审批检查清单 ✅
 
 ## 当前状态
+
+M28 人工补丁审批检查清单已完成 — 全量测试 1005 通过，2 跳过。
 
 M27 人工补丁预览已完成 — 全量测试 984 通过，2 跳过。项目现已具备完整的 LLM 安全管线：M16 改写 → M22 审阅 → M23 摘要 → M24 规划 → M25 预览 → M26 验证 → M27 补丁预览（均不自动应用候选，不生成可执行补丁）。项目现已具备完整的 LLM 安全管线：M16 改写 → M22 审阅 → M23 决策摘要 → M24 应用规划 → M25 预览 → M26 预应用验证（均不自动应用候选）。 — 新增 76 个专用 LLM 审阅 UI 测试（上下文/渲染器/安全/CLI/回归），全量测试 778 通过，2 跳过。所有手动 CLI 验证通过：mock LLM 生成、render-llm-review-ui、demo 脚本 --write-llm-review-ui、ExportFormat 仅 pdf。M16 LLM 引擎行为不变，默认工作流保持向后兼容。项目现已具备三张纯静态浏览器页面（M20 确认审核、M21 JD 输入、M22 LLM 改写审阅）。
 

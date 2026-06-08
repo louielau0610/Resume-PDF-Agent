@@ -1,0 +1,2 @@
+/* M28 Manual Approval Checklist - Local static JS. No network. Checklist-only. */
+function filterItems(s){document.querySelectorAll('.filter-btn').forEach(function(b){b.classList.remove('active');});document.querySelectorAll('.filter-btn').forEach(function(b){if(b.textContent.toLowerCase().indexOf(s.replace('_',' '))!==-1||s==='all')b.classList.add('active');});document.querySelectorAll('.candidate-card').forEach(function(c){if(s==='all'||c.getAttribute('data-status')===s){c.classList.remove('hidden');}else{c.classList.add('hidden');}});}

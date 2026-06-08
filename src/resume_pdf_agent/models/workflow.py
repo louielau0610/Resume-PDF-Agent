@@ -32,6 +32,7 @@ class WorkflowStageName(str, Enum):
     LLM_APPLICATION_PREVIEW_UI = "llm_application_preview_ui"
     LLM_PRE_APPLICATION_VALIDATION = "llm_pre_application_validation"
     LLM_MANUAL_PATCH_PREVIEW = "llm_manual_patch_preview"
+    LLM_MANUAL_APPROVAL_CHECKLIST = "llm_manual_approval_checklist"
     ARTIFACT_WRITING = "artifact_writing"
     REMINDER_PANEL = "reminder_panel"
 
@@ -134,6 +135,11 @@ class ResumeWorkflowInput(BaseModel):
     llm_manual_patch_preview_json_path: str | None = None
     llm_manual_patch_preview_md_path: str | None = None
     llm_manual_patch_preview_html_path: str | None = None
+    # M28: Manual approval checklist
+    write_llm_manual_approval_checklist: bool = False
+    llm_manual_approval_checklist_json_path: str | None = None
+    llm_manual_approval_checklist_md_path: str | None = None
+    llm_manual_approval_checklist_html_path: str | None = None
 
     @model_validator(mode="after")
     def _output_dir_not_empty(self) -> ResumeWorkflowInput:
@@ -190,6 +196,10 @@ class ResumeWorkflowResult(BaseModel):
     llm_manual_patch_preview_json_path: str | None = None
     llm_manual_patch_preview_md_path: str | None = None
     llm_manual_patch_preview_html_path: str | None = None
+    # M28: Manual approval checklist
+    llm_manual_approval_checklist_json_path: str | None = None
+    llm_manual_approval_checklist_md_path: str | None = None
+    llm_manual_approval_checklist_html_path: str | None = None
 
     @model_validator(mode="after")
     def _summary_not_empty(self) -> ResumeWorkflowResult:

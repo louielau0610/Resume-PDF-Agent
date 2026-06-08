@@ -832,5 +832,59 @@ def preview_llm_manual_patch(
         typer.echo(f"HTML preview:         {output_html}")
 
 
+@app.command("build-llm-manual-approval-checklist")
+def build_llm_manual_approval_checklist(
+    preview_path: str = typer.Option(
+        ..., "--preview",
+        help="Path to llm_rewrite_manual_patch_preview.json.",
+    ),
+    output_json: str | None = typer.Option(
+        None, "--output-json",
+        help="Optional output path for llm_rewrite_manual_patch_approval_checklist.json.",
+    ),
+    output_md: str | None = typer.Option(
+        None, "--output-md",
+        help="Optional output path for llm_rewrite_manual_patch_approval_checklist.md.",
+    ),
+    output_html: str | None = typer.Option(
+        None, "--output-html",
+        help="Optional output path for llm_rewrite_manual_patch_approval_checklist.html.",
+    ),
+    strict: bool = typer.Option(
+        False, "--strict/--no-strict",
+        help="Not used; reserved for future strict-mode checks.",
+    ),
+) -> None:
+    """Build a manual approval checklist from M27 patch preview. Checklist only — no final approval granted, no candidates applied."""
+    from resume_pdf_agent.llm_manual_approval_checklist import write_manual_approval_checklist_to_files
+
+    try:
+        report = write_manual_approval_checklist_to_files(
+            preview_path=preview_path,
+            output_json_path=output_json,
+            output_md_path=output_md,
+            output_html_path=output_html,
+        )
+    except Exception as exc:
+        typer.echo(f"Error: {exc}", err=True)
+        raise typer.Exit(code=1)
+
+    typer.echo("Manual Approval Checklist (checklist only)")
+    typer.echo("No final approval granted; no candidates applied; no executable patch generated.")
+    typer.echo(f"Total items:          {report.total_items}")
+    typer.echo(f"Review required:      {report.review_required_count}")
+    typer.echo(f"Blocked:              {report.blocked_count}")
+    typer.echo(f"Needs manual edit:    {report.needs_manual_edit_count}")
+    typer.echo(f"Excluded:             {report.excluded_count}")
+    typer.echo(f"Unmapped:             {report.unmapped_count}")
+    typer.echo(f"Skipped:              {report.skipped_count}")
+    if output_json:
+        typer.echo(f"JSON checklist:       {output_json}")
+    if output_md:
+        typer.echo(f"Markdown checklist:   {output_md}")
+    if output_html:
+        typer.echo(f"HTML checklist:       {output_html}")
+
+
 if __name__ == "__main__":
     app()

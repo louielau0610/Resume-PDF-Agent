@@ -1,5 +1,9 @@
 # resume_pdf_agent
 
+## M26 严格预应用验证层
+
+M26 已新增严格预应用验证层，可对 M24 应用计划执行确定性安全检查。运行 `validate-llm-pre-application` 会生成 `llm_rewrite_pre_application_validation.json` 和 `.md`，明确列出哪些候选通过/阻塞/需要人工编辑/已排除/未映射。该验证仅用于验证目的：不会应用任何 LLM 候选，不会生成补丁，不会修改 `resume.html` 或 `resume.pdf`，也不会绕过 M5 真实性检查或 M14 确认门控。
+
 ## M25 LLM 候选应用预览 UI
 
 M25 已新增本地静态 `llm_rewrite_application_preview.html`，可从 M24 的 `llm_rewrite_application_plan.json` 预览 planned / blocked / needs_manual_edit / excluded / unmapped 候选改写。该页面只用于人工检查和审计，不会应用 candidates，不会修改 `resume.html` 或 `resume.pdf`，也不会绕过 M5 真实性检查或 M14 确认门控。
@@ -20,11 +24,11 @@ M22.1 已完成浏览器端 LLM 改写审阅 UI 的安全加固：`llm_review.ht
 
 `resume_pdf_agent` 是一个 **criteria-aware 的 AI 简历 PDF 生成 Agent**。它不调用 LLM API，而是通过 11 阶段确定性工作流，将用户职业画像与岗位筛选指标（criteria）进行系统比对，经过分类、差距分析、真实性检查、Bullet 增强、模板匹配、HTML 渲染等步骤，最终输出 ATS 友好的结构化 PDF 简历和静态工作流仪表板。
 
-## 当前状态：M19
+## 当前状态：M26
 
-M19 新增可选 API 层（Optional API Layer），通过 API 风格的请求/响应模型包装现有工作流，FastAPI/uvicorn 为可选依赖。
+M26 严格预应用验证层为当前最新里程碑。全量测试 948 通过，2 跳过。
 
-**已完成里程碑**：M0→M1→M2→M3→M4→M5→M6→M7→M8→M9→M10→M11→M12→M13→M14→M15→M16→M17→M18→**M19** ✅
+**已完成里程碑**：M0→M1→M2→M3→M4→M5→M6→M7→M8→M9→M10→M11→M12→M13→M14→M15→M16→M17→M18→M19→M20→M20.1→M21→M21.1→M22→M22.1→M23→M24→M25→**M26** ✅
 
 ## 架构概要
 

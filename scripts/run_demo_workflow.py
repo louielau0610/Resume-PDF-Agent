@@ -112,6 +112,12 @@ def main() -> None:
         default=False,
         help="Write a local static manual LLM application preview page. Requires --include-llm-mock.",
     )
+    parser.add_argument(
+        "--write-llm-pre-application-validation",
+        action="store_true",
+        default=False,
+        help="Run strict pre-application validation and write validation reports. Requires --include-llm-mock.",
+    )
     args = parser.parse_args()
 
     sample_input = _find_sample_input()
@@ -220,6 +226,7 @@ def main() -> None:
         args.write_llm_review_decision_summary
         or args.write_llm_application_plan
         or args.write_llm_application_preview_ui
+        or args.write_llm_pre_application_validation
     ) and args.include_llm_mock:
         try:
             import json
@@ -311,6 +318,23 @@ def main() -> None:
                         print(f"  LLM app preview UI:  {preview_result.output_path}")
                     if preview_result.errors:
                         print(f"  LLM app preview UI:  ERROR ({'; '.join(preview_result.errors)})")
+                if args.write_llm_pre_application_validation:
+                    from resume_pdf_agent.llm_pre_application_validation import (
+                        write_pre_application_validation_to_files,
+                    )
+                    val_json = Path(args.output_dir) / "llm_rewrite_pre_application_validation.json"
+                    val_md = Path(args.output_dir) / "llm_rewrite_pre_application_validation.md"
+                    val_report = write_pre_application_validation_to_files(
+                        plan_path=plan_json,
+                        output_json_path=val_json,
+                        output_md_path=val_md,
+                        result_path=result_path,
+                        decisions_path=decisions_path,
+                        summary_path=summary_json,
+                    )
+                    print(f"  M26 validation JSON: {val_json}")
+                    print(f"  M26 validation MD:   {val_md}")
+                    print(f"  M26 passed/blocked:  {val_report.passed_count}/{val_report.blocked_count}")
         except Exception as exc:
             print(f"  LLM planning:        ERROR ({exc})")
 

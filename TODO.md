@@ -56,7 +56,8 @@
 - M25：Manual Candidate Application Preview UI ✅。
 - M26：Strict Pre-Application Validation Layer ✅。
 - M26.1：Verification and Documentation Completion ✅。
-- M27：Manual Patch Preview Without Resume Mutation ✅（当前）。
+- M27：Manual Patch Preview Without Resume Mutation ✅。
+- M27.1：Strict Validation for M27 ✅（当前）。
 
 ## M21: Browser JD Upload UI ✅ (current)
 

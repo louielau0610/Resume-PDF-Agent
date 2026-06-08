@@ -18,7 +18,7 @@ M22.1 已完成：浏览器端 LLM 改写审阅 UI 现在在 Jinja2 模板层启
 
 ## Current Documentation Milestone
 
-M27 Manual Patch Preview Without Resume Mutation（当前）
+M27.1 Strict Validation for M27（当前）
 
 ## 已完成里程碑
 
@@ -47,6 +47,7 @@ M27 Manual Patch Preview Without Resume Mutation（当前）
 - M26：严格预应用验证层 ✅
 - M26.1：验证与文档完成 ✅
 - M27：人工补丁预览（不修改简历） ✅
+- M27.1：M27 严格验证 ✅
 
 ## 当前状态
 

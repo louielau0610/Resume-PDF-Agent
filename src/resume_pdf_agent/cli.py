@@ -709,5 +709,69 @@ def render_llm_application_preview_ui(
         raise typer.Exit(code=1)
 
 
+@app.command("validate-llm-pre-application")
+def validate_llm_pre_application(
+    plan_path: str = typer.Option(
+        ..., "--plan",
+        help="Path to llm_rewrite_application_plan.json.",
+    ),
+    result_path: str | None = typer.Option(
+        None, "--result",
+        help="Optional path to llm_rewrite_result.json for cross-checking.",
+    ),
+    decisions_path: str | None = typer.Option(
+        None, "--decisions",
+        help="Optional path to llm_rewrite_review_decisions.json.",
+    ),
+    summary_path: str | None = typer.Option(
+        None, "--summary",
+        help="Optional path to llm_rewrite_review_decision_summary.json.",
+    ),
+    output_json: str | None = typer.Option(
+        None, "--output-json",
+        help="Optional output path for llm_rewrite_pre_application_validation.json.",
+    ),
+    output_md: str | None = typer.Option(
+        None, "--output-md",
+        help="Optional output path for llm_rewrite_pre_application_validation.md.",
+    ),
+    strict: bool = typer.Option(
+        False, "--strict/--no-strict",
+        help="Fail on missing optional cross-check files.",
+    ),
+) -> None:
+    """Run strict pre-application validation on an LLM application plan. Validation only — no candidates are applied."""
+    from resume_pdf_agent.llm_pre_application_validation import write_pre_application_validation_to_files
+
+    try:
+        report = write_pre_application_validation_to_files(
+            plan_path=plan_path,
+            output_json_path=output_json,
+            output_md_path=output_md,
+            result_path=result_path,
+            decisions_path=decisions_path,
+            summary_path=summary_path,
+            strict=strict,
+        )
+    except Exception as exc:
+        typer.echo(f"Error: {exc}", err=True)
+        raise typer.Exit(code=1)
+
+    typer.echo("Pre-Application Validation Report (validation only)")
+    typer.echo("No candidates were applied; no patch was generated.")
+    typer.echo(f"Total plan items:     {report.total_plan_items}")
+    typer.echo(f"Passed:               {report.passed_count}")
+    typer.echo(f"Blocked:              {report.blocked_count}")
+    typer.echo(f"Needs manual edit:    {report.needs_manual_edit_count}")
+    typer.echo(f"Excluded:             {report.excluded_count}")
+    typer.echo(f"Unmapped:             {report.unmapped_count}")
+    typer.echo(f"Warnings:             {report.warning_count}")
+    typer.echo(f"Can proceed:          {'Yes' if report.can_proceed_to_patch_preview else 'No'}")
+    if output_json:
+        typer.echo(f"JSON report:          {output_json}")
+    if output_md:
+        typer.echo(f"Markdown report:      {output_md}")
+
+
 if __name__ == "__main__":
     app()

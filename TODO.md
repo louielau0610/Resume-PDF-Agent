@@ -49,7 +49,12 @@
 - M20.1：Confirmation UI Verification Fix ✅。
 - M21：Browser JD Upload UI ✅。
 - M21.1：JD Upload UI Verification and Test Coverage ✅。
-- M22：Browser-based LLM Rewrite Review UI ✅（当前）。
+- M22：Browser-based LLM Rewrite Review UI ✅。
+- M22.1：LLM Review UI autoescape hardening ✅。
+- M23：LLM Review Decision Loader / Advisory Summary ✅。
+- M24：LLM Candidate Application Planning Layer ✅。
+- M25：Manual Candidate Application Preview UI ✅。
+- M26：Strict Pre-Application Validation Layer ✅（当前）。
 
 ## M21: Browser JD Upload UI ✅ (current)
 

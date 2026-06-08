@@ -123,6 +123,9 @@ def run_resume_workflow(
     llm_application_plan_md_path: str | None = None
     # M25 LLM application preview UI
     llm_application_preview_ui_path: str | None = None
+    # M26 pre-application validation
+    llm_pre_application_validation_json_path: str | None = None
+    llm_pre_application_validation_md_path: str | None = None
 
     # ── A. User intake (setup) ─────────────────────────────────────────────
     stages.append(
@@ -1041,6 +1044,98 @@ def run_resume_workflow(
                     )
                 )
 
+    # ── M26. Pre-application validation ──────────────────────────────
+    _m26_plan_for_validation = (
+        workflow_input.llm_application_plan_json_path
+        or (str(output_dir / "llm_rewrite_application_plan.json"))
+    )
+
+    if workflow_input.write_llm_pre_application_validation and Path(_m26_plan_for_validation).is_file():
+        try:
+            from resume_pdf_agent.llm_pre_application_validation import (
+                write_pre_application_validation_to_files,
+            )
+
+            val_json_path = Path(
+                workflow_input.llm_pre_application_validation_json_path
+                or (output_dir / "llm_rewrite_pre_application_validation.json")
+            )
+            val_md_path = Path(
+                workflow_input.llm_pre_application_validation_md_path
+                or (output_dir / "llm_rewrite_pre_application_validation.md")
+            )
+
+            val_report = write_pre_application_validation_to_files(
+                plan_path=_m26_plan_for_validation,
+                output_json_path=val_json_path,
+                output_md_path=val_md_path,
+                result_path=llm_rewrite_result_path,
+                decisions_path=workflow_input.llm_review_decisions_path,
+                summary_path=workflow_input.llm_review_decision_summary_json_path,
+                strict=False,
+            )
+
+            llm_pre_application_validation_json_path = str(val_json_path)
+            llm_pre_application_validation_md_path = str(val_md_path)
+
+            all_artifacts.append(
+                WorkflowArtifact(
+                    artifact_type="llm_pre_application_validation",
+                    path=str(val_json_path),
+                    description="Strict pre-application validation report (JSON)",
+                )
+            )
+            all_artifacts.append(
+                WorkflowArtifact(
+                    artifact_type="llm_pre_application_validation",
+                    path=str(val_md_path),
+                    description="Strict pre-application validation report (Markdown)",
+                )
+            )
+
+            stages.append(
+                _stage_result(
+                    WorkflowStageName.LLM_PRE_APPLICATION_VALIDATION,
+                    WorkflowStageStatus.COMPLETED_WITH_WARNINGS if val_report.global_warnings else WorkflowStageStatus.COMPLETED,
+                    (
+                        f"Pre-application validation: {val_report.passed_count} passed, "
+                        f"{val_report.blocked_count} blocked, "
+                        f"{val_report.needs_manual_edit_count} needs edit, "
+                        f"{val_report.excluded_count} excluded, "
+                        f"{val_report.unmapped_count} unmapped; "
+                        f"can proceed: {'Yes' if val_report.can_proceed_to_patch_preview else 'No'}"
+                    ),
+                    warnings=list(val_report.global_warnings),
+                )
+            )
+            if val_report.global_warnings:
+                global_warnings.extend(val_report.global_warnings)
+        except Exception as exc:
+            global_warnings.append(f"Pre-application validation failed: {exc}")
+            stages.append(
+                _stage_result(
+                    WorkflowStageName.LLM_PRE_APPLICATION_VALIDATION,
+                    WorkflowStageStatus.COMPLETED_WITH_WARNINGS,
+                    f"Pre-application validation skipped: {exc}",
+                    warnings=[str(exc)],
+                )
+            )
+    elif workflow_input.write_llm_pre_application_validation:
+        global_warnings.append(
+            "write_llm_pre_application_validation is true but no application plan was found. "
+            "Generate an application plan first via --write-llm-application-plan."
+        )
+        stages.append(
+            _stage_result(
+                WorkflowStageName.LLM_PRE_APPLICATION_VALIDATION,
+                WorkflowStageStatus.COMPLETED_WITH_WARNINGS,
+                "Pre-application validation skipped: missing application plan JSON.",
+                warnings=[
+                    "No LLM application plan JSON was available for pre-application validation."
+                ],
+            )
+        )
+
     # M14: Skip PDF if confirmation gate blocks
     if workflow_input.require_confirmation_before_pdf and not can_generate_final_pdf:
         stages.append(
@@ -1173,6 +1268,8 @@ def run_resume_workflow(
         llm_application_plan_json_path=llm_application_plan_json_path,
         llm_application_plan_md_path=llm_application_plan_md_path,
         llm_application_preview_ui_path=llm_application_preview_ui_path,
+        llm_pre_application_validation_json_path=llm_pre_application_validation_json_path,
+        llm_pre_application_validation_md_path=llm_pre_application_validation_md_path,
     )
 
     # ── L. Write workflow_result.json if intermediate JSON is enabled ──────
@@ -1221,6 +1318,8 @@ def _build_result(
     llm_application_plan_json_path: str | None = None,
     llm_application_plan_md_path: str | None = None,
     llm_application_preview_ui_path: str | None = None,
+    llm_pre_application_validation_json_path: str | None = None,
+    llm_pre_application_validation_md_path: str | None = None,
 ) -> ResumeWorkflowResult:
     """Assemble the final ResumeWorkflowResult."""
 
@@ -1276,4 +1375,6 @@ def _build_result(
         llm_application_plan_json_path=llm_application_plan_json_path,
         llm_application_plan_md_path=llm_application_plan_md_path,
         llm_application_preview_ui_path=llm_application_preview_ui_path,
+        llm_pre_application_validation_json_path=None,
+        llm_pre_application_validation_md_path=None,
     )

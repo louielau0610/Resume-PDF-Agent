@@ -27,6 +27,7 @@ _REQUIRED_DOCS: list[str] = [
     "docs/browser_confirmation_ui_v0.md",
     "docs/browser_jd_upload_ui_v0.md",
     "docs/browser_llm_rewrite_review_ui_v0.md",
+    "docs/llm_pre_application_validation_v0.md",
     "examples/README.md",
     "examples/sample_data_science_demo.md",
     "examples/demo_output_manifest_v0.md",
@@ -67,6 +68,7 @@ _EXPECTED_CORE_PACKAGES: list[str] = [
     "llm_review_decisions",
     "llm_application_plan",
     "llm_application_preview_ui",
+    "llm_pre_application_validation",
     "visual_regression",
 ]
 

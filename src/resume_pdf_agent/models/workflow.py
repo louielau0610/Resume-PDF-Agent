@@ -30,6 +30,7 @@ class WorkflowStageName(str, Enum):
     LLM_REVIEW_DECISION_SUMMARY = "llm_review_decision_summary"
     LLM_APPLICATION_PLAN = "llm_application_plan"
     LLM_APPLICATION_PREVIEW_UI = "llm_application_preview_ui"
+    LLM_PRE_APPLICATION_VALIDATION = "llm_pre_application_validation"
     ARTIFACT_WRITING = "artifact_writing"
     REMINDER_PANEL = "reminder_panel"
 
@@ -123,6 +124,10 @@ class ResumeWorkflowInput(BaseModel):
     # M25: Manual LLM candidate application preview UI
     write_llm_application_preview_ui: bool = False
     llm_application_preview_ui_path: str | None = None
+    # M26: Strict pre-application validation
+    write_llm_pre_application_validation: bool = False
+    llm_pre_application_validation_json_path: str | None = None
+    llm_pre_application_validation_md_path: str | None = None
 
     @model_validator(mode="after")
     def _output_dir_not_empty(self) -> ResumeWorkflowInput:
@@ -172,6 +177,9 @@ class ResumeWorkflowResult(BaseModel):
     llm_application_plan_md_path: str | None = None
     # M25: Manual LLM candidate application preview UI
     llm_application_preview_ui_path: str | None = None
+    # M26: Strict pre-application validation
+    llm_pre_application_validation_json_path: str | None = None
+    llm_pre_application_validation_md_path: str | None = None
 
     @model_validator(mode="after")
     def _summary_not_empty(self) -> ResumeWorkflowResult:

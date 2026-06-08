@@ -91,6 +91,12 @@ from resume_pdf_agent.models.llm_application_preview_ui import (
     LLMApplicationPreviewUIResult,
     LLMApplicationPreviewUIStatus,
 )
+from resume_pdf_agent.models.llm_pre_application_validation import (
+    LLMPreApplicationBlockReason,
+    LLMPreApplicationValidationItem,
+    LLMPreApplicationValidationReport,
+    LLMPreApplicationValidationStatus,
+)
 from resume_pdf_agent.models.llm_review_ui import (
     LLMReviewCandidateView,
     LLMReviewDecisionType,
@@ -239,6 +245,10 @@ __all__ = [
     "LLMReviewUIOptions",
     "LLMReviewUIResult",
     "LLMReviewUIStatus",
+    "LLMPreApplicationBlockReason",
+    "LLMPreApplicationValidationItem",
+    "LLMPreApplicationValidationReport",
+    "LLMPreApplicationValidationStatus",
     "MatchLevel",
     "Metric",
     "MetricStatus",

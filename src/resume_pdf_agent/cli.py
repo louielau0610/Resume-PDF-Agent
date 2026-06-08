@@ -773,5 +773,64 @@ def validate_llm_pre_application(
         typer.echo(f"Markdown report:      {output_md}")
 
 
+@app.command("preview-llm-manual-patch")
+def preview_llm_manual_patch(
+    plan_path: str = typer.Option(
+        ..., "--plan",
+        help="Path to llm_rewrite_application_plan.json.",
+    ),
+    validation_path: str = typer.Option(
+        ..., "--validation",
+        help="Path to llm_rewrite_pre_application_validation.json.",
+    ),
+    output_json: str | None = typer.Option(
+        None, "--output-json",
+        help="Optional output path for llm_rewrite_manual_patch_preview.json.",
+    ),
+    output_md: str | None = typer.Option(
+        None, "--output-md",
+        help="Optional output path for llm_rewrite_manual_patch_preview.md.",
+    ),
+    output_html: str | None = typer.Option(
+        None, "--output-html",
+        help="Optional output path for llm_rewrite_manual_patch_preview.html.",
+    ),
+    strict: bool = typer.Option(
+        False, "--strict/--no-strict",
+        help="Not used; reserved for future strict-mode checks.",
+    ),
+) -> None:
+    """Generate manual patch-preview artifacts. Preview only — no candidates are applied and no executable patch is generated."""
+    from resume_pdf_agent.llm_manual_patch_preview import write_manual_patch_preview_to_files
+
+    try:
+        report = write_manual_patch_preview_to_files(
+            plan_path=plan_path,
+            validation_path=validation_path,
+            output_json_path=output_json,
+            output_md_path=output_md,
+            output_html_path=output_html,
+        )
+    except Exception as exc:
+        typer.echo(f"Error: {exc}", err=True)
+        raise typer.Exit(code=1)
+
+    typer.echo("Manual Patch Preview (preview only)")
+    typer.echo("No candidates were applied; no executable patch was generated.")
+    typer.echo(f"Total items:          {report.total_items}")
+    typer.echo(f"Preview ready:        {report.preview_ready_count}")
+    typer.echo(f"Blocked:              {report.blocked_count}")
+    typer.echo(f"Needs manual edit:    {report.needs_manual_edit_count}")
+    typer.echo(f"Excluded:             {report.excluded_count}")
+    typer.echo(f"Unmapped:             {report.unmapped_count}")
+    typer.echo(f"Skipped:              {report.skipped_count}")
+    if output_json:
+        typer.echo(f"JSON preview:         {output_json}")
+    if output_md:
+        typer.echo(f"Markdown preview:     {output_md}")
+    if output_html:
+        typer.echo(f"HTML preview:         {output_html}")
+
+
 if __name__ == "__main__":
     app()

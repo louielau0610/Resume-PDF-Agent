@@ -126,6 +126,10 @@ def run_resume_workflow(
     # M26 pre-application validation
     llm_pre_application_validation_json_path: str | None = None
     llm_pre_application_validation_md_path: str | None = None
+    # M27 manual patch preview
+    llm_manual_patch_preview_json_path: str | None = None
+    llm_manual_patch_preview_md_path: str | None = None
+    llm_manual_patch_preview_html_path: str | None = None
 
     # ── A. User intake (setup) ─────────────────────────────────────────────
     stages.append(
@@ -1136,6 +1140,88 @@ def run_resume_workflow(
             )
         )
 
+    # ── M27. Manual patch preview ───────────────────────────────────
+    _m27_plan_for_preview = (
+        workflow_input.llm_application_plan_json_path
+        or str(output_dir / "llm_rewrite_application_plan.json")
+    )
+    _m27_val_for_preview = (
+        workflow_input.llm_pre_application_validation_json_path
+        or str(output_dir / "llm_rewrite_pre_application_validation.json")
+    )
+
+    if (
+        workflow_input.write_llm_manual_patch_preview
+        and Path(_m27_plan_for_preview).is_file()
+        and Path(_m27_val_for_preview).is_file()
+    ):
+        try:
+            from resume_pdf_agent.llm_manual_patch_preview import (
+                write_manual_patch_preview_to_files,
+            )
+
+            pv_json_path = Path(
+                workflow_input.llm_manual_patch_preview_json_path
+                or (output_dir / "llm_rewrite_manual_patch_preview.json")
+            )
+            pv_md_path = Path(
+                workflow_input.llm_manual_patch_preview_md_path
+                or (output_dir / "llm_rewrite_manual_patch_preview.md")
+            )
+            pv_html_path = Path(
+                workflow_input.llm_manual_patch_preview_html_path
+                or (output_dir / "llm_rewrite_manual_patch_preview.html")
+            )
+
+            pv_report = write_manual_patch_preview_to_files(
+                plan_path=_m27_plan_for_preview,
+                validation_path=_m27_val_for_preview,
+                output_json_path=pv_json_path,
+                output_md_path=pv_md_path,
+                output_html_path=pv_html_path,
+            )
+
+            llm_manual_patch_preview_json_path = str(pv_json_path)
+            llm_manual_patch_preview_md_path = str(pv_md_path)
+            llm_manual_patch_preview_html_path = str(pv_html_path)
+
+            all_artifacts.append(WorkflowArtifact(
+                artifact_type="llm_manual_patch_preview",
+                path=str(pv_json_path),
+                description="Manual patch preview (JSON) — preview only",
+            ))
+            all_artifacts.append(WorkflowArtifact(
+                artifact_type="llm_manual_patch_preview",
+                path=str(pv_md_path),
+                description="Manual patch preview (Markdown) — preview only",
+            ))
+            all_artifacts.append(WorkflowArtifact(
+                artifact_type="llm_manual_patch_preview",
+                path=str(pv_html_path),
+                description="Manual patch preview (HTML) — preview only",
+            ))
+
+            stages.append(_stage_result(
+                WorkflowStageName.LLM_MANUAL_PATCH_PREVIEW,
+                WorkflowStageStatus.COMPLETED_WITH_WARNINGS if pv_report.global_warnings else WorkflowStageStatus.COMPLETED,
+                (
+                    f"Manual patch preview: {pv_report.preview_ready_count} ready, "
+                    f"{pv_report.blocked_count} blocked, "
+                    f"{pv_report.needs_manual_edit_count} needs edit, "
+                    f"{pv_report.excluded_count} excluded, "
+                    f"{pv_report.unmapped_count} unmapped"
+                ),
+                warnings=list(pv_report.global_warnings),
+            ))
+            if pv_report.global_warnings:
+                global_warnings.extend(pv_report.global_warnings)
+        except Exception as exc:
+            global_warnings.append(f"Manual patch preview failed: {exc}")
+    elif workflow_input.write_llm_manual_patch_preview:
+        global_warnings.append(
+            "write_llm_manual_patch_preview is true but plan or validation is missing."
+        )
+
     # M14: Skip PDF if confirmation gate blocks
     if workflow_input.require_confirmation_before_pdf and not can_generate_final_pdf:
         stages.append(
@@ -1270,6 +1356,9 @@ def run_resume_workflow(
         llm_application_preview_ui_path=llm_application_preview_ui_path,
         llm_pre_application_validation_json_path=llm_pre_application_validation_json_path,
         llm_pre_application_validation_md_path=llm_pre_application_validation_md_path,
+        llm_manual_patch_preview_json_path=llm_manual_patch_preview_json_path,
+        llm_manual_patch_preview_md_path=llm_manual_patch_preview_md_path,
+        llm_manual_patch_preview_html_path=llm_manual_patch_preview_html_path,
     )
 
     # ── L. Write workflow_result.json if intermediate JSON is enabled ──────
@@ -1320,6 +1409,9 @@ def _build_result(
     llm_application_preview_ui_path: str | None = None,
     llm_pre_application_validation_json_path: str | None = None,
     llm_pre_application_validation_md_path: str | None = None,
+    llm_manual_patch_preview_json_path: str | None = None,
+    llm_manual_patch_preview_md_path: str | None = None,
+    llm_manual_patch_preview_html_path: str | None = None,
 ) -> ResumeWorkflowResult:
     """Assemble the final ResumeWorkflowResult."""
 
@@ -1377,4 +1469,7 @@ def _build_result(
         llm_application_preview_ui_path=llm_application_preview_ui_path,
         llm_pre_application_validation_json_path=None,
         llm_pre_application_validation_md_path=None,
+        llm_manual_patch_preview_json_path=None,
+        llm_manual_patch_preview_md_path=None,
+        llm_manual_patch_preview_html_path=None,
     )

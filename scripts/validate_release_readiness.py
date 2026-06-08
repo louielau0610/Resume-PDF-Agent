@@ -69,6 +69,7 @@ _EXPECTED_CORE_PACKAGES: list[str] = [
     "llm_application_plan",
     "llm_application_preview_ui",
     "llm_pre_application_validation",
+    "llm_manual_patch_preview",
     "visual_regression",
 ]
 

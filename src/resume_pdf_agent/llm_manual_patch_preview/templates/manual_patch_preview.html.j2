@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLM Manual Patch Preview / LLM人工补丁预览</title>
+<style>{{ css }}</style>
+</head>
+<body>
+<main class="app-shell">
+<header class="top-bar">
+  <span class="top-bar-brand">Manual Patch Preview Console</span>
+  <span class="top-bar-badge">Local Static Page — Preview Only</span>
+</header>
+
+<section class="hero-panel">
+  <h1 class="hero-title">LLM Manual Patch Preview / LLM人工补丁预览</h1>
+  <p class="hero-subtitle">Preview-only — no candidates have been applied, no executable patch has been generated.</p>
+</section>
+
+<section class="section-panel safety-notice">
+  <div class="safety-notice-text">{{ report.safety_notice }}</div>
+</section>
+
+<section class="section-panel">
+  <div class="section-panel-header"><h2 class="section-panel-title">Summary / 摘要</h2></div>
+  <div class="summary-cards">
+    <div class="summary-card"><span class="sc-label">Total</span><span class="sc-value">{{ report.total_items }}</span></div>
+    <div class="summary-card"><span class="sc-label">Preview Ready</span><span class="sc-value">{{ report.preview_ready_count }}</span></div>
+    <div class="summary-card"><span class="sc-label">Blocked</span><span class="sc-value">{{ report.blocked_count }}</span></div>
+    <div class="summary-card"><span class="sc-label">Needs Edit</span><span class="sc-value">{{ report.needs_manual_edit_count }}</span></div>
+    <div class="summary-card"><span class="sc-label">Excluded</span><span class="sc-value">{{ report.excluded_count }}</span></div>
+    <div class="summary-card"><span class="sc-label">Unmapped</span><span class="sc-value">{{ report.unmapped_count }}</span></div>
+  </div>
+</section>
+
+<section class="section-panel">
+  <div class="section-panel-header"><h2 class="section-panel-title">Filter / 筛选</h2></div>
+  <div class="filter-row">
+    <button class="filter-btn active" onclick="filterItems('all')">All ({{ report.total_items }})</button>
+    <button class="filter-btn" onclick="filterItems('preview_ready')">Preview Ready ({{ report.preview_ready_count }})</button>
+    <button class="filter-btn" onclick="filterItems('blocked')">Blocked ({{ report.blocked_count }})</button>
+    <button class="filter-btn" onclick="filterItems('needs_manual_edit')">Needs Edit ({{ report.needs_manual_edit_count }})</button>
+    <button class="filter-btn" onclick="filterItems('excluded')">Excluded ({{ report.excluded_count }})</button>
+    <button class="filter-btn" onclick="filterItems('unmapped')">Unmapped ({{ report.unmapped_count }})</button>
+  </div>
+</section>
+
+<section class="section-panel">
+  <div class="section-panel-header"><h2 class="section-panel-title">Candidates / 候选预览</h2></div>
+  <div id="candidates-container">
+    {% for item in report.items %}
+    <div class="candidate-card" data-status="{{ item.preview_status.value }}">
+      <div class="candidate-header">
+        <span class="candidate-id">{{ item.candidate_id }}</span>
+        <span class="candidate-status {{ item.preview_status.value }}">{{ item.preview_status.value }}</span>
+        {% if item.can_copy_for_manual_review %}<span class="badge badge-copy">Can Copy</span>{% endif %}
+      </div>
+      {% if item.target_section or item.target_item_id %}
+      <div class="candidate-meta">
+        {% if item.target_section %}<span>Section: {{ item.target_section }}</span>{% endif %}
+        {% if item.target_item_id %}<span>Item: {{ item.target_item_id }}</span>{% endif %}
+      </div>
+      {% endif %}
+      <div class="candidate-texts">
+        <div class="text-block original">
+          <div class="text-label">Original / 原文</div>
+          <div class="text-content">{{ item.original_text or 'N/A' }}</div>
+        </div>
+        <div class="text-block proposed">
+          <div class="text-label">Proposed / 建议替换</div>
+          <div class="text-content">{{ item.proposed_text or 'N/A' }}</div>
+        </div>
+      </div>
+      {% if item.diff_preview %}
+      <div class="diff-block">
+        <div class="text-label">Diff Preview (display-only)</div>
+        <pre class="diff-content">{% for line in item.diff_preview %}{{ line }}
+{% endfor %}</pre>
+      </div>
+      {% endif %}
+      {% if item.block_reasons %}
+      <div class="block-reasons">
+        <strong>Block Reasons:</strong> {{ item.block_reasons|join(', ') }}
+      </div>
+      {% endif %}
+      <div class="manual-instruction">{{ item.manual_instruction }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<footer class="footer-note">
+  <p>Preview-only local static page. No candidates have been applied. No executable patch has been generated.</p>
+  <p>M5 truthfulness and M14 confirmation safeguards still apply.</p>
+  <p>It does NOT predict hiring probability or access internal screening standards.</p>
+</footer>
+</main>
+<script>var ITEMS = {{ items_json }};</script>
+<script>{{ js }}</script>
+</body>
+</html>

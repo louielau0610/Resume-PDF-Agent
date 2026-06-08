@@ -118,6 +118,12 @@ def main() -> None:
         default=False,
         help="Run strict pre-application validation and write validation reports. Requires --include-llm-mock.",
     )
+    parser.add_argument(
+        "--write-llm-manual-patch-preview",
+        action="store_true",
+        default=False,
+        help="Generate manual patch-preview artifacts (JSON/MD/HTML). Requires --include-llm-mock.",
+    )
     args = parser.parse_args()
 
     sample_input = _find_sample_input()
@@ -227,6 +233,7 @@ def main() -> None:
         or args.write_llm_application_plan
         or args.write_llm_application_preview_ui
         or args.write_llm_pre_application_validation
+        or args.write_llm_manual_patch_preview
     ) and args.include_llm_mock:
         try:
             import json
@@ -335,6 +342,25 @@ def main() -> None:
                     print(f"  M26 validation JSON: {val_json}")
                     print(f"  M26 validation MD:   {val_md}")
                     print(f"  M26 passed/blocked:  {val_report.passed_count}/{val_report.blocked_count}")
+                if args.write_llm_manual_patch_preview:
+                    from resume_pdf_agent.llm_manual_patch_preview import (
+                        write_manual_patch_preview_to_files,
+                    )
+                    val_for_m27 = Path(args.output_dir) / "llm_rewrite_pre_application_validation.json"
+                    pv_json = Path(args.output_dir) / "llm_rewrite_manual_patch_preview.json"
+                    pv_md = Path(args.output_dir) / "llm_rewrite_manual_patch_preview.md"
+                    pv_html = Path(args.output_dir) / "llm_rewrite_manual_patch_preview.html"
+                    pv_report = write_manual_patch_preview_to_files(
+                        plan_path=plan_json,
+                        validation_path=val_for_m27,
+                        output_json_path=pv_json,
+                        output_md_path=pv_md,
+                        output_html_path=pv_html,
+                    )
+                    print(f"  M27 preview JSON:    {pv_json}")
+                    print(f"  M27 preview MD:      {pv_md}")
+                    print(f"  M27 preview HTML:    {pv_html}")
+                    print(f"  M27 ready/blocked:   {pv_report.preview_ready_count}/{pv_report.blocked_count}")
         except Exception as exc:
             print(f"  LLM planning:        ERROR ({exc})")
 
